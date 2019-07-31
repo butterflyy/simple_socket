@@ -1,0 +1,10 @@
+EXPORTS
+	SS_Initialize
+	SS_Finalize
+	SS_GetLibVersion
+	SS_StrError
+	SS_SetCallback
+	SS_StartServer
+	SS_StopServer
+	SS_DisconnectClient
+	SS_SendFrame

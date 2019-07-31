@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\simple_net\Client.cpp">
+      <Filter>simple_net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\simple_net\NetHelper.cpp">
+      <Filter>simple_net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\simple_net\Server.cpp">
+      <Filter>simple_net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\simple_net\ServerManager.cpp">
+      <Filter>simple_net</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerImp.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerManagerImp.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
+    <ClCompile Include="whsarmserver.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\simple_net\Client.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_net\NetConfig.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_net\NetHelper.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_net\NetProtocol.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_net\Server.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_net\ServerManager.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerImp.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerManagerImp.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="whsarmserver.h">
+      <Filter>api</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="simple_net">
+      <UniqueIdentifier>{51458129-63de-4a47-8edf-6cba0dffcaf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="api">
+      <UniqueIdentifier>{6df22342-f510-41b8-ba61-832c562168b6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="whsarmserver.def">
+      <Filter>api</Filter>
+    </None>
+  </ItemGroup>
+</Project>

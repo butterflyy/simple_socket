@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="api">
+      <UniqueIdentifier>{50538699-62ba-42a6-8bc0-7ff67b29b83c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="simple_net">
+      <UniqueIdentifier>{7f464e78-e6d4-48d7-bb76-f3db1a766a4d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\simple_net\Client.cpp">
+      <Filter>simple_net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\simple_net\NetHelper.cpp">
+      <Filter>simple_net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\simple_net\Server.cpp">
+      <Filter>simple_net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\simple_net\ServerManager.cpp">
+      <Filter>simple_net</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientImp.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
+    <ClCompile Include="whsarmclient.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\simple_net\Client.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_net\NetConfig.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_net\NetEventInterface.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_net\NetHelper.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_net\NetProtocol.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_net\Server.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_net\ServerManager.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientImp.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="whsarmclient.h">
+      <Filter>api</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="whsarmclient.def">
+      <Filter>api</Filter>
+    </None>
+  </ItemGroup>
+</Project>

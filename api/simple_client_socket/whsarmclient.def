@@ -1,0 +1,9 @@
+EXPORTS
+	SC_Initialize
+	SC_Finalize
+	SC_GetLibVersion
+	SC_StrError
+	SC_SetCallback
+	SC_ConnectToHost
+	SC_DisconnectFromHost
+	SC_SendFrame
