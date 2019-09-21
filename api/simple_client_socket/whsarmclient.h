@@ -1,4 +1,4 @@
-#ifndef __SC_API__
+ï»¿#ifndef __SC_API__
 #define __SC_API__
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
@@ -17,8 +17,8 @@
 
 
 /**
-* whsarmclient ¿â°æ±¾ºÅ
-* Í·ÎÄ¼þÉùÃ÷µÄ¿â°æ±¾ºÅ£¬ Í¨¹ý SC_GetLibVersion ½Ó¿Ú»ñÈ¡Êµ¼Ê¼ÓÔØ¿âµÄ°æ±¾ºÅ¡£
+* whsarmclient åº“ç‰ˆæœ¬å·
+* å¤´æ–‡ä»¶å£°æ˜Žçš„åº“ç‰ˆæœ¬å·ï¼Œ é€šè¿‡ SC_GetLibVersion æŽ¥å£èŽ·å–å®žé™…åŠ è½½åº“çš„ç‰ˆæœ¬å·ã€‚
 */
 #define SCAPI_VERSION "1.0.0"
 
@@ -27,115 +27,115 @@ extern "C" {
 #endif   // __cplusplus
 
 	enum sc_error_code {
-		/** ²Ù×÷³É¹¦ */
+		/** æ“ä½œæˆåŠŸ */
 		SC_SUCCESS = 0,
 
-		/** Ò»°ã´íÎó */
+		/** ä¸€èˆ¬é”™è¯¯ */
 		SC_ERROR = -1,
 
-		/** ²ÎÊýÎÞÐ§ */
+		/** å‚æ•°æ— æ•ˆ */
 		SC_INVALID_PARAM = -2,
 
-		/** ÍøÂç´íÎó */
+		/** ç½‘ç»œé”™è¯¯ */
 		SC_NETWORK_ERROR = -3,
 
-		/** ÍøÂç¶Ï¿ª */
+		/** ç½‘ç»œæ–­å¼€ */
 		SC_NETWORK_DISCONNECTED = -4,
 
-		/** ÍøÂç³¬Ê± */
+		/** ç½‘ç»œè¶…æ—¶ */
 		SC_NETWORK_TIMEOUT = -5,
 
-		/** Êý¾ÝÖ¡³¬¹ý1MB */
+		/** æ•°æ®å¸§è¶…è¿‡5MB */
 		SC_PAYLOAD_TOO_BIG = -6,
 
-		/** Êý¾ÝÖ¡´íÎó */
+		/** æ•°æ®å¸§é”™è¯¯ */
 		SC_FRAME_ERROR = -7,
 	};
 
-	/** Êý¾ÝÖ¡ÀàÐÍ */
+	/** æ•°æ®å¸§ç±»åž‹ */
 	enum sc_frame_type{
-		/* ÎÄ±¾Êý¾Ý */
+		/* æ–‡æœ¬æ•°æ® */
 		SC_FRAME_STRING = 1,
 
-		/* ¶þ½øÖÆÊý¾Ý */
+		/* äºŒè¿›åˆ¶æ•°æ® */
 		SC_FRAME_BINARY = 2,
 	};
 
 	/**
-	* ÃèÊö£º Á¬½Ó¶Ï¿ªºó£¬´¥·¢´ËÊÂ¼þ»Øµ÷¡£
+	* æè¿°ï¼š è¿žæŽ¥æ–­å¼€åŽï¼Œè§¦å‘æ­¤äº‹ä»¶å›žè°ƒã€‚
 	*/
 	typedef void(CALLBACK *sc_disconnected_callback)();
 
 
 	/**
-	* ÃèÊö£º Á¬½Ó³öÏÖ´íÎóºó£¬´¥·¢´ËÊÂ¼þ»Øµ÷¡£
-	* ²ÎÊý£º error_code ´íÎóÂë£¬²Î¿¼ sc_error_code¡£
+	* æè¿°ï¼š è¿žæŽ¥å‡ºçŽ°é”™è¯¯åŽï¼Œè§¦å‘æ­¤äº‹ä»¶å›žè°ƒã€‚
+	* å‚æ•°ï¼š error_code é”™è¯¯ç ï¼Œå‚è€ƒ sc_error_codeã€‚
 	*/
 	typedef void(CALLBACK *sc_error_callback)(int error_code);
 
 	/**
-	* ÃèÊö£º ½ÓÊÜµ½·þÎñÆ÷Êý¾ÝÖ¡ºó£¬´¥·¢´ËÊÂ¼þ»Øµ÷¡£
-	* ²ÎÊý£º data Êý¾ÝÖ¡µÄÖ¸Õë¡£
-	* ²ÎÊý£º len Êý¾ÝÖ¡³¤¶È¡£
-	* ²ÎÊý£º type Êý¾ÝÖ¡ÀàÐÍ£¬ ²Î¿¼ sc_frame_type¡£
+	* æè¿°ï¼š æŽ¥å—åˆ°æœåŠ¡å™¨æ•°æ®å¸§åŽï¼Œè§¦å‘æ­¤äº‹ä»¶å›žè°ƒã€‚
+	* å‚æ•°ï¼š data æ•°æ®å¸§çš„æŒ‡é’ˆã€‚
+	* å‚æ•°ï¼š len æ•°æ®å¸§é•¿åº¦ã€‚
+	* å‚æ•°ï¼š type æ•°æ®å¸§ç±»åž‹ï¼Œ å‚è€ƒ sc_frame_typeã€‚
 	*/
 	typedef void(CALLBACK *sc_recvframe_callback)(const unsigned char* data, int len, int type);
 
 
 	/**
-	* ÃèÊö£º ³õÊ¼»¯×ÊÔ´£¬±ØÐëÔÚÆäËûËùÓÐµÄAPIÖ®Ç°µ÷ÓÃ¡£
-	* ·µ»Ø£º 0 ³É¹¦£¬ÆäËûÖµÊ§°Ü£¬²Î¿¼ sc_error_code¡£
+	* æè¿°ï¼š åˆå§‹åŒ–èµ„æºï¼Œå¿…é¡»åœ¨å…¶ä»–æ‰€æœ‰çš„APIä¹‹å‰è°ƒç”¨ã€‚
+	* è¿”å›žï¼š 0 æˆåŠŸï¼Œå…¶ä»–å€¼å¤±è´¥ï¼Œå‚è€ƒ sc_error_codeã€‚
 	*/
 	SC_API int WINAPI SC_Initialize();
 
 	/**
-	* ÃèÊö£º ÊÍ·ÅÉè±¸×ÊÔ´£¬ºÍ SC_Initialize ¶ÔÓ¦£¬³ÌÐò½áÊøÊ±µ÷ÓÃ£¬¹Ø±ÕËùÓÐÁ¬½Ó²¢ÊÍ·Å×ÊÔ´¡£
+	* æè¿°ï¼š é‡Šæ”¾è®¾å¤‡èµ„æºï¼Œå’Œ SC_Initialize å¯¹åº”ï¼Œç¨‹åºç»“æŸæ—¶è°ƒç”¨ï¼Œå…³é—­æ‰€æœ‰è¿žæŽ¥å¹¶é‡Šæ”¾èµ„æºã€‚
 	*/
 	SC_API void WINAPI SC_Finalize();
 
 	/**
-	* ÃèÊö£º »ñÈ¡¿â°æ±¾ºÅ¡£
-	* ·µ»Ø£º °æ±¾ºÅÃèÊö×Ö·û´®£¬ÀýÈç 1.3.2¡£
+	* æè¿°ï¼š èŽ·å–åº“ç‰ˆæœ¬å·ã€‚
+	* è¿”å›žï¼š ç‰ˆæœ¬å·æè¿°å­—ç¬¦ä¸²ï¼Œä¾‹å¦‚ 1.3.2ã€‚
 	*/
 	SC_API const char* WINAPI SC_GetLibVersion();
 
 	/**
-	* ÃèÊö£º ·µ»Ø´íÎóÂëµÄ¼òµ¥×Ö·û´®ÃèÊö¡£
-	* ²ÎÊý£º error_code ´íÎóÂë£¬²Î¿¼ sc_error_code¡£
-	* ·µ»Ø£º ´íÎó×Ö·û´®ÃèÊö£¬ÀýÈç -1£¬·µ»Ø ¡°SC_ERROR¡±¡£
+	* æè¿°ï¼š è¿”å›žé”™è¯¯ç çš„ç®€å•å­—ç¬¦ä¸²æè¿°ã€‚
+	* å‚æ•°ï¼š error_code é”™è¯¯ç ï¼Œå‚è€ƒ sc_error_codeã€‚
+	* è¿”å›žï¼š é”™è¯¯å­—ç¬¦ä¸²æè¿°ï¼Œä¾‹å¦‚ -1ï¼Œè¿”å›ž â€œSC_ERRORâ€ã€‚
 	*/
 	SC_API const char* WINAPI SC_StrError(int error_code);
 
 	/**
-	* ÃèÊö£º ÉèÖÃ»Øµ÷º¯Êý£¬SC_Initialize ³É¹¦ºóµ÷ÓÃ¡£
-	* ²ÎÊý£º on_disconnected Á¬½Ó¶Ï¿ª»Øµ÷º¯ÊýÖ¸Õë¡£
-	* ²ÎÊý£º on_error Á¬½Ó´íÎó»Øµ÷º¯ÊýÖ¸Õë¡£
-	* ²ÎÊý£º on_recvframe ·þÎñÆ÷Êý¾ÝÖ¡»Øµ÷º¯ÊýÖ¸Õë¡£
-	* ·µ»Ø£º 0 ³É¹¦£¬ÆäËûÖµÊ§°Ü£¬²Î¿¼ sc_error_code¡£
+	* æè¿°ï¼š è®¾ç½®å›žè°ƒå‡½æ•°ï¼ŒSC_Initialize æˆåŠŸåŽè°ƒç”¨ã€‚
+	* å‚æ•°ï¼š on_disconnected è¿žæŽ¥æ–­å¼€å›žè°ƒå‡½æ•°æŒ‡é’ˆã€‚
+	* å‚æ•°ï¼š on_error è¿žæŽ¥é”™è¯¯å›žè°ƒå‡½æ•°æŒ‡é’ˆã€‚
+	* å‚æ•°ï¼š on_recvframe æœåŠ¡å™¨æ•°æ®å¸§å›žè°ƒå‡½æ•°æŒ‡é’ˆã€‚
+	* è¿”å›žï¼š 0 æˆåŠŸï¼Œå…¶ä»–å€¼å¤±è´¥ï¼Œå‚è€ƒ sc_error_codeã€‚
 	*/
 	SC_API int WINAPI SC_SetCallback(sc_disconnected_callback on_disconnected,
 		sc_error_callback on_error,
 		sc_recvframe_callback on_recvframe);
 
 	/**
-	* ÃèÊö£º Á¬½Ó·þÎñÆ÷¡£
-	* ²ÎÊý£º ip ·þÎñÆ÷IPµØÖ·¡£
-	* ²ÎÊý£º port ·þÎñÆ÷¶Ë¿ÚºÅ¡£
-	* ·µ»Ø£º 0 ³É¹¦£¬ÆäËûÖµÊ§°Ü£¬²Î¿¼ sc_error_code¡£
+	* æè¿°ï¼š è¿žæŽ¥æœåŠ¡å™¨ã€‚
+	* å‚æ•°ï¼š ip æœåŠ¡å™¨IPåœ°å€ã€‚
+	* å‚æ•°ï¼š port æœåŠ¡å™¨ç«¯å£å·ã€‚
+	* è¿”å›žï¼š 0 æˆåŠŸï¼Œå…¶ä»–å€¼å¤±è´¥ï¼Œå‚è€ƒ sc_error_codeã€‚
 	*/
 	SC_API int WINAPI SC_ConnectToHost(const char* ip, int port);
 
 	/**
-	* ÃèÊö£º ¶Ï¿ªÁ¬½Ó¡£
+	* æè¿°ï¼š æ–­å¼€è¿žæŽ¥ã€‚
 	*/
 	SC_API void WINAPI SC_DisconnectFromHost();
 
 	/**
-	* ÃèÊö£º ·¢ËÍÊý¾Ý¸ø·þÎñÆ÷¡£
-	* ²ÎÊý£º data Êý¾ÝÖ¡µÄÖ¸Õë¡£
-	* ²ÎÊý£º len Êý¾ÝÖ¡³¤¶È¡£
-	* ²ÎÊý£º type Êý¾ÝÖ¡ÀàÐÍ£¬ ²Î¿¼ sc_frame_type¡£
-	* ·µ»Ø£º 0 ³É¹¦£¬ÆäËûÖµÊ§°Ü£¬²Î¿¼ sc_error_code¡£
+	* æè¿°ï¼š å‘é€æ•°æ®ç»™æœåŠ¡å™¨ã€‚
+	* å‚æ•°ï¼š data æ•°æ®å¸§çš„æŒ‡é’ˆã€‚
+	* å‚æ•°ï¼š len æ•°æ®å¸§é•¿åº¦ã€‚
+	* å‚æ•°ï¼š type æ•°æ®å¸§ç±»åž‹ï¼Œ å‚è€ƒ sc_frame_typeã€‚
+	* è¿”å›žï¼š 0 æˆåŠŸï¼Œå…¶ä»–å€¼å¤±è´¥ï¼Œå‚è€ƒ sc_error_codeã€‚
 	*/
 	SC_API int WINAPI SC_SendFrame(const unsigned char* data, int len, int type);
 

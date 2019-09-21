@@ -46,7 +46,7 @@ extern "C" {
 		/** 网络超时 */
 		SS_NETWORK_TIMEOUT = -5,
 
-		/** 数据帧超过1MB */
+		/** 数据帧超过5MB */
 		SS_PAYLOAD_TOO_BIG = -6,
 
 		/** 数据帧错误 */

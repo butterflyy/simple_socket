@@ -91,7 +91,7 @@ bool JsonTestDataParse::SaveDownloadPersonImage(const std::string& json, std::st
 		//save face image
 		std::string base64_face = ds["person_info"]["face"].toString();
 
-		base64::bytes face;
+		bytes face;
 		if (!base64::decode(base64_face, face)){
 			return false;
 		}
@@ -106,7 +106,7 @@ bool JsonTestDataParse::SaveDownloadPersonImage(const std::string& json, std::st
 		int tmpsize = ds["person_info"]["tmpls"].size();
 		for (int i = 0; i < tmpsize; i++){
 			std::string base64_tmpl = ds["person_info"]["tmpls"][i].toString();
-			base64::bytes tmpl;
+			bytes tmpl;
 			if (!base64::decode(base64_tmpl, tmpl)){
 				return false;
 			}

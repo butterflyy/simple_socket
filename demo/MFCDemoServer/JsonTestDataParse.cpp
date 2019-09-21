@@ -51,7 +51,7 @@ std::string JsonTestDataParse::MakeDownloadPerson(const std::string& imagePath,
 		return "";
 	}
 
-	std::string base64_face = base64::encode(base64::bytes((char*)facebuff, size));
+	std::string base64_face = base64::encode(bytes((char*)facebuff, size));
 	delete[]facebuff;
 
 	info.set("face", base64_face);
@@ -65,7 +65,7 @@ std::string JsonTestDataParse::MakeDownloadPerson(const std::string& imagePath,
 			return "";
 		}
 
-		std::string base64_tmpl = base64::encode(base64::bytes((char*)tmplbuff, size));
+		std::string base64_tmpl = base64::encode(bytes((char*)tmplbuff, size));
 		delete[]tmplbuff;
 
 		tmpls.add(base64_tmpl);
