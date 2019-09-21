@@ -2,7 +2,7 @@
 #include "ServerImp.h"
 #include "ServerManagerImp.h"
 
-#define BETA_VERSION  1  //beta version for inner test, if is release beta version is 0.
+#define BETA_VERSION  2  //beta version for inner test, if is release beta version is 0.
 
 //Global Variable
 ServerManagerImp* g_serverManagerImp = nullptr;

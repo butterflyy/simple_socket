@@ -18,26 +18,33 @@ void Client::Connect(const char* ip, int port){
 		throw SimpleNetException("Client is already connected", SN_NETWORK_ERROR);
 	}
 	else{
-		Poco::Timespan timeoutc(100000);
-		_socket.connect(Poco::Net::SocketAddress(ip, port), timeoutc);
-
 		//make sure thread quit if loop connected.
 		Thread::quit();
 
-		//handshake
-		sendFrame(MSG_HANDSHAKE, FRAME_BINARY, nullptr, 0);
-		Poco::Timespan timeout(200000);
-		if (_socket.poll(timeout, Socket::SELECT_READ)){
-			int msgtype;
-			int frametype;
-			recvFrame(&msgtype, &frametype, nullptr, 0);
-			if (msgtype != MSG_HANDSHAKE){
-				throw SimpleNetException("Recv handshake ack error", SN_NETWORK_ERROR);
+		try{
+			Poco::Timespan timeoutc(100000);
+			_socket.connect(Poco::Net::SocketAddress(ip, port), timeoutc);
+
+			//handshake
+			sendFrame(MSG_HANDSHAKE, FRAME_BINARY, nullptr, 0);
+			Poco::Timespan timeout(200000);
+			if (_socket.poll(timeout, Socket::SELECT_READ)){
+				int msgtype;
+				int frametype;
+				recvFrame(&msgtype, &frametype, nullptr, 0);
+				if (msgtype != MSG_HANDSHAKE){
+					throw SimpleNetException("Recv handshake ack error", SN_NETWORK_ERROR);
+				}
+			}
+			else{
+				throw Poco::TimeoutException("No handshake ack");
 			}
 		}
-		else{
-			throw Poco::TimeoutException("No handshake ack");
+		catch (...){
+			close();
+			throw;
 		}
+
 
 		Thread::start();
 

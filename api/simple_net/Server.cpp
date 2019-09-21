@@ -43,10 +43,12 @@ void Server::run(){
 				int frametype;
 				recvFrame(&msgtype, &frametype, nullptr, 0);
 				if (msgtype != MSG_HANDSHAKE){
+					close();
 					throw SimpleNetException("Recv handshake ack error", SN_NETWORK_ERROR);
 				}
 			}
 			else{
+				close();
 				throw Poco::TimeoutException("No handshake ack");
 			}
 			sendFrame(MSG_HANDSHAKE, FRAME_BINARY, nullptr, 0);

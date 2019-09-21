@@ -55,7 +55,7 @@ class Wrapper{
 public:
 	static void CALLBACK disconnected_callback(){
 		//同步回调过程，避免阻塞
-		wrapper->error_callback(ARMNET_REMOTE_HOST_CLOSE);
+		wrapper->_armnet_error_cb(ARMNET_REMOTE_HOST_CLOSE);
 	}
 
 	static void CALLBACK error_callback(int error_code){
