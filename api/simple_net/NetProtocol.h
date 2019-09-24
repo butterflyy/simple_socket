@@ -44,6 +44,7 @@ typedef struct _TCP_HEADER
 {
 	char     flag[10];         //message flag
 	char     version[2];       //protocol version
+	char     reserve[8];      //reserve
 	uint8    msgtype;          //MSG_TYPE
 	uint8    frametype;        //FRAME_TYPE
 	uint32   msglen;           //message length

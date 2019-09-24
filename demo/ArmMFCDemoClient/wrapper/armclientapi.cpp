@@ -574,8 +574,6 @@ ARMCLIENT_API int ARMNET_UploadAccessRecord(const struct armnet_access_info* inf
 		utils::OutputDebug(e.displayText().c_str());
 		return ARMNET_ERROR;
 	}
-
-	return 0;
 }
 
 /**
@@ -589,7 +587,73 @@ ARMCLIENT_API int ARMNET_UploadDeviceCondition(const struct armnet_device_condit
 * 上传人员信息记录
 */
 ARMCLIENT_API int ARMNET_UploadPersonInfo(const struct armnet_person_info* info){
-	return 0;
+	try{
+		Poco::JSON::Object root;
+
+		root.set("mod", "upload_person");
+		root.set("session_id", Poco::UUIDGenerator::defaultGenerator().createOne().toString());
+		root.set("type", JSON_REQ);
+
+		Poco::JSON::Object person_info;
+		person_info.set("person_id", info->person_id);
+		person_info.set("person_name", info->person_name);
+		person_info.set("id_number", info->id_number);
+		person_info.set("card_number", info->card_number);
+		person_info.set("key_number", info->key_number);
+		person_info.set("department_number", info->department_number);
+		person_info.set("role", info->role);
+
+		Poco::JSON::Object face;
+		face.set("width", info->face.width); 
+		face.set("height", info->face.height);
+		face.set("format", info->face.format);
+		face.set("length", info->face.data.length);
+		face.set("data", base64::encode(bytes((char*)info->face.data.get_data(), info->face.data.length)));
+		person_info.set("face", face);
+
+
+		Poco::JSON::Object left_image;
+		left_image.set("width", info->tmpl1.image.width);
+		left_image.set("height", info->tmpl1.image.height);
+		left_image.set("format", info->tmpl1.image.format);
+		left_image.set("length", info->tmpl1.image.data.length);
+		left_image.set("data", base64::encode(bytes((char*)info->tmpl1.image.data.get_data(), info->tmpl1.image.data.length)));
+
+		Poco::JSON::Object left_code;
+		left_code.set("length", info->tmpl1.code.length);
+		left_code.set("data", base64::encode(bytes((char*)info->tmpl1.code.get_data(), info->tmpl1.code.length)));
+
+		person_info.set("left_image", left_image);
+		person_info.set("left_code", left_code);
+
+
+		Poco::JSON::Object right_image;
+		right_image.set("width", info->tmpl2.image.width);
+		right_image.set("height", info->tmpl2.image.height);
+		right_image.set("format", info->tmpl2.image.format);
+		right_image.set("length", info->tmpl2.image.data.length);
+		right_image.set("data", base64::encode(bytes((char*)info->tmpl2.image.data.get_data(), info->tmpl2.image.data.length)));
+
+		Poco::JSON::Object right_code;
+		right_code.set("length", info->tmpl2.code.length);
+		right_code.set("data", base64::encode(bytes((char*)info->tmpl1.code.get_data(), info->tmpl1.code.length)));
+
+		person_info.set("right_image", right_image);
+		person_info.set("right_code", right_code);
+
+		root.set("person_info", person_info);
+
+		std::stringstream ss;
+		root.stringify(ss);
+
+		std::string str = ss.str();
+
+		return Wrapper::TransNetError(SC_SendFrame((byte*)str.c_str(), str.size(), SC_FRAME_STRING));
+	}
+	catch (Poco::Exception& e){
+		utils::OutputDebug(e.displayText().c_str());
+		return ARMNET_ERROR;
+	}
 }
 
 /**

@@ -97,7 +97,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\wrapper;..\..\api\simple_client_socket;..\..\..\externals\include;..\..\..\externals\poco-poco-1.7.3-release\Foundation\include;..\..\..\externals\poco-poco-1.7.3-release\JSON\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\wrapper;..\..\..\externals\include;..\..\..\externals\poco-poco-1.7.3-release\Foundation\include;..\..\..\externals\poco-poco-1.7.3-release\JSON\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,7 +150,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\wrapper;..\..\api\simple_client_socket;..\..\..\externals\include;..\..\..\externals\poco-poco-1.7.3-release\Foundation\include;..\..\..\externals\poco-poco-1.7.3-release\JSON\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\wrapper;..\..\..\externals\include;..\..\..\externals\poco-poco-1.7.3-release\Foundation\include;..\..\..\externals\poco-poco-1.7.3-release\JSON\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

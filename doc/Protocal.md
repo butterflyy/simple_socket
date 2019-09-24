@@ -197,3 +197,51 @@
                  "code":0,
                  "message":""
              }
+             
+### 服务器自定义命令
+* 请求顺序
+	服务器 -> 客户端
+
+* 请求JSON示例
+  
+             {
+                 "mod":"send_user_command",
+                 "session_id":"de6a6236-db52-11e9-aaa8-00e04c110030",
+                 "type":1,
+                 "command_type":2
+                 "command_value":"test!"
+             }
+
+* 返回JSON示例
+
+             {
+                 "mod":"send_user_command",
+                 "session_id":"de6a6236-db52-11e9-aaa8-00e04c110030",
+                 "type":2,
+                 "code":0,
+                 "message":""
+             }
+             
+### 客户端自定义命令
+* 请求顺序
+	服务器 -> 客户端
+
+* 请求JSON示例
+  
+             {
+                 "mod":"send_device_command",
+                 "session_id":"de6a6236-db52-11e9-aaa8-00e04c110030",
+                 "type":1,
+                 "command_type":2
+                 "command_value":"test!"
+             }
+
+* 返回JSON示例
+
+             {
+                 "mod":"send_device_command",
+                 "session_id":"de6a6236-db52-11e9-aaa8-00e04c110030",
+                 "type":2,
+                 "code":0,
+                 "message":""
+             }
