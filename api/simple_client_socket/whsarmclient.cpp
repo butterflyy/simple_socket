@@ -1,7 +1,7 @@
 #include "whsarmclient.h"
 #include "ClientImp.h"
 
-#define BETA_VERSION  3  //beta version for inner test, if is release beta version is 0.
+#define BETA_VERSION  4  //beta version for inner test, if is release beta version is 0.
 
 //Global Variable
 ClientImp* g_clientImp = nullptr;
