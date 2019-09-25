@@ -37,7 +37,7 @@ void Server::run(){
 
 	{
 		EXCEPTION_BEGIN
-			Poco::Timespan timeout(200000);
+			Poco::Timespan timeout(2000000);
 			if (_socket.poll(timeout, Socket::SELECT_READ)){
 				int msgtype;
 				int frametype;
@@ -63,7 +63,7 @@ void Server::run(){
 	OnConnected();
 
 	while (!Thread::isQuit()){
-		Poco::Timespan timeout(100000);
+		Poco::Timespan timeout(1000000);
 		if (_socket.poll(timeout, Socket::SELECT_READ)){
 			EXCEPTION_BEGIN
 				int msgtype;

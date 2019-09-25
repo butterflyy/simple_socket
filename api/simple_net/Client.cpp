@@ -22,12 +22,12 @@ void Client::Connect(const char* ip, int port){
 		Thread::quit();
 
 		try{
-			Poco::Timespan timeoutc(100000);
+			Poco::Timespan timeoutc(2000000);
 			_socket.connect(Poco::Net::SocketAddress(ip, port), timeoutc);
 
 			//handshake
 			sendFrame(MSG_HANDSHAKE, FRAME_BINARY, nullptr, 0);
-			Poco::Timespan timeout(200000);
+			Poco::Timespan timeout(2000000);
 			if (_socket.poll(timeout, Socket::SELECT_READ)){
 				int msgtype;
 				int frametype;
@@ -65,7 +65,7 @@ void Client::run(){
 	LOG(INFO) << "Client run begin";
 
 	while (!Thread::isQuit()){
-		Poco::Timespan timeout(100000);
+		Poco::Timespan timeout(1000000);
 		if (_socket.poll(timeout, Socket::SELECT_READ)){
 			EXCEPTION_BEGIN
 				int msgtype;
