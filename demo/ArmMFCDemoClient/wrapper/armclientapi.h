@@ -23,11 +23,12 @@
 #define ARMCLIENT_API
 #include <stddef.h> //for size_t
 #endif
-#include <string.h>
+
 
 /** armclientapi version */
 //#define ARMCLIENTAPI_VERSION "3.5.8"
-
+#include <string>
+#include <vector>
 
 #ifdef __cplusplus
 extern "C" {
@@ -81,6 +82,8 @@ extern "C" {
 		ARMNET_CMD_SET_PERSON_ROLE,
 
 		ARMNET_CMD_SET_PERSON_TMP_PWD,
+
+		ARMNET_CMD_IDENTIFY_RESULT,  //add
 	};
 
 	enum armnet_result_code{
@@ -107,10 +110,19 @@ extern "C" {
 
 
 	struct armnet_device_config{
+		///////////////不使用///////////////
 		char heart_jump_period[32];
 		char keep_open_timeout[32];
 		char keep_open_range[256];
 		char tmp_pwd_timeout[32];
+		////////////////////////////
+
+		int workModel; //前后端认证, 1:前端认证, 2:后端认证(默认)
+		int validModel; //认证类型，参见识别类型定义, 默认 0x7 人脸+虹膜+密码
+		int passwdTimeout; //认证后密码输入超时时间,单位:秒, 默认 30 秒
+		int passwdRetryCount; //单次输入密码的最大次数， 默认 3 次
+		int validTimeout; //等待后台验证超时时间,单位:秒, 默认 30 秒
+		bool weigenOutput; //是否开启韦根输出, true：开启, false:关闭
 	};
 
 	struct armnet_data{
@@ -142,8 +154,20 @@ extern "C" {
 		armnet_data code;
 	};
 
+	struct armnet_person_feature
+	{
+		std::string FaceFeature;
+		std::string FaceImage;
+		std::string LeftIrisFeature;
+		std::string LeftIrisImage;
+		std::string RightIrisFeature;
+		std::string RightIrisImage;
+	};
+
 	struct armnet_person_info{
-		char person_id[32];
+
+		///////////////不使用///////////////
+		//char person_id[32];
 		char person_name[32];
 		char id_number[32];
 		char card_number[32];
@@ -153,6 +177,37 @@ extern "C" {
 		armnet_image face;
 		armnet_tmpl tmpl1;
 		armnet_tmpl tmpl2;
+		/////////////////////////////////////
+
+
+		std::string person_id;
+		int is_admin;
+		std::string regist_time;
+		std::string position;
+		std::string department;
+		std::string org;
+		std::string address;
+		std::string nation;
+		std::string id_card;
+		int sex;
+		std::string card_no;
+		std::string name;
+		std::string password;
+		int alarm_flag;
+
+		bool has_feature;
+		armnet_person_feature feature;
+	};
+
+
+	struct armnet_identify_result{
+		std::string identifyId;
+		int recog_result;
+		int validType;
+		std::string recogTime;
+		armnet_person_info personInfo;
+		int surplusPwd;
+		std::string password;
 	};
 
 	struct armnet_access_info{
@@ -315,7 +370,7 @@ extern "C" {
 	/**
 	* 删除人员命令对应的数据
 	*/
-	ARMCLIENT_API const char* ARMNET_GetRemovePersonInfo(ARMNET_COMMAND_DATA command);
+	ARMCLIENT_API const std::vector<std::string>* ARMNET_GetRemovePersonInfo(ARMNET_COMMAND_DATA command);
 	
 	/**
 	* 设置人员黑白名单命令对应的数据
@@ -326,6 +381,11 @@ extern "C" {
 	* 设置用户临时密码
 	*/
 	ARMCLIENT_API const struct armnet_person_tmp_pwd* ARMNET_GetPersonTmpPwd(ARMNET_COMMAND_DATA command);
+
+	/**
+	* 获取人脸虹膜识别返回
+	*/
+	ARMCLIENT_API const struct armnet_identify_result* ARMNET_GetIdentifyResult(ARMNET_COMMAND_DATA command);
 
 	/**
 	*******************************重要***************************************
@@ -352,6 +412,17 @@ extern "C" {
 	* 上传设备心跳记录
 	*/
 	ARMCLIENT_API int ARMNET_UploadDeviceHeartbeat(const struct armnet_device_heartbeat* heartbeat);
+
+	/**
+	* 上传比对结果
+	*/
+	ARMCLIENT_API int ARMNET_UploadIdentify(const struct armnet_identify_result* identify);
+
+
+	/**
+	* 上传密码比对结果
+	*/
+	ARMCLIENT_API int ARMNET_UploadIdentifyPassword(const struct armnet_identify_result* identify);
 
 	/**
 	* 上传设备自定义命令

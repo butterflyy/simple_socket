@@ -9,6 +9,7 @@
 
 #include <common\utils.h>
 #include <common\utf_gbk.h>
+#include <common\base64.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -110,6 +111,9 @@ BEGIN_MESSAGE_MAP(CArmMFCDemoClientDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_UPLOAD_DEVICE_HEARTBEAT, &CArmMFCDemoClientDlg::OnBnClickedButtonUploadDeviceHeartbeat)
 	ON_BN_CLICKED(IDC_BUTTON_UPLOAD_DEVICE_COMMAND, &CArmMFCDemoClientDlg::OnBnClickedButtonUploadDeviceCommand)
 	ON_BN_CLICKED(IDC_BUTTON_UPLOAD_PERSON, &CArmMFCDemoClientDlg::OnBnClickedButtonUploadPerson)
+	ON_BN_CLICKED(IDC_BUTTON_UPLOAD_CAPTURE, &CArmMFCDemoClientDlg::OnBnClickedButtonUploadCapture)
+	ON_BN_CLICKED(IDC_BUTTON_UPLOAD_MATCH_RESULT, &CArmMFCDemoClientDlg::OnBnClickedButtonUploadMatchResult)
+	ON_BN_CLICKED(IDC_BUTTON_UPLOAD_PWD, &CArmMFCDemoClientDlg::OnBnClickedButtonUploadPwd)
 END_MESSAGE_MAP()
 
 
@@ -464,9 +468,9 @@ void CArmMFCDemoClientDlg::CommandCallback(ARMNET_COMMAND_DATA command){
 	}
 		break;
 	case ARMNET_CMD_REMOVE_PERSON:{
-									  const char* person_id = ARMNET_GetRemovePersonInfo(command);
-									  assert(person_id);
-									  std::string str_info = utils::StrFormat("»À‘±ID£∫%s",person_id);
+									  const std::vector<std::string>* person_ids = ARMNET_GetRemovePersonInfo(command);
+									  assert(person_ids);
+									  std::string str_info = utils::StrFormat("»À‘±ID£∫%d",person_ids->size());
 
 									  appendMsg(str_info.c_str());
 
@@ -606,71 +610,118 @@ void CArmMFCDemoClientDlg::OnBnClickedButtonUploadDeviceCommand()
 
 void CArmMFCDemoClientDlg::OnBnClickedButtonUploadPerson()
 {
+	//// TODO: Add your control notification handler code here
+	//armnet_person_info info;
+
+	//info.person_id, "ir23123");
+	//info.person_name, "µƒ¿≠∑∆");
+	//info.id_number, "67643");
+	//info.card_number, "TY342342";
+	//info.key_number, "123456789";
+	//info.department_number, "Œ¥¿¥ø∆ºº≥«123");
+	//info.role = 2;
+
+	//info.tmpl1.code.set_data(new byte[TMPL_SIZE]);
+	//info.tmpl1.code.length = TMPL_SIZE;
+	//int ret = utils::ReadFile("d:\\tmp1.tmp", info.tmpl1.code.get_data(), TMPL_SIZE);
+	//if (ret < 0){
+	//	ShowMessage("∂¡ƒ£∞Â ß∞‹");
+	//	return;
+	//}
+
+	//byte* image1(nullptr);
+	//ret = utils::ReadFile("d:\\code1.png", &image1);
+	//if (ret < 0){
+	//	ShowMessage("∂¡Õº∆¨ ß∞‹");
+	//	return;
+	//}
+	//info.tmpl1.image.data.length = ret;
+	//info.tmpl1.image.data.set_data(image1);
+
+	//info.tmpl2.code.set_data(new byte[TMPL_SIZE]);
+	//info.tmpl2.code.length = TMPL_SIZE;
+	//ret = utils::ReadFile("d:\\tmp2.tmp", info.tmpl2.code.get_data(), TMPL_SIZE);
+	//if (ret < 0){
+	//	ShowMessage("∂¡ƒ£∞Â ß∞‹");
+	//	return;
+	//}
+
+	//byte* image2(nullptr);
+	//ret = utils::ReadFile("d:\\code2.png", &image2);
+	//if (ret < 0){
+	//	ShowMessage("∂¡Õº∆¨ ß∞‹");
+	//	return;
+	//}
+	//info.tmpl2.image.data.length = ret;
+	//info.tmpl2.image.data.set_data(image2);
+
+	//byte* face(nullptr);
+	//ret = utils::ReadFile("d:\\face.png", &face);
+	//if (ret < 0){
+	//	ShowMessage("∂¡Õº∆¨ ß∞‹");
+	//	return;
+	//}
+	//info.face.data.length = ret;
+	//info.face.data.set_data(face);
+
+	//ret = ARMNET_UploadPersonInfo(&info);
+	//delete[] info.tmpl1.code.get_data();
+	//delete[] info.tmpl2.code.get_data();
+	//delete[] info.tmpl1.image.data.get_data();
+	//delete[] info.tmpl2.image.data.get_data();
+	//delete[] info.face.data.get_data();
+
+	//if (ret < 0){
+	//	ShowMessage(utils::StrFormat("Upload failed, error(%s)", ARMNET_StrError(ret)));
+	//	return;
+	//}
+
+}
+
+
+void CArmMFCDemoClientDlg::OnBnClickedButtonUploadCapture()
+{
 	// TODO: Add your control notification handler code here
+
 	armnet_person_info info;
-	memset(&info, 0, sizeof(armnet_person_info));
 
-	strcpy(info.person_id, "ir23123");
-	strcpy(info.person_name, "µƒ¿≠∑∆");
-	strcpy(info.id_number, "67643");
-	strcpy(info.card_number, "TY342342");
-	strcpy(info.key_number, "123456789");
-	strcpy(info.department_number, "Œ¥¿¥ø∆ºº≥«123");
-	info.role = 2;
+	std::string data;
 
-	info.tmpl1.code.set_data(new byte[TMPL_SIZE]);
-	info.tmpl1.code.length = TMPL_SIZE;
-	int ret = utils::ReadFile("d:\\tmp1.tmp", info.tmpl1.code.get_data(), TMPL_SIZE);
-	if (ret < 0){
-		ShowMessage("∂¡ƒ£∞Â ß∞‹");
-		return;
-	}
+	utils::ReadFile("d:\\face.jpg", data);
+	info.feature.FaceFeature = base64::encode(data);
 
-	byte* image1(nullptr);
-	ret = utils::ReadFile("d:\\code1.png", &image1);
-	if (ret < 0){
-		ShowMessage("∂¡Õº∆¨ ß∞‹");
-		return;
-	}
-	info.tmpl1.image.data.length = ret;
-	info.tmpl1.image.data.set_data(image1);
+	utils::ReadFile("d:\\face.jpg", data);
+	info.feature.FaceImage = base64::encode(data);
 
-	info.tmpl2.code.set_data(new byte[TMPL_SIZE]);
-	info.tmpl2.code.length = TMPL_SIZE;
-	ret = utils::ReadFile("d:\\tmp2.tmp", info.tmpl2.code.get_data(), TMPL_SIZE);
-	if (ret < 0){
-		ShowMessage("∂¡ƒ£∞Â ß∞‹");
-		return;
-	}
+	utils::ReadFile("d:\\left.tmp", data);
+	info.feature.LeftIrisFeature = base64::encode(data);
 
-	byte* image2(nullptr);
-	ret = utils::ReadFile("d:\\code2.png", &image2);
-	if (ret < 0){
-		ShowMessage("∂¡Õº∆¨ ß∞‹");
-		return;
-	}
-	info.tmpl2.image.data.length = ret;
-	info.tmpl2.image.data.set_data(image2);
+	utils::ReadFile("d:\\left.bmp", data);
+	info.feature.LeftIrisImage = base64::encode(data);
 
-	byte* face(nullptr);
-	ret = utils::ReadFile("d:\\face.png", &face);
-	if (ret < 0){
-		ShowMessage("∂¡Õº∆¨ ß∞‹");
-		return;
-	}
-	info.face.data.length = ret;
-	info.face.data.set_data(face);
+	utils::ReadFile("d:\\right.tmp", data);
+	info.feature.RightIrisFeature = base64::encode(data);
 
-	ret = ARMNET_UploadPersonInfo(&info);
-	delete[] info.tmpl1.code.get_data();
-	delete[] info.tmpl2.code.get_data();
-	delete[] info.tmpl1.image.data.get_data();
-	delete[] info.tmpl2.image.data.get_data();
-	delete[] info.face.data.get_data();
+	utils::ReadFile("d:\\right.bmp", data);
+	info.feature.RightIrisImage = base64::encode(data);
+	
 
+	int ret = ARMNET_UploadPersonInfo(&info);
 	if (ret < 0){
 		ShowMessage(utils::StrFormat("Upload failed, error(%s)", ARMNET_StrError(ret)));
 		return;
 	}
 
+}
+
+
+void CArmMFCDemoClientDlg::OnBnClickedButtonUploadMatchResult()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CArmMFCDemoClientDlg::OnBnClickedButtonUploadPwd()
+{
+	// TODO: Add your control notification handler code here
 }

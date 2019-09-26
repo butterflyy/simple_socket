@@ -56,4 +56,7 @@ public:
 	afx_msg void OnBnClickedButtonUploadDeviceHeartbeat();
 	afx_msg void OnBnClickedButtonUploadDeviceCommand();
 	afx_msg void OnBnClickedButtonUploadPerson();
+	afx_msg void OnBnClickedButtonUploadCapture();
+	afx_msg void OnBnClickedButtonUploadMatchResult();
+	afx_msg void OnBnClickedButtonUploadPwd();
 };
