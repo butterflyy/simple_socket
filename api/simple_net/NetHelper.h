@@ -96,6 +96,10 @@ public:
 	bool IsCalled() const;
 
 	static const char* StrError(int err);
+
+	//log frame data
+	void LogFrame(bool send, const byte* data, int len, int type);
+
 protected:
 	void close();
 	void sendFrame(int msgtype, int frametype, const byte* data, int len);
@@ -157,6 +161,13 @@ inline const char* NetHelper::StrError(int err){
 inline void NetHelper::close(){
 	_socket.shutdown();
 	_socket.close();
+}
+
+inline void NetHelper::LogFrame(bool send, const byte* data, int len, int type){
+#if LOG_FRAME_DATA
+	LOG(INFO) << (send ? "Send frame   to: " : "Recv frame from: ") << RemoteAddress() << " type:" << type
+		<< " len: " << len << " data: " << (type == FRAME_STRING ? std::string((char*)data, len > 256 ? 256 : len) : "");
+#endif
 }
 
 

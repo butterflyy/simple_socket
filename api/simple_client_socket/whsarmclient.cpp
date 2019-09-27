@@ -22,8 +22,11 @@ SC_API int WINAPI SC_Initialize(){
 	}
 
 	//log init
-#if defined(WIN32) || defined(__gnu_linux__)
+#if defined(WIN32)
 	google::InitGoogleLogging("simpleclientsocket");
+#endif
+
+#if defined(WIN32) || defined(__gnu_linux__)
 	FLAGS_logbuflevel = -1;
 	FLAGS_alsologtostderr = true;
 #endif

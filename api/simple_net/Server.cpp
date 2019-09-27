@@ -71,6 +71,8 @@ void Server::run(){
 				int nRecv = recvFrame(&msgtype, &frametype, _recvbuff, _recvlen);
 				assert(msgtype == MSG_NORMAL);
 
+				LogFrame(false, _recvbuff, nRecv, frametype);
+
 				OnRecvFrame(_recvbuff, nRecv, frametype);
 			EXCEPTION_END
 

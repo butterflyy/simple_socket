@@ -29,6 +29,8 @@ NetHelper::~NetHelper()
 void NetHelper::SendFrame(const byte* data, int len, int type){
 	utils::LockGuard<utils::Mutex> lock(_sendMutex);
 
+	LogFrame(true, data, len, type);
+
 	sendFrame(MSG_NORMAL, type, data, len);
 }
 
