@@ -80,7 +80,7 @@ void ServerManager::run(){
 	while (!Thread::isQuit()){
 		//recv client connect
 		try{
-			Poco::Timespan timeout(HEARTBEAT_TIME * 1000);
+			Poco::Timespan timeout(1000000);
 			if (_serverSocket.poll(timeout, Socket::SELECT_READ)){
 				//new client
 				StreamSocket socket = _serverSocket.acceptConnection();

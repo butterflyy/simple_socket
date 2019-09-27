@@ -141,6 +141,9 @@
       <AdditionalLibraryDirectories>..\..\..\externals\glog-0.3.4\Lib\$(Platform)\$(Configuration);..\..\..\externals\poco-poco-1.7.3-release\lib;</AdditionalLibraryDirectories>
       <AdditionalDependencies>libglog_static.lib;</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy D:\Workspace\simple_socket\build\out\Release\Win32\whsarmserver.dll D:\Workspace\guangzhou_yiping\YpDemo\bin\Debug\whsarmserver.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

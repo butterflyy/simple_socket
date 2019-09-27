@@ -2,19 +2,23 @@
 #include "NetConfig.h"
 #include "NetProtocol.h"
 
-#define DEFAULT_SND_TIMEOUT 5000
-#define DEFAULT_RCV_TIMEOUT 5000
-#define HEARTBEAT_TIME 1000
-#define RECV_BUFF_SIZE 5*1024*1024 //5MB
+//#define DEFAULT_SND_TIMEOUT 5000
+//#define DEFAULT_RCV_TIMEOUT 5000
+#define HEARTBEAT_TIME                    5000                          //send heartbeat time is 5 second
+#define KEEPALIVE_TIMEOUT               10000                       //keep alive timeout 10 second
+#define RECV_BUFF_SIZE                       5*1024*1024           //recv max buffer is 5MB
 
 
 POCO_DECLARE_EXCEPTION(, SimpleNetException, NetException)
 
 //handle exception begin
-#define EXCEPTION_BEGIN      \
-int error_code(0);                                 \
-std::string error_msg;                             \
+#define EXCEPTION_BEGIN_PEER(peerdes)      \
+	int error_code(0);                                 \
+	std::string error_msg;                             \
+	std::string peerdes_(peerdes);        \
 try{                                               \
+
+#define EXCEPTION_BEGIN EXCEPTION_BEGIN_PEER("")
 
 //handle exception end
 #define EXCEPTION_END        \
@@ -40,7 +44,8 @@ catch (Poco::Exception& e){                        \
 	error_msg = e.displayText();                   \
 }                                                  \
 if (error_code != 0){                              \
-	LOG(ERROR) << "error code : " <<               \
+	LOG(ERROR) << (peerdes_.empty() ? "" : (peerdes_ + ": "))       \
+		<< "error code : " <<                         \
 		NetHelper::StrError(error_code)            \
 		<< "  error msg : " << error_msg;          \
 }
@@ -118,6 +123,9 @@ protected:
 
 	byte* _recvbuff;
 	int _recvlen;  //default 1MB
+
+	TimeSpan _sendSpan;
+	TimeSpan _recvSpan;
 
 	bool _called; //if event called.
 };

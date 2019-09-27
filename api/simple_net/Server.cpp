@@ -36,7 +36,7 @@ void Server::run(){
 	LOG(INFO) << "Server:" << peerdes << " run begin";
 
 	{
-		EXCEPTION_BEGIN
+		EXCEPTION_BEGIN_PEER(peerdes)
 			Poco::Timespan timeout(2000000);
 			if (_socket.poll(timeout, Socket::SELECT_READ)){
 				int msgtype;
@@ -59,21 +59,29 @@ void Server::run(){
 		}
 	}
 
+
+	_sendSpan.start();
+	_recvSpan.start();
+
 	_connected = true;
 	OnConnected();
 
 	while (!Thread::isQuit()){
 		Poco::Timespan timeout(1000000);
 		if (_socket.poll(timeout, Socket::SELECT_READ)){
-			EXCEPTION_BEGIN
+			EXCEPTION_BEGIN_PEER(peerdes)
 				int msgtype;
 				int frametype;
 				int nRecv = recvFrame(&msgtype, &frametype, _recvbuff, _recvlen);
-				assert(msgtype == MSG_NORMAL);
+				assert(msgtype == MSG_NORMAL || msgtype == MSG_HANDSHAKE);
 
-				LogFrame(false, _recvbuff, nRecv, frametype);
+				_recvSpan.restart();
 
-				OnRecvFrame(_recvbuff, nRecv, frametype);
+				if (msgtype == MSG_NORMAL){
+					LogFrame(false, _recvbuff, nRecv, frametype);
+
+					OnRecvFrame(_recvbuff, nRecv, frametype);
+				}
 			EXCEPTION_END
 
 			if (error_code != 0){
@@ -83,7 +91,7 @@ void Server::run(){
 				else{
 					//error handle
 					if (error_code == SN_PAYLOAD_TOO_BIG || error_code == SN_FRAME_ERROR){
-						EXCEPTION_BEGIN
+						EXCEPTION_BEGIN_PEER(peerdes)
 							//read empty buffer
 							readEmptyBuffer();
 						EXCEPTION_END
@@ -92,10 +100,24 @@ void Server::run(){
 					OnError(error_code, error_msg);
 				}
 			}
+		}
+		else{//check hearbeat
+			if (_sendSpan.elapsed() > HEARTBEAT_TIME){
+				utils::LockGuard<utils::Mutex> lock(_sendMutex);
 
+				EXCEPTION_BEGIN_PEER(peerdes)
+					sendFrame(MSG_HEARBEAT, FRAME_BINARY, nullptr, 0);
+				EXCEPTION_END
+
+				_sendSpan.restart();
+			}
+			else if (_recvSpan.elapsed() > KEEPALIVE_TIMEOUT){
+				LOG(ERROR) << peerdes << " keepalive timeout";
+				break;//disconnected.
+			}
 		}
 	}
-	EXCEPTION_BEGIN
+	EXCEPTION_BEGIN_PEER(peerdes)
 		close();
 	EXCEPTION_END
 
