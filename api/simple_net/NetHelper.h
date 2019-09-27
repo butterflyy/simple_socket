@@ -159,7 +159,12 @@ inline const char* NetHelper::StrError(int err){
 }
 
 inline void NetHelper::close(){
-	_socket.shutdown();
+	try{
+		_socket.shutdown();
+	}
+	catch (Poco::Exception& e){
+		LOG(WARNING) << "shutdown exception: " << e.displayText();
+	}
 	_socket.close();
 }
 
