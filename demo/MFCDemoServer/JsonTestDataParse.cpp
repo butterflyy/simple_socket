@@ -19,11 +19,12 @@ JsonTestDataParse::~JsonTestDataParse()
 }
 
 
-std::string JsonTestDataParse::MakeGetDeviceInfo(){
+std::string JsonTestDataParse::MakeGetDeviceInfo(std::string& session_id){
 	Poco::JSON::Object root;
 
 	root.set("mod", "get_device_info");
-	root.set("session_id", Poco::UUIDGenerator::defaultGenerator().createOne().toString());
+	session_id = Poco::UUIDGenerator::defaultGenerator().createOne().toString();
+	root.set("session_id", session_id);
 	root.set("type", JSON_REQ);
 
 	std::stringstream ss;
@@ -33,11 +34,12 @@ std::string JsonTestDataParse::MakeGetDeviceInfo(){
 }
 
 std::string JsonTestDataParse::MakeDownloadPerson(const std::string& imagePath,
-	const std::vector<std::string>& tmplPaths){
+	const std::vector<std::string>& tmplPaths, std::string& session_id){
 	Poco::JSON::Object root;
 
 	root.set("mod", "download_person");
-	root.set("session_id", Poco::UUIDGenerator::defaultGenerator().createOne().toString());
+	session_id = Poco::UUIDGenerator::defaultGenerator().createOne().toString();
+	root.set("session_id", session_id);
 	root.set("type", JSON_REQ);
 
 	Poco::JSON::Object info;

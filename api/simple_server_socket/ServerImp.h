@@ -1,5 +1,6 @@
 #pragma once
 #include "Server.h"
+#include "EventManager.h"
 
 class ServerManagerImp;
 class ServerImp : public Server

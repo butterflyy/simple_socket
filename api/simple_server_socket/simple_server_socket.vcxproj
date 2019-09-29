@@ -142,7 +142,7 @@
       <AdditionalDependencies>libglog_static.lib;</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy D:\Workspace\simple_socket\build\out\Release\Win32\whsarmserver.dll D:\Workspace\guangzhou_yiping\YpDemo\bin\Debug\whsarmserver.dll</Command>
+      <Command>copy D:\Workspace\simple_socket\build\out\Release\Win32\whsarmserver.dll D:\Workspace\simple_socket\guangzhou_yiping\YpDemo\bin\Debug\whsarmserver.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -174,6 +174,7 @@
     <ClInclude Include="..\simple_net\NetProtocol.h" />
     <ClInclude Include="..\simple_net\Server.h" />
     <ClInclude Include="..\simple_net\ServerManager.h" />
+    <ClInclude Include="EventManager.h" />
     <ClInclude Include="ServerImp.h" />
     <ClInclude Include="ServerManagerImp.h" />
     <ClInclude Include="whsarmserver.h" />
@@ -183,6 +184,7 @@
     <ClCompile Include="..\simple_net\NetHelper.cpp" />
     <ClCompile Include="..\simple_net\Server.cpp" />
     <ClCompile Include="..\simple_net\ServerManager.cpp" />
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="ServerImp.cpp" />
     <ClCompile Include="ServerManagerImp.cpp" />
     <ClCompile Include="whsarmserver.cpp" />

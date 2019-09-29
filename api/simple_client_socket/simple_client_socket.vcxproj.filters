@@ -27,15 +27,15 @@
     <ClCompile Include="whsarmclient.cpp">
       <Filter>api</Filter>
     </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\simple_net\Client.h">
       <Filter>simple_net</Filter>
     </ClInclude>
     <ClInclude Include="..\simple_net\NetConfig.h">
-      <Filter>simple_net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\simple_net\NetEventInterface.h">
       <Filter>simple_net</Filter>
     </ClInclude>
     <ClInclude Include="..\simple_net\NetHelper.h">
@@ -54,6 +54,9 @@
       <Filter>api</Filter>
     </ClInclude>
     <ClInclude Include="whsarmclient.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager.h">
       <Filter>api</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,10 +1,18 @@
 #include "whsarmclient.h"
 #include "ClientImp.h"
 
-#define BETA_VERSION  0  //beta version for inner test, if is release beta version is 0.
+#if defined(WIN32) && defined(_DEBUG)
+#include <vld.h>
+#endif
 
+#define BETA_VERSION  0  //beta version for inner test, if is release beta version is 0.
+#define RC_VERSION      1  //release candidate version. After beta version test ok.
+ 
 //Global Variable
 ClientImp* g_clientImp = nullptr;
+
+//Gloable External Variable 
+EventManager* EVENT = nullptr;
 
 inline bool IsInitialize() {
 	if (!g_clientImp) {
@@ -37,6 +45,8 @@ SC_API int WINAPI SC_Initialize(){
 	LOG(INFO) << "Builded Time: " << __DATE__ << " " << __TIME__;
 #endif
 
+	EVENT = new EventManager();
+
 	EXCEPTION_BEGIN
 		g_clientImp = new ClientImp();
 	EXCEPTION_END
@@ -61,6 +71,8 @@ SC_API void WINAPI SC_Finalize(){
 		EXCEPTION_END
 	}
 
+	SAFE_DELETE(EVENT);
+
 	//log shutdown
 #if defined(WIN32) || defined(__gnu_linux__)
 	google::ShutdownGoogleLogging();
@@ -68,13 +80,19 @@ SC_API void WINAPI SC_Finalize(){
 }
 
 SC_API const char* WINAPI SC_GetLibVersion(){
-	if (BETA_VERSION == 0){//release version
-		return SCAPI_VERSION;
-	}
-	else{//beta version
-		static char str_version[20];
+	static char str_version[20];
+	if (BETA_VERSION){
 		sprintf(str_version, "%s-Beta%d", SCAPI_VERSION, BETA_VERSION);
+
 		return str_version;
+	}
+	else if (RC_VERSION){
+		sprintf(str_version, "%s-RC%d", SCAPI_VERSION, RC_VERSION);
+
+		return str_version;
+	}
+	else{
+		return SCAPI_VERSION;
 	}
 }
 
@@ -100,7 +118,7 @@ SC_API int WINAPI SC_SetCallback(sc_disconnected_callback on_disconnected,
 		return SC_ERROR;
 	}
 
-	g_clientImp->SetCallback(on_disconnected, on_error, on_recvframe);
+	EVENT->SetCallback(on_disconnected, on_error, on_recvframe);
 
 	return SC_SUCCESS;
 }

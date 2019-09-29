@@ -167,12 +167,12 @@
   <ItemGroup>
     <ClInclude Include="..\simple_net\Client.h" />
     <ClInclude Include="..\simple_net\NetConfig.h" />
-    <ClInclude Include="..\simple_net\NetEventInterface.h" />
     <ClInclude Include="..\simple_net\NetHelper.h" />
     <ClInclude Include="..\simple_net\NetProtocol.h" />
     <ClInclude Include="..\simple_net\Server.h" />
     <ClInclude Include="..\simple_net\ServerManager.h" />
     <ClInclude Include="ClientImp.h" />
+    <ClInclude Include="EventManager.h" />
     <ClInclude Include="whsarmclient.h" />
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +181,7 @@
     <ClCompile Include="..\simple_net\Server.cpp" />
     <ClCompile Include="..\simple_net\ServerManager.cpp" />
     <ClCompile Include="ClientImp.cpp" />
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="whsarmclient.cpp" />
   </ItemGroup>
   <ItemGroup>

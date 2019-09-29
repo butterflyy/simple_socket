@@ -5,32 +5,17 @@
 #pragma once
 #include "afxwin.h"
 #include <common\utils.h>
-#include <common\SignalManager.h>
+#include <common\ConvertSync.h>
 #include <whsarmserver.h>
 
 #define WM_CALLBACK_MSG   WM_USER  + 101
 
-enum CallbackCommand{
-	COMMAND_CONNECTED,
-	COMMAND_DISCONNECTED,
-	COMMAND_ERROR,
-	COMMAND_RECVFRAME,
-};
-
-struct CallbackMsg
-{
-	SS_SESSION session;
-	union
-	{
-		char client_ip[20]; //connected client ip
-		int error_code; // error code
-		struct FrameData{  //recv frame data
-			unsigned char* data;
-			int len;
-			int type;
-		}frame_data;
-	}udata;
-};
+//enum CallbackCommand{
+//	COMMAND_InitClientList,
+//	COMMAND_ShowMessage,
+//	COMMAND_appendRecvMsg,
+//	COMMAND_appendSendMsg,
+//};
 
 struct ClientInfo{
 	SS_SESSION session;
@@ -64,6 +49,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg LRESULT OnCallbackMsg(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnBnClickedButtonSendCommand();
+	afx_msg void OnBnClickedButtonSendCommandSync();
 	afx_msg void OnBnClickedButtonOpenImagePath();
 	afx_msg void OnBnClickedButtonOpenTmpls();
 	afx_msg void OnBnClickedButtonClearRecv();
@@ -85,6 +71,9 @@ public:
 
 	std::string m_imagePath;
 	std::vector<std::string> m_tmplPaths;
+
+	bool _sync_request = false;
+	ConvertSync<std::string, std::string> _convertSync; //Asynchronous to synchronous
 public:
 	static void CALLBACK connected_callback(SS_SESSION session, const char* client_ip);
 	static void CALLBACK disconnected_callback(SS_SESSION session);

@@ -81,7 +81,7 @@ void Client::run(){
 				int msgtype;
 				int frametype;
 				int nRecv = recvFrame(&msgtype, &frametype, _recvbuff, _recvlen);
-				assert(msgtype == MSG_NORMAL || msgtype == MSG_HANDSHAKE);
+				assert(msgtype == MSG_NORMAL || msgtype == MSG_HEARBEAT);
 
 				_recvSpan.restart();
 

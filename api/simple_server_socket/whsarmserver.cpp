@@ -2,10 +2,18 @@
 #include "ServerImp.h"
 #include "ServerManagerImp.h"
 
+#if defined(WIN32) && defined(_DEBUG)
+#include <vld.h>
+#endif
+
 #define BETA_VERSION  0  //beta version for inner test, if is release beta version is 0.
+#define RC_VERSION      1  //release candidate version. After beta version test ok.
 
 //Global Variable
 ServerManagerImp* g_serverManagerImp = nullptr;
+
+//Gloable External Variable 
+EventManager* EVENT = nullptr;
 
 inline bool IsInitialize() {
 	if (!g_serverManagerImp) {
@@ -35,6 +43,8 @@ SS_API int WINAPI SS_Initialize(){
 	LOG(INFO) << "Builded Time: " << __DATE__ << " " << __TIME__;
 #endif
 
+	EVENT = new EventManager();
+
 	EXCEPTION_BEGIN
 		g_serverManagerImp = new ServerManagerImp();
 	EXCEPTION_END
@@ -59,6 +69,7 @@ SS_API void WINAPI SS_Finalize(){
 		EXCEPTION_END
 	}
 
+	SAFE_DELETE(EVENT);
 
 	//log shutdown
 #if defined(WIN32) || defined(__gnu_linux__)
@@ -67,13 +78,19 @@ SS_API void WINAPI SS_Finalize(){
 }
 
 SS_API const char* WINAPI SS_GetLibVersion(){
-	if (BETA_VERSION == 0){//release version
-		return SSAPI_VERSION;
-	}
-	else{//beta version
-		static char str_version[20];
+	static char str_version[20];
+	if (BETA_VERSION){
 		sprintf(str_version, "%s-Beta%d", SSAPI_VERSION, BETA_VERSION);
+
 		return str_version;
+	}
+	else if (RC_VERSION){
+		sprintf(str_version, "%s-RC%d", SSAPI_VERSION, RC_VERSION);
+
+		return str_version;
+	}
+	else{
+		return SSAPI_VERSION;
 	}
 }
 
@@ -100,7 +117,7 @@ SS_API int WINAPI SS_SetCallback(ss_connected_callback on_connected,
 		return SS_ERROR;
 	}
 
-	g_serverManagerImp->SetCallback(on_connected, on_disconnected, on_error, on_recvframe);
+	EVENT->SetCallback(on_connected, on_disconnected, on_error, on_recvframe);
 
 	return SS_SUCCESS;
 }

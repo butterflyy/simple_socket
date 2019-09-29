@@ -160,7 +160,7 @@ std::string JsonTestDataParse::MakeResultDeviceInfo(const std::string& session_i
 	info.set("device_port", 1545);
 	info.set("server_ip", "192.168.1.166");
 	info.set("server_port", 39877);
-	info.set("address", "门口考勤机器");
+	info.set("address", utf_gbk::toUtf8("门口考勤机器"));
 
 	root.set("device_info", info);
 

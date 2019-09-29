@@ -22,6 +22,9 @@
     <ClCompile Include="whsarmserver.cpp">
       <Filter>api</Filter>
     </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\simple_net\Client.h">
@@ -49,6 +52,9 @@
       <Filter>api</Filter>
     </ClInclude>
     <ClInclude Include="whsarmserver.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager.h">
       <Filter>api</Filter>
     </ClInclude>
   </ItemGroup>

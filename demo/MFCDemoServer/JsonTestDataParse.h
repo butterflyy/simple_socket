@@ -12,10 +12,10 @@ public:
 	~JsonTestDataParse();
 
 	//req
-	static std::string MakeGetDeviceInfo();
+	static std::string MakeGetDeviceInfo(std::string& session_id);
 
 	static std::string MakeDownloadPerson(const std::string& imagePath,
-					const std::vector<std::string>& tmplPaths);
+		const std::vector<std::string>& tmplPaths, std::string& session_id);
 
 
 	//ack

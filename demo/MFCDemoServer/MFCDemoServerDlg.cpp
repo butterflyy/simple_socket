@@ -75,6 +75,7 @@ BEGIN_MESSAGE_MAP(CMFCDemoServerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_OPEN_TMPLS, &CMFCDemoServerDlg::OnBnClickedButtonOpenTmpls)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR_RECV, &CMFCDemoServerDlg::OnBnClickedButtonClearRecv)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR_SEND, &CMFCDemoServerDlg::OnBnClickedButtonClearSend)
+	ON_BN_CLICKED(IDC_BUTTON_SEND_COMMAND_SYNC, &CMFCDemoServerDlg::OnBnClickedButtonSendCommandSync)
 END_MESSAGE_MAP()
 
 
@@ -267,131 +268,91 @@ std::string CMFCDemoServerDlg::GetClientIp(SS_SESSION session){
 }
 
 afx_msg LRESULT CMFCDemoServerDlg::OnCallbackMsg(WPARAM wParam, LPARAM lParam){
-	CallbackMsg* pMsg = (CallbackMsg*)lParam;
-	switch (wParam)
-	{
-	case COMMAND_CONNECTED:{
-							   ClientInfo info;
-							   info.session = pMsg->session;
-							   info.client_ip = pMsg->udata.client_ip;
-							   m_clients.push_back(info);
-							   InitClientList();
-							   
-							   ShowMessage(utils::StrFormat("设备连接"));
-	}
-		break;
-	case COMMAND_DISCONNECTED:{
-								  std::vector<ClientInfo> clients;
-								  for (std::vector<ClientInfo>::const_iterator it = m_clients.begin();
-									  it != m_clients.end();
-									  ++it){
-									  if (it->session != pMsg->session){
-										  clients.push_back(*it);
-									  }
-								  }
-
-								  m_clients = clients;
-								  InitClientList();
-
-								  ShowMessage(utils::StrFormat("设备断开"));
-	}
-		break;
-	case COMMAND_ERROR:{
-						   ShowMessage(utils::StrFormat("设备错误"));
-	}
-		break;
-	case COMMAND_RECVFRAME:{
-							   std::string client_ip = GetClientIp(pMsg->session);
-							   switch (pMsg->udata.frame_data.type){
-							   case SS_FRAME_STRING:{
-									appendRecvMsg(utils::StrFormat("******************%s [string] [%d byte]*****************", 
-										client_ip.c_str(), pMsg->udata.frame_data.len));
-									std::string str((char*)pMsg->udata.frame_data.data, pMsg->udata.frame_data.len);
-									appendRecvMsg(str);
-
-									//处理请求
-									std::string mod;
-									std::string session_id;
-									int type;
-									JsonTestDataParse::Parse(str, mod, session_id, type);
-
-									if (type == JSON_REQ){
-										std::string ackjson = JsonTestDataParse::MakeResult(mod, session_id);
-
-										int ret = SendStringFrame(pMsg->session, ackjson);
-										if (ret < 0){
-											ShowMessage(utils::StrFormat("发送数据失败， err = %s", SS_StrError(ret)));
-											return 0;
-										}
-
-										appendSendMsg(utils::StrFormat("******************%s [string] [%d byte]*****************", 
-											client_ip.c_str(), ackjson.size()));
-										appendSendMsg(ackjson);
-									}
-
-							   }
-								   break;
-							   case SS_FRAME_BINARY:{
-									appendRecvMsg(utils::StrFormat("******************%s [binary] [%d byte]*****************", 
-										client_ip.c_str(), pMsg->udata.frame_data.len));
-									std::string str((char*)pMsg->udata.frame_data.data, pMsg->udata.frame_data.len);
-									appendRecvMsg(str);
-							   }
-								   break;
-							   default:assert(false); break;
-							   }
-							   delete[] pMsg->udata.frame_data.data;
-	}
-		break;
-	default:
-		assert(false);
-		break;
-	}
-
-	delete pMsg;
 	return 0;
 }
 
 void CALLBACK CMFCDemoServerDlg::connected_callback(SS_SESSION session, const char* client_ip){
-	//同步回调过程，避免阻塞
-	CallbackMsg* pMsg = new CallbackMsg();
-	memset(pMsg, 0, sizeof(CallbackMsg));
-	pMsg->session = session;
-	strcpy_s(pMsg->udata.client_ip, client_ip);
+	ClientInfo info;
+	info.session = session;
+	info.client_ip = client_ip;
+	m_pThis->m_clients.push_back(info);
+	m_pThis->InitClientList();
 
-	m_pThis->PostMessage(WM_CALLBACK_MSG, COMMAND_CONNECTED, (LPARAM)pMsg);
+	m_pThis->ShowMessage(utils::StrFormat("设备连接"));
 }
 
 void CALLBACK CMFCDemoServerDlg::disconnected_callback(SS_SESSION session){
-	//同步回调过程，避免阻塞
-	CallbackMsg* pMsg = new CallbackMsg();
-	memset(pMsg, 0, sizeof(CallbackMsg));
-	pMsg->session = session;
+	std::vector<ClientInfo> clients;
+	for (std::vector<ClientInfo>::const_iterator it = m_pThis->m_clients.begin();
+		it != m_pThis->m_clients.end();
+		++it){
+		if (it->session != session){
+			clients.push_back(*it);
+		}
+	}
 
-	m_pThis->PostMessage(WM_CALLBACK_MSG, COMMAND_DISCONNECTED, (LPARAM)pMsg);
+	m_pThis->m_clients = clients;
+	m_pThis->InitClientList();
+
+	m_pThis->ShowMessage(utils::StrFormat("设备断开"));
 }
 
 void CALLBACK CMFCDemoServerDlg::error_callback(SS_SESSION session, int error_code){
-	//同步回调过程，避免阻塞
-	CallbackMsg* pMsg = new CallbackMsg();
-	memset(pMsg, 0, sizeof(CallbackMsg));
-	pMsg->session = session;
-	pMsg->udata.error_code = error_code;
-
-	m_pThis->PostMessage(WM_CALLBACK_MSG, COMMAND_ERROR, (LPARAM)pMsg);
+	m_pThis->ShowMessage(utils::StrFormat("设备错误"));
 }
 
 void CALLBACK CMFCDemoServerDlg::recvframe_callback(SS_SESSION session, const unsigned char* data, int len, int type){
-	//同步回调过程，避免阻塞
-	CallbackMsg* pMsg = new CallbackMsg();
-	memset(pMsg, 0, sizeof(CallbackMsg));
-	pMsg->session = session;
-	pMsg->udata.frame_data.data = new byte[len];
-	memcpy(pMsg->udata.frame_data.data, data, len);
-	pMsg->udata.frame_data.len = len;
-	pMsg->udata.frame_data.type = type;
+	std::string client_ip = m_pThis->GetClientIp(session);
+	switch (type){
+	case SS_FRAME_STRING:{
+							 std::string str((char*)data, len);
+							 //处理请求
+							 std::string mod;
+							 std::string session_id;
+							 int type;
+							 JsonTestDataParse::Parse(str, mod, session_id, type);
 
-	m_pThis->PostMessage(WM_CALLBACK_MSG, COMMAND_RECVFRAME, (LPARAM)pMsg);
+							 if (type == JSON_REQ){
+								 m_pThis->appendRecvMsg(utils::StrFormat("******************%s [string] [%d byte]*****************",
+									 client_ip.c_str(), len));
+								 m_pThis->appendRecvMsg(str);
+
+								 std::string ackjson = JsonTestDataParse::MakeResult(mod, session_id);
+
+								 int ret = m_pThis->SendStringFrame(session, ackjson);
+								 if (ret < 0){
+									 m_pThis->ShowMessage(utils::StrFormat("发送数据失败， err = %s", SS_StrError(ret)));
+									 return;
+								 }
+
+								 m_pThis->appendSendMsg(utils::StrFormat("******************%s [string] [%d byte]*****************",
+									 client_ip.c_str(), ackjson.size()));
+								 m_pThis->appendSendMsg(ackjson);
+							 }
+							 else{
+								 if (m_pThis->_sync_request){
+									 int ret = m_pThis->_convertSync.SetEvent(session_id, str);
+									 if (ret < 0){
+										 m_pThis->ShowMessage("通知事件失败");
+									 }
+								 }
+								 else{
+									 m_pThis->appendRecvMsg(utils::StrFormat("******************%s [string] [%d byte]*****************",
+										 client_ip.c_str(), len));
+									 m_pThis->appendRecvMsg(str);
+								 }
+							 }
+	}
+		break;
+	case SS_FRAME_BINARY:{
+							 m_pThis->appendRecvMsg(utils::StrFormat("******************%s [binary] [%d byte]*****************",
+								 client_ip.c_str(), len));
+							 std::string str((char*)data, len);
+							 m_pThis->appendRecvMsg(str);
+	}
+		break;
+	default:assert(false); break;
+	}
 }
 
 void CMFCDemoServerDlg::OnBnClickedButtonOpenImagePath()
@@ -448,6 +409,8 @@ void CMFCDemoServerDlg::OnBnClickedButtonClearSend()
 }
 
 void CMFCDemoServerDlg::OnBnClickedButtonSendCommand(){
+	_sync_request = false;
+
 	int cur_client = m_cmbClientList.GetCurSel();
 	if (cur_client == -1){
 		ShowMessage("请选择客户端！");
@@ -457,10 +420,11 @@ void CMFCDemoServerDlg::OnBnClickedButtonSendCommand(){
 	int cur_command = m_cmbCommand.GetCurSel();
 
 	std::string json;
+	std::string session_id;
 	switch (cur_command)
 	{
-	case 0: json = JsonTestDataParse::MakeGetDeviceInfo(); break;
-	case 1: json = JsonTestDataParse::MakeDownloadPerson(m_imagePath, m_tmplPaths); break;
+	case 0: json = JsonTestDataParse::MakeGetDeviceInfo(session_id); break;
+	case 1: json = JsonTestDataParse::MakeDownloadPerson(m_imagePath, m_tmplPaths, session_id); break;
 	default: assert(false);  break;
 	}
 
@@ -478,4 +442,52 @@ void CMFCDemoServerDlg::OnBnClickedButtonSendCommand(){
 	appendSendMsg(utils::StrFormat("******************%s [string] [%d byte]*****************", 
 		m_clients[cur_client].client_ip.c_str(), json.size()));
 	appendSendMsg(json);
+}
+
+
+void CMFCDemoServerDlg::OnBnClickedButtonSendCommandSync()
+{
+	_sync_request = true;
+
+	// TODO: Add your control notification handler code here
+	int cur_client = m_cmbClientList.GetCurSel();
+	if (cur_client == -1){
+		ShowMessage("请选择客户端！");
+		return;
+	}
+
+	int cur_command = m_cmbCommand.GetCurSel();
+
+	std::string json;
+	std::string session_id;
+	switch (cur_command)
+	{
+	case 0: json = JsonTestDataParse::MakeGetDeviceInfo(session_id); break;
+	case 1: json = JsonTestDataParse::MakeDownloadPerson(m_imagePath, m_tmplPaths, session_id); break;
+	default: assert(false);  break;
+	}
+
+	if (json.empty()){
+		ShowMessage("构造JSON请求数据为空(下载人员需要选择图片和模板)！");
+		return;
+	}
+
+	int ret = SendStringFrame(m_clients[cur_client].session, json);
+	if (ret < 0){
+		ShowMessage(utils::StrFormat("发送数据失败， err = %s", SS_StrError(ret)));
+		return;
+	}
+
+	//等待返回
+	std::string data;
+	ret = _convertSync.WaitEvent(session_id, &data, 5000);
+	if (ret < 0){
+		ShowMessage(utils::StrFormat("等待返回错误, code = %d", ret));
+	}
+	else if (ret == 1){
+		ShowMessage("等待返回超时!");
+	}
+	else{ //success
+		ShowMessage(data);
+	}
 }
