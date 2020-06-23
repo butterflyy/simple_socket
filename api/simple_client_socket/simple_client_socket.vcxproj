@@ -92,12 +92,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SC_API_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\externals\include;..\..\..\externals\glog-0.3.4\src\windows;..\..\..\externals\poco-poco-1.7.3-release\Foundation\include;..\..\..\externals\poco-poco-1.7.3-release\Net\include;..\simple_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\externals\include;..\..\..\externals\glog-0.3.4\src\windows;..\Poco\Foundation;..\Poco\Net;..\simple_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\externals\glog-0.3.4\Lib\$(Platform)\$(Configuration);..\..\..\externals\poco-poco-1.7.3-release\lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\externals\glog-0.3.4\Lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libglog_static.lib;</AdditionalDependencies>
       <ModuleDefinitionFile>whsarmclient.def</ModuleDefinitionFile>
     </Link>
@@ -115,7 +115,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\externals\glog-0.3.4\Lib\$(Platform)\$(Configuration);..\..\..\externals\poco-poco-1.7.3-release\lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\externals\glog-0.3.4\Lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libglog_static.lib;</AdditionalDependencies>
       <ModuleDefinitionFile>SimpleClientSocket.def</ModuleDefinitionFile>
     </Link>
@@ -137,7 +137,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\..\externals\glog-0.3.4\Lib\$(Platform)\$(Configuration);..\..\..\externals\poco-poco-1.7.3-release\lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\externals\glog-0.3.4\Lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libglog_static.lib;</AdditionalDependencies>
       <ModuleDefinitionFile>whsarmclient.def</ModuleDefinitionFile>
     </Link>
@@ -159,7 +159,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\..\externals\glog-0.3.4\Lib\$(Platform)\$(Configuration);..\..\..\externals\poco-poco-1.7.3-release\lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\externals\glog-0.3.4\Lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libglog_static.lib;</AdditionalDependencies>
       <ModuleDefinitionFile>SimpleClientSocket.def</ModuleDefinitionFile>
     </Link>
