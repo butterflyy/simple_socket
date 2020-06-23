@@ -4,8 +4,8 @@ LIBUSB_ROOT_REL:= ../../../simple_client_socket
 LIBUSB_ROOT_ABS:= $(LOCAL_PATH)/../../../simple_client_socket
 
 LOCAL_LDFLAGS  += \
-					$(LIBUSB_ROOT_ABS)/../../../externals/poco-poco-1.7.3-release/Android/armeabi/libPocoFoundation.a \
-					$(LIBUSB_ROOT_ABS)/../../../externals/poco-poco-1.7.3-release/Android/armeabi/libPocoNet.a \
+					$(LIBUSB_ROOT_ABS)/../../../externals/poco-poco-1.7.3-release/Foundation/obj/local/$(TARGET_ARCH_ABI)/libPocoFoundation.a \
+					$(LIBUSB_ROOT_ABS)/../../../externals/poco-poco-1.7.3-release/Net/libs/$(TARGET_ARCH_ABI)/libPocoNet.so \
 				  
 
 LOCAL_LDLIBS  := -llog

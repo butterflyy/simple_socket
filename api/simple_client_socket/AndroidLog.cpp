@@ -84,7 +84,7 @@ AndroidLog::AndroidLog(int level) : _level(level) {
 }
 
 AndroidLog::~AndroidLog() {
-	__android_log_print(_level, "whsusbapi", "%s", _ostr.str().c_str());
+	__android_log_print(_level, "whsarmclient", "%s", _ostr.str().c_str());
 	//write log
 	log_mutex->lock();
 	(*log_file) << _ostr.str() << "\r\n";

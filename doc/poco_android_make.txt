@@ -4,8 +4,6 @@
 export PATH=$PATH:/home/lyg/ndk/POCO/poco-android-toolchain/bin
 
 
-./configure --config=android --no-tests --no-samples --prefix=/usr/local/android
+./configure --config=Android --minimal --static
 
-make -s -j4
-
-sudo make install
+make -j4
