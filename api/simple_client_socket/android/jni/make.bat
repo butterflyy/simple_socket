@@ -1,0 +1,1 @@
+D:\Android\Android\Sdk\ndk-bundle\ndk-build.cmd

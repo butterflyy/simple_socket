@@ -1,0 +1,11 @@
+/home/lyg/ndk/android-ndk-r21d/build/tools/make-standalone-toolchain.sh --platform=android-18 --toolchain=arm-linux-androideabi-4.8 --install-dir=/home/lyg/ndk/POCO/poco-android-toolchain
+
+
+export PATH=$PATH:/home/lyg/ndk/POCO/poco-android-toolchain/bin
+
+
+./configure --config=android --no-tests --no-samples --prefix=/usr/local/android
+
+make -s -j4
+
+sudo make install

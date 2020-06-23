@@ -2,7 +2,7 @@
 #include "ClientImp.h"
 
 #if defined(WIN32) && defined(_DEBUG)
-#include <vld.h>
+//#include <vld.h>
 #endif
 
 #define BETA_VERSION  0  //beta version for inner test, if is release beta version is 0.
@@ -30,14 +30,16 @@ SC_API int WINAPI SC_Initialize(){
 	}
 
 	//log init
-#if defined(WIN32)
-	google::InitGoogleLogging("simpleclientsocket");
-#endif
-
 #if defined(WIN32) || defined(__gnu_linux__)
+	google::InitGoogleLogging("simpleclientsocket");
 	FLAGS_logbuflevel = -1;
+#if defined(_DEBUG) || defined(__gnu_linux__)
 	FLAGS_alsologtostderr = true;
 #endif
+#else//android log
+	InitLogging();
+#endif
+
 
 	LOG(INFO) << "SSAPI_VERSION : " << SC_GetLibVersion();
 
@@ -76,6 +78,8 @@ SC_API void WINAPI SC_Finalize(){
 	//log shutdown
 #if defined(WIN32) || defined(__gnu_linux__)
 	google::ShutdownGoogleLogging();
+#else
+	ShutdownLogging();
 #endif
 }
 

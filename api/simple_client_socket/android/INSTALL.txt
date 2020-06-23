@@ -1,0 +1,17 @@
+Installation Instructions
+*************************
+
+The way to compile this package is:
+
+  1. 'cd' to the android jni directory.
+		
+		cd D:\Workspace\repository\whs_device_usb_api\api\whsusbapi\android\jni
+
+  2. ndk-bundle
+		 D:\Android\Android\Sdk\ndk-bundle\ndk-build.cmd
+		 
+  3. copy whsusbapi.h to android project.
+		 
+  3. copy jni libs file to android project.
+
+

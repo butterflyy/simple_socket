@@ -1,0 +1,1 @@
+xcopy "D:\Workspace\repository\whs_device_usb_api\api\whsusbapi\android\libs" "D:\Workspace\repository\whs_device_usb_api\Demo\AndroidDemo\whsusbapi_pro\app\src\main\jniLibs" /e /i

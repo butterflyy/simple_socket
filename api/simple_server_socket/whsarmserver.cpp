@@ -3,7 +3,7 @@
 #include "ServerManagerImp.h"
 
 #if defined(WIN32) && defined(_DEBUG)
-#include <vld.h>
+//#include <vld.h>
 #endif
 
 #define BETA_VERSION  0  //beta version for inner test, if is release beta version is 0.
