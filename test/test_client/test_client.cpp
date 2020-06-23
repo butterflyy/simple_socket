@@ -58,7 +58,7 @@ void main(int argc, char* argv[])
 			break;
 		}
 
-#if 0
+#if 1
 		//test string
 		for (int i = 0; i < 10000; i++){
 			std::string s = utils::StrFormat("客户端测试数据%d！", i);

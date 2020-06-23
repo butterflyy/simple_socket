@@ -50,7 +50,7 @@
 	#if defined(Foundation_EXPORTS)
 		#define Foundation_API __declspec(dllexport)
 	#else
-		#define Foundation_API __declspec(dllimport)	
+		#define Foundation_API //__declspec(dllimport)	
 	#endif
 #endif
 
@@ -89,7 +89,7 @@
 	#endif
 
 	#if !defined(POCO_NO_AUTOMATIC_LIBS) && !defined(Foundation_EXPORTS)
-		#pragma comment(lib, "PocoFoundation" POCO_LIB_SUFFIX)
+		//#pragma comment(lib, "PocoFoundation" POCO_LIB_SUFFIX)
 	#endif
 #endif
 

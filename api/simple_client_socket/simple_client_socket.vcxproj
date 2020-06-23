@@ -98,7 +98,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\..\externals\glog-0.3.4\Lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libglog_static.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libglog_static.lib;ws2_32.lib;iphlpapi.lib;</AdditionalDependencies>
       <ModuleDefinitionFile>whsarmclient.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -165,6 +165,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Poco\Foundation\Poco\Alignment.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Ascii.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\atomiccounter.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\AutoPtr.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Bugcheck.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\ByteOrder.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Config.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Exception.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Foundation.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Platform.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Platform_POSIX.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Platform_VMS.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Platform_VX.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Platform_WIN32.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\RefCountedObject.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\string.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Timespan.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Timestamp.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Types.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\UnWindows.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\IPAddress.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\Net.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\NetException.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\ServerSocket.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\ServerSocketImpl.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\Socket.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\SocketAddress.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\SocketAddressImpl.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\SocketConnector.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\SocketDefs.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\SocketImpl.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\SocketStream.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\StreamSocket.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\StreamSocketImpl.h" />
     <ClInclude Include="..\simple_net\Client.h" />
     <ClInclude Include="..\simple_net\NetConfig.h" />
     <ClInclude Include="..\simple_net\NetHelper.h" />
@@ -176,6 +210,25 @@
     <ClInclude Include="whsarmclient.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Poco\Foundation\Poco\Ascii.cpp" />
+    <ClCompile Include="..\Poco\Foundation\Poco\AtomicCounter.cpp" />
+    <ClCompile Include="..\Poco\Foundation\Poco\Bugcheck.cpp" />
+    <ClCompile Include="..\Poco\Foundation\Poco\Exception.cpp" />
+    <ClCompile Include="..\Poco\Foundation\Poco\RefCountedObject.cpp" />
+    <ClCompile Include="..\Poco\Foundation\Poco\Timespan.cpp" />
+    <ClCompile Include="..\Poco\Foundation\Poco\Timestamp.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\IPAddress.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\IPAddressImpl.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\Net.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\NetException.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\ServerSocket.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\ServerSocketImpl.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\Socket.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\SocketAddress.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\SocketAddressImpl.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\SocketImpl.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\StreamSocket.cpp" />
+    <ClCompile Include="..\Poco\Net\Poco\Net\StreamSocketImpl.cpp" />
     <ClCompile Include="..\simple_net\Client.cpp" />
     <ClCompile Include="..\simple_net\NetHelper.cpp" />
     <ClCompile Include="..\simple_net\Server.cpp" />
