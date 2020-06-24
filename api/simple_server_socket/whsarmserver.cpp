@@ -57,6 +57,8 @@ SS_API void WINAPI SS_Finalize(){
 		return;
 	}
 
+	LOG(INFO) << "SS_Finalize";
+
 	{
 		EXCEPTION_BEGIN
 			g_serverManagerImp->StopServer();
@@ -117,6 +119,8 @@ SS_API int WINAPI SS_SetCallback(ss_connected_callback on_connected,
 		return SS_ERROR;
 	}
 
+	LOG(INFO) << "SS_SetCallback";
+
 	EVENT->SetCallback(on_connected, on_disconnected, on_error, on_recvframe);
 
 	return SS_SUCCESS;
@@ -126,6 +130,8 @@ SS_API int WINAPI SS_StartServer(int port){
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}
+
+	LOG(INFO) << "SS_StartServer";
 
 	EXCEPTION_BEGIN
 		g_serverManagerImp->StartServer(port);
@@ -140,6 +146,7 @@ SS_API void WINAPI SS_StopServer(){
 		return;
 	}
 
+	LOG(INFO) << "SS_StopServer";
 
 	EXCEPTION_BEGIN
 		g_serverManagerImp->StopServer();
@@ -150,6 +157,8 @@ SS_API int WINAPI SS_DisconnectClient(SS_SESSION session){
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}
+
+	LOG(INFO) << "SS_DisconnectClient";
 
 	ServerImp* serverImp = reinterpret_cast<ServerImp*>(session);
 	if (!serverImp){
@@ -168,6 +177,8 @@ SS_API int WINAPI SS_SendFrame(SS_SESSION session, const unsigned char* data, in
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}
+
+	LOG(INFO) << "SS_SendFrame";
 
 	if (!data || len <= 0 || (type != SS_FRAME_STRING && type != SS_FRAME_BINARY)){
 		return SS_INVALID_PARAM;

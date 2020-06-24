@@ -29,17 +29,14 @@ public:
 		switch (_eventData.type)
 		{
 		case EVENT_DISCONNECT:
-			LOG(INFO) << "on_disconnected";
 			if (_manager->_on_disconnected)
 				_manager->_on_disconnected();
 			break;
 		case EVENT_ERROR:
-			LOG(INFO) << "on_error";
 			if (_manager->_on_error)
 				_manager->_on_error(_eventData.error_code);
 			break;
 		case EVENT_RECV_FRAME:
-			LOG(INFO) << "on_recvframe";
 			if (_manager->_on_disconnected)
 				_manager->_on_recvframe( _eventData.frame.data,
 				_eventData.frame.len, _eventData.frame.type);

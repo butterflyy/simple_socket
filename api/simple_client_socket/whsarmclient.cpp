@@ -57,11 +57,11 @@ SC_API int WINAPI SC_Initialize(){
 }
 
 SC_API void WINAPI SC_Finalize(){
-	LOG(INFO) << "SC_Finalize";
-
 	if (!IsInitialize()) {
 		return;
 	}
+
+	LOG(INFO) << "SC_Finalize";
 
 	{
 		EXCEPTION_BEGIN
@@ -120,11 +120,11 @@ SC_API const char* WINAPI SC_StrError(int error_code){
 SC_API int WINAPI SC_SetCallback(sc_disconnected_callback on_disconnected,
 	sc_error_callback on_error,
 	sc_recvframe_callback on_recvframe){
-	LOG(INFO) << "SC_SetCallback";
-
 	if (!IsInitialize()) {
 		return SC_ERROR;
 	}
+
+	LOG(INFO) << "SC_SetCallback";
 
 	EVENT->SetCallback(on_disconnected, on_error, on_recvframe);
 
@@ -132,11 +132,11 @@ SC_API int WINAPI SC_SetCallback(sc_disconnected_callback on_disconnected,
 }
 
 SC_API int WINAPI SC_ConnectToHost(const char* ip, int port){
-	LOG(INFO) << "SC_ConnectToHost";
-
 	if (!IsInitialize()) {
 		return SC_ERROR;
 	}
+
+	LOG(INFO) << "SC_ConnectToHost";
 
 	EXCEPTION_BEGIN
 		g_clientImp->Connect(ip, port);
@@ -146,11 +146,11 @@ SC_API int WINAPI SC_ConnectToHost(const char* ip, int port){
 }
 
 SC_API void WINAPI SC_DisconnectFromHost(){
-	LOG(INFO) << "SC_DisconnectFromHost";
-
 	if (!IsInitialize()) {
 		return;
 	}
+
+	LOG(INFO) << "SC_DisconnectFromHost";
 
 	EXCEPTION_BEGIN
 		g_clientImp->Disconnect();
@@ -158,11 +158,11 @@ SC_API void WINAPI SC_DisconnectFromHost(){
 }
 
 SC_API int WINAPI SC_SendFrame(const unsigned char* data, int len, int type){
-	LOG(INFO) << "SC_SendFrame";
-
 	if (!IsInitialize()) {
 		return SC_ERROR;
 	}
+
+	LOG(INFO) << "SC_SendFrame";
 
 	if (!data || len <= 0 || (type != SC_FRAME_STRING && type != SC_FRAME_BINARY)){
 		return SC_INVALID_PARAM;
