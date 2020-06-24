@@ -350,7 +350,7 @@ bool IPAddress::operator == (const IPAddress& a) const
         if ( scope() != a.scope() )
             return false;
 #endif
-		return std::memcmp(addr(), a.addr(), l1) == 0;
+		return memcmp(addr(), a.addr(), l1) == 0;
     }
 	else return false;
 }
@@ -372,7 +372,7 @@ bool IPAddress::operator < (const IPAddress& a) const
         if ( scope() != a.scope() )
             return scope() < a.scope();
 #endif
-		return std::memcmp(addr(), a.addr(), l1) < 0;
+		return memcmp(addr(), a.addr(), l1) < 0;
     }
 	else return l1 < l2;
 }
