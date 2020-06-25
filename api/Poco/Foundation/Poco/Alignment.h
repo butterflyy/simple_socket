@@ -41,7 +41,7 @@
 
 
 	#include <type_traits>
-	//#define POCO_HAVE_ALIGNMENT
+	#define POCO_HAVE_ALIGNMENT
 
 
 #else

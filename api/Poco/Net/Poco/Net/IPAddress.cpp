@@ -21,6 +21,7 @@
 //#include "Poco/BinaryReader.h"
 //#include "Poco/BinaryWriter.h"
 //#include "Poco/String.h"
+#include "Poco/UtilsAdd.h"
 #include "Poco/Types.h"
 
 
@@ -69,11 +70,7 @@ IPAddress::IPAddress(Family family)
 		throw Poco::InvalidArgumentException("Invalid or unsupported address family passed to IPAddress()");
 }
 
-std::string trim(const std::string& addr){
-	//NEEDHANDLE
-	poco_assert(false);
-	return "";
-}
+
 IPAddress::IPAddress(const std::string& addr)
 {
 	IPv4AddressImpl empty4 = IPv4AddressImpl();
@@ -569,17 +566,15 @@ IPAddress IPAddress::broadcast()
 
 BinaryWriter& operator << (BinaryWriter& writer, const IPAddress& value)
 {
-	poco_assert(false);
-	//writer.stream().write((const char*) value.addr(), value.length());
+	writer.stream().write((const char*) value.addr(), value.length());
 	return writer;
 }
 
 BinaryReader& operator >> (BinaryReader& reader, IPAddress& value)
 {
-	poco_assert(false);
-	//char buf[sizeof(struct in6_addr)];
-	//reader.stream().read(buf, value.length());
-	//value = IPAddress(buf, value.length());
+	char buf[sizeof(struct in6_addr)];
+	reader.stream().read(buf, value.length());
+	value = IPAddress(buf, value.length());
 	return reader;
 }
 

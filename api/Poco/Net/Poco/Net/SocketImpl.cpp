@@ -17,7 +17,7 @@
 #include "Poco/Net/SocketImpl.h"
 #include "Poco/Net/NetException.h"
 #include "Poco/Net/StreamSocketImpl.h"
-//#include "Poco/NumberFormatter.h"
+#include "Poco/UtilsAdd.h"
 #include "Poco/Timestamp.h"
 #include <string.h> // FD_SET needs memset on some platforms, so we can't use <cstring>
 #if defined(POCO_HAVE_FD_EPOLL)
@@ -1066,7 +1066,7 @@ void SocketImpl::error(int code, const std::string& arg)
 		throw IOException("Bad socket descriptor", code);
 #endif
 	default:
-		;//throw IOException(NumberFormatter::format(code), arg, code);//NEEDHANDLE
+		throw IOException(NumberFormatter::format(code), arg, code);
 	}
 }
 

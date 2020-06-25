@@ -158,16 +158,10 @@
     <ClInclude Include="..\Poco\Net\Poco\Net\SocketAddressImpl.h">
       <Filter>Net</Filter>
     </ClInclude>
-    <ClInclude Include="..\Poco\Net\Poco\Net\SocketConnector.h">
-      <Filter>Net</Filter>
-    </ClInclude>
     <ClInclude Include="..\Poco\Net\Poco\Net\SocketDefs.h">
       <Filter>Net</Filter>
     </ClInclude>
     <ClInclude Include="..\Poco\Net\Poco\Net\SocketImpl.h">
-      <Filter>Net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Poco\Net\Poco\Net\SocketStream.h">
       <Filter>Net</Filter>
     </ClInclude>
     <ClInclude Include="..\Poco\Net\Poco\Net\StreamSocket.h">
@@ -222,6 +216,12 @@
       <Filter>Foundation</Filter>
     </ClInclude>
     <ClInclude Include="..\Poco\Foundation\Poco\UnWindows.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\IPAddressImpl.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\UtilsAdd.h">
       <Filter>Foundation</Filter>
     </ClInclude>
   </ItemGroup>

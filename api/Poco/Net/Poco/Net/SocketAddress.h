@@ -54,7 +54,7 @@ public:
 		/// The IP address must either be a domain name, or it must
 		/// be in dotted decimal (IPv4) or hex string (IPv6) format.
 
-	SocketAddress(const std::string& hostAddress, const std::string& portNumber);
+	//SocketAddress(const std::string& hostAddress, const std::string& portNumber);
 		/// Creates a SocketAddress from an IP address and the
 		/// service name or port number.
 		///
@@ -64,7 +64,7 @@ public:
 		/// The given port must either be a decimal port number, or
 		/// a service name.
 
-	explicit SocketAddress(const std::string& hostAndPort);
+	//explicit SocketAddress(const std::string& hostAndPort);
 		/// Creates a SocketAddress from an IP address or host name and the
 		/// port number/service name. Host name/address and port number must
 		/// be separated by a colon. In case of an IPv6 address,
@@ -126,7 +126,7 @@ public:
 protected:
 	void init(const IPAddress& hostAddress, Poco::UInt16 portNumber);
 	void init(const std::string& hostAddress, Poco::UInt16 portNumber);
-	Poco::UInt16 resolveService(const std::string& service);
+	//Poco::UInt16 resolveService(const std::string& service);
 
 private:
 	typedef Poco::Net::Impl::SocketAddressImpl Impl;

@@ -17,14 +17,14 @@
 #include "Poco/Net/IPAddressImpl.h"
 #include "Poco/Net/NetException.h"
 #include "Poco/RefCountedObject.h"
-//#include "Poco/NumberFormatter.h"
+#include "Poco/NumberFormatter.h"
 #include "Poco/ByteOrder.h"
 #include "Poco/String.h"
 #include "Poco/Types.h"
 
 
 using Poco::RefCountedObject;
-//using Poco::NumberFormatter;
+using Poco::NumberFormatter;
 using Poco::toLower;
 using Poco::UInt8;
 using Poco::UInt16;
@@ -120,13 +120,13 @@ std::string IPv4AddressImpl::toString() const
 	const UInt8* bytes = reinterpret_cast<const UInt8*>(&_addr);
 	std::string result;
 	result.reserve(16);
-	//NumberFormatter::append(result, bytes[0]);
-	//result.append(".");
-	//NumberFormatter::append(result, bytes[1]);
-	//result.append(".");
-	//NumberFormatter::append(result, bytes[2]);
-	//result.append(".");
-	//NumberFormatter::append(result, bytes[3]);//NEEDHANDLE
+	NumberFormatter::append(result, bytes[0]);
+	result.append(".");
+	NumberFormatter::append(result, bytes[1]);
+	result.append(".");
+	NumberFormatter::append(result, bytes[2]);
+	result.append(".");
+	NumberFormatter::append(result, bytes[3]);
 	return result;
 }
 
@@ -422,67 +422,66 @@ IPv6AddressImpl::IPv6AddressImpl(unsigned prefix):
 
 std::string IPv6AddressImpl::toString() const
 {
-	return "";
-//	const UInt16* words = reinterpret_cast<const UInt16*>(&_addr);
-//	if ((isIPv4Compatible() && !isLoopback()) || isIPv4Mapped())
-//	{
-//		std::string result;
-//		result.reserve(24);
-//		if (words[5] == 0)
-//			result.append("::");
-//		else
-//			result.append("::ffff:");
-//		const UInt8* bytes = reinterpret_cast<const UInt8*>(&_addr);
-//		//NumberFormatter::append(result, bytes[12]);
-//		//result.append(".");
-//		//NumberFormatter::append(result, bytes[13]);
-//		//result.append(".");
-//		//NumberFormatter::append(result, bytes[14]);
-//		//result.append(".");
-//		//NumberFormatter::append(result, bytes[15]);//NEEDHANLE
-//		return result;
-//	}
-//	else
-//	{
-//		std::string result;
-//		result.reserve(64);
-//		bool zeroSequence = false;
-//		int i = 0;
-//		while (i < 8)
-//		{
-//			if (!zeroSequence && words[i] == 0)
-//			{
-//				int zi = i;
-//				while (zi < 8 && words[zi] == 0) ++zi;
-//				if (zi > i + 1)
-//				{
-//					i = zi;
-//					result.append(":");
-//					zeroSequence = true;
-//				}
-//			}
-//			if (i > 0) result.append(":");
-//			if (i < 8) NumberFormatter::appendHex(result, ByteOrder::fromNetwork(words[i++]));
-//		}
-//		if (_scope > 0)
-//		{
-//			result.append("%");
-//#if defined(_WIN32)
-//			NumberFormatter::append(result, _scope);
-//#else
-//			char buffer[IFNAMSIZ];
-//			if (if_indextoname(_scope, buffer))
-//			{
-//				result.append(buffer);
-//			}
-//			else
-//			{
-//				NumberFormatter::append(result, _scope);
-//			}
-//#endif
-//		}
-//		return toLower(result);
-//	}
+	const UInt16* words = reinterpret_cast<const UInt16*>(&_addr);
+	if ((isIPv4Compatible() && !isLoopback()) || isIPv4Mapped())
+	{
+		std::string result;
+		result.reserve(24);
+		if (words[5] == 0)
+			result.append("::");
+		else
+			result.append("::ffff:");
+		const UInt8* bytes = reinterpret_cast<const UInt8*>(&_addr);
+		NumberFormatter::append(result, bytes[12]);
+		result.append(".");
+		NumberFormatter::append(result, bytes[13]);
+		result.append(".");
+		NumberFormatter::append(result, bytes[14]);
+		result.append(".");
+		NumberFormatter::append(result, bytes[15]);
+		return result;
+	}
+	else
+	{
+		std::string result;
+		result.reserve(64);
+		bool zeroSequence = false;
+		int i = 0;
+		while (i < 8)
+		{
+			if (!zeroSequence && words[i] == 0)
+			{
+				int zi = i;
+				while (zi < 8 && words[zi] == 0) ++zi;
+				if (zi > i + 1)
+				{
+					i = zi;
+					result.append(":");
+					zeroSequence = true;
+				}
+			}
+			if (i > 0) result.append(":");
+			if (i < 8) NumberFormatter::appendHex(result, ByteOrder::fromNetwork(words[i++]));
+		}
+		if (_scope > 0)
+		{
+			result.append("%");
+#if defined(_WIN32)
+			NumberFormatter::append(result, _scope);
+#else
+			char buffer[IFNAMSIZ];
+			if (if_indextoname(_scope, buffer))
+			{
+				result.append(buffer);
+			}
+			else
+			{
+				NumberFormatter::append(result, _scope);
+			}
+#endif
+		}
+		return toLower(result);
+	}
 }
 
 

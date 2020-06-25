@@ -20,7 +20,7 @@
 //#include "Poco/Net/DNS.h"
 #include "Poco/RefCountedObject.h"
 //#include "Poco/NumberParser.h"
-//#include "Poco/NumberFormatter.h"
+#include "Poco/UtilsAdd.h"
 #include <algorithm>
 #include <cstring>
 
@@ -77,39 +77,39 @@ SocketAddress::SocketAddress(const std::string& hostAddress, Poco::UInt16 portNu
 }
 
 
-SocketAddress::SocketAddress(const std::string& hostAddress, const std::string& portNumber)
-{
-	init(hostAddress, resolveService(portNumber));
-}
-
-
-SocketAddress::SocketAddress(const std::string& hostAndPort)
-{
-	poco_assert (!hostAndPort.empty());
-
-	std::string host;
-	std::string port;
-	std::string::const_iterator it  = hostAndPort.begin();
-	std::string::const_iterator end = hostAndPort.end();
-	if (*it == '[')
-	{
-		++it;
-		while (it != end && *it != ']') host += *it++;
-		if (it == end) throw InvalidArgumentException("Malformed IPv6 address");
-		++it;
-	}
-	else
-	{
-		while (it != end && *it != ':') host += *it++;
-	}
-	if (it != end && *it == ':')
-	{
-		++it;
-		while (it != end) port += *it++;
-	}
-	else throw InvalidArgumentException("Missing port number");
-	init(host, resolveService(port));
-}
+//SocketAddress::SocketAddress(const std::string& hostAddress, const std::string& portNumber)
+//{
+//	init(hostAddress, resolveService(portNumber));
+//}
+//
+//
+//SocketAddress::SocketAddress(const std::string& hostAndPort)
+//{
+//	poco_assert (!hostAndPort.empty());
+//
+//	std::string host;
+//	std::string port;
+//	std::string::const_iterator it  = hostAndPort.begin();
+//	std::string::const_iterator end = hostAndPort.end();
+//	if (*it == '[')
+//	{
+//		++it;
+//		while (it != end && *it != ']') host += *it++;
+//		if (it == end) throw InvalidArgumentException("Malformed IPv6 address");
+//		++it;
+//	}
+//	else
+//	{
+//		while (it != end && *it != ':') host += *it++;
+//	}
+//	if (it != end && *it == ':')
+//	{
+//		++it;
+//		while (it != end) port += *it++;
+//	}
+//	else throw InvalidArgumentException("Missing port number");
+//	init(host, resolveService(port));
+//}
 
 
 SocketAddress::SocketAddress(const SocketAddress& socketAddress)
@@ -204,7 +204,7 @@ std::string SocketAddress::toString() const
 		result.append("]");
 #endif
 	result.append(":");
-	//NumberFormatter::append(result, port());//NEEDHANDLE
+	NumberFormatter::append(result, port());
 	return result;
 }
 
@@ -230,24 +230,23 @@ void SocketAddress::init(const std::string& hostAddress, Poco::UInt16 portNumber
 	}
 	else
 	{
-//		HostEntry he = DNS::hostByName(hostAddress);
-//		HostEntry::AddressList addresses = he.addresses();
-//		if (addresses.size() > 0)
-//		{
-//#if defined(POCO_HAVE_IPv6)
-//			// if we get both IPv4 and IPv6 addresses, prefer IPv4
-//			std::sort(addresses.begin(), addresses.end(), AFLT());
-//#endif
-//			init(addresses[0], portNumber);
-//		}
-//		else throw HostNotFoundException("No address found for host", hostAddress);
+		HostEntry he = DNS::hostByName(hostAddress);
+		HostEntry::AddressList addresses = he.addresses();
+		if (addresses.size() > 0)
+		{
+#if defined(POCO_HAVE_IPv6)
+			// if we get both IPv4 and IPv6 addresses, prefer IPv4
+			std::sort(addresses.begin(), addresses.end(), AFLT());
+#endif
+			init(addresses[0], portNumber);
+		}
+		else throw HostNotFoundException("No address found for host", hostAddress);
 	}
 }
 
 
-Poco::UInt16 SocketAddress::resolveService(const std::string& service)
-{
-	return 0;//NEEDHANDLE
+//Poco::UInt16 SocketAddress::resolveService(const std::string& service)
+//{
 //	unsigned port;
 //	if (NumberParser::tryParseUnsigned(service, port) && port <= 0xFFFF)
 //	{
@@ -265,7 +264,7 @@ Poco::UInt16 SocketAddress::resolveService(const std::string& service)
 //			throw ServiceNotFoundException(service);
 //#endif
 //	}
-}
+//}
 
 
 } } // namespace Poco::Net

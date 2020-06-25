@@ -185,7 +185,9 @@
     <ClInclude Include="..\Poco\Foundation\Poco\Timestamp.h" />
     <ClInclude Include="..\Poco\Foundation\Poco\Types.h" />
     <ClInclude Include="..\Poco\Foundation\Poco\UnWindows.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\UtilsAdd.h" />
     <ClInclude Include="..\Poco\Net\Poco\Net\IPAddress.h" />
+    <ClInclude Include="..\Poco\Net\Poco\Net\IPAddressImpl.h" />
     <ClInclude Include="..\Poco\Net\Poco\Net\Net.h" />
     <ClInclude Include="..\Poco\Net\Poco\Net\NetException.h" />
     <ClInclude Include="..\Poco\Net\Poco\Net\ServerSocket.h" />
@@ -193,10 +195,8 @@
     <ClInclude Include="..\Poco\Net\Poco\Net\Socket.h" />
     <ClInclude Include="..\Poco\Net\Poco\Net\SocketAddress.h" />
     <ClInclude Include="..\Poco\Net\Poco\Net\SocketAddressImpl.h" />
-    <ClInclude Include="..\Poco\Net\Poco\Net\SocketConnector.h" />
     <ClInclude Include="..\Poco\Net\Poco\Net\SocketDefs.h" />
     <ClInclude Include="..\Poco\Net\Poco\Net\SocketImpl.h" />
-    <ClInclude Include="..\Poco\Net\Poco\Net\SocketStream.h" />
     <ClInclude Include="..\Poco\Net\Poco\Net\StreamSocket.h" />
     <ClInclude Include="..\Poco\Net\Poco\Net\StreamSocketImpl.h" />
     <ClInclude Include="..\simple_net\Client.h" />

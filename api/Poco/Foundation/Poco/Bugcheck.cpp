@@ -15,7 +15,7 @@
 
 
 #include "Poco/Bugcheck.h"
-//#include "Poco/Debugger.h" //NEEDHANDLE
+#include "Poco/Debugger.h"
 #include "Poco/Exception.h"
 #include <sstream>
 
@@ -33,21 +33,21 @@ void Bugcheck::assertion(const char* cond, const char* file, int line, const cha
 		message += text;
 		message += ")";
 	}
-	//Debugger::enter(message, file, line);
+	Debugger::enter(message, file, line);
 	throw AssertionViolationException(what(cond, file, line, text));
 }
 
 
 void Bugcheck::nullPointer(const char* ptr, const char* file, int line)
 {
-	//Debugger::enter(std::string("NULL pointer: ") + ptr, file, line);
+	Debugger::enter(std::string("NULL pointer: ") + ptr, file, line);
 	throw NullPointerException(what(ptr, file, line));
 }
 
 
 void Bugcheck::bugcheck(const char* file, int line)
 {
-	//Debugger::enter("Bugcheck", file, line);
+	Debugger::enter("Bugcheck", file, line);
 	throw BugcheckException(what(0, file, line));
 }
 
@@ -60,7 +60,7 @@ void Bugcheck::bugcheck(const char* msg, const char* file, int line)
 		m.append(": ");
 		m.append(msg);
 	}
-	//Debugger::enter(m, file, line);
+	Debugger::enter(m, file, line);
 	throw BugcheckException(what(msg, file, line));
 }
 
@@ -87,7 +87,7 @@ void Bugcheck::unexpected(const char* file, int line)
 		{
 			msg += "unknown exception";
 		}
-		//Debugger::enter(msg, file, line);
+		Debugger::enter(msg, file, line);
 	}
 	catch (...)
 	{
@@ -98,13 +98,13 @@ void Bugcheck::unexpected(const char* file, int line)
 
 void Bugcheck::debugger(const char* file, int line)
 {
-	//Debugger::enter(file, line);
+	Debugger::enter(file, line);
 }
 
 
 void Bugcheck::debugger(const char* msg, const char* file, int line)
 {
-	//Debugger::enter(msg, file, line);
+	Debugger::enter(msg, file, line);
 }
 
 
