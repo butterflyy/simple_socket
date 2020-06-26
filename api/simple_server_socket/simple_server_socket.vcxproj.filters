@@ -82,6 +82,9 @@
     <ClCompile Include="..\Poco\Net\Poco\Net\StreamSocketImpl.cpp">
       <Filter>Net</Filter>
     </ClCompile>
+    <ClCompile Include="..\Poco\Foundation\Poco\Debugger.cpp">
+      <Filter>Foundation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\simple_net\Client.h">
@@ -218,6 +221,12 @@
     </ClInclude>
     <ClInclude Include="..\Poco\Net\Poco\Net\StreamSocketImpl.h">
       <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Debugger.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\UtilsAdd.h">
+      <Filter>Foundation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

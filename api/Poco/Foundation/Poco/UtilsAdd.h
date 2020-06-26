@@ -47,6 +47,12 @@ namespace Poco{
 		static void append(std::string& str, int value){
 			str.append(format(value));
 		}
+
+		static void appendHex(std::string& str, int value){
+			char buff[15] = { 0 };
+			sprintf(buff, "%x", value);
+			str.append(buff, strlen(buff));
+		}
 	};
 }
 

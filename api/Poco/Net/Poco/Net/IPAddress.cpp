@@ -564,19 +564,19 @@ IPAddress IPAddress::broadcast()
 }
 
 
-BinaryWriter& operator << (BinaryWriter& writer, const IPAddress& value)
-{
-	writer.stream().write((const char*) value.addr(), value.length());
-	return writer;
-}
-
-BinaryReader& operator >> (BinaryReader& reader, IPAddress& value)
-{
-	char buf[sizeof(struct in6_addr)];
-	reader.stream().read(buf, value.length());
-	value = IPAddress(buf, value.length());
-	return reader;
-}
+//BinaryWriter& operator << (BinaryWriter& writer, const IPAddress& value)
+//{
+//	writer.stream().write((const char*) value.addr(), value.length());
+//	return writer;
+//}
+//
+//BinaryReader& operator >> (BinaryReader& reader, IPAddress& value)
+//{
+//	char buf[sizeof(struct in6_addr)];
+//	reader.stream().read(buf, value.length());
+//	value = IPAddress(buf, value.length());
+//	return reader;
+//}
 
 
 } } // namespace Poco::Net

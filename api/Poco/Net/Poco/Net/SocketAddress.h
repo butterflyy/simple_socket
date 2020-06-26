@@ -48,7 +48,7 @@ public:
 		/// Creates a SocketAddress with unspecified (wildcard) IP address 
 		/// and given port number.
 
-	SocketAddress(const std::string& hostAddress, Poco::UInt16 portNumber);
+	//SocketAddress(const std::string& hostAddress, Poco::UInt16 portNumber);
 		/// Creates a SocketAddress from an IP address and given port number.
 		///
 		/// The IP address must either be a domain name, or it must
@@ -125,7 +125,7 @@ public:
 
 protected:
 	void init(const IPAddress& hostAddress, Poco::UInt16 portNumber);
-	void init(const std::string& hostAddress, Poco::UInt16 portNumber);
+	//void init(const std::string& hostAddress, Poco::UInt16 portNumber);
 	//Poco::UInt16 resolveService(const std::string& service);
 
 private:

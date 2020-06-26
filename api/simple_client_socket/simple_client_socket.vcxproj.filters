@@ -93,6 +93,9 @@
     <ClCompile Include="..\Poco\Foundation\Poco\AtomicCounter.cpp">
       <Filter>Foundation</Filter>
     </ClCompile>
+    <ClCompile Include="..\Poco\Foundation\Poco\Debugger.cpp">
+      <Filter>Foundation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\simple_net\Client.h">
@@ -222,6 +225,9 @@
       <Filter>Net</Filter>
     </ClInclude>
     <ClInclude Include="..\Poco\Foundation\Poco\UtilsAdd.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Debugger.h">
       <Filter>Foundation</Filter>
     </ClInclude>
   </ItemGroup>

@@ -17,14 +17,14 @@
 #include "Poco/Net/IPAddressImpl.h"
 #include "Poco/Net/NetException.h"
 #include "Poco/RefCountedObject.h"
-#include "Poco/NumberFormatter.h"
+#include "Poco/UtilsAdd.h"
 #include "Poco/ByteOrder.h"
 #include "Poco/String.h"
 #include "Poco/Types.h"
 
 
 using Poco::RefCountedObject;
-using Poco::NumberFormatter;
+//using Poco::NumberFormatter;
 using Poco::toLower;
 using Poco::UInt8;
 using Poco::UInt16;

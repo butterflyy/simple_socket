@@ -172,6 +172,7 @@
     <ClInclude Include="..\Poco\Foundation\Poco\Bugcheck.h" />
     <ClInclude Include="..\Poco\Foundation\Poco\ByteOrder.h" />
     <ClInclude Include="..\Poco\Foundation\Poco\Config.h" />
+    <ClInclude Include="..\Poco\Foundation\Poco\Debugger.h" />
     <ClInclude Include="..\Poco\Foundation\Poco\Exception.h" />
     <ClInclude Include="..\Poco\Foundation\Poco\Foundation.h" />
     <ClInclude Include="..\Poco\Foundation\Poco\Platform.h" />
@@ -213,6 +214,7 @@
     <ClCompile Include="..\Poco\Foundation\Poco\Ascii.cpp" />
     <ClCompile Include="..\Poco\Foundation\Poco\AtomicCounter.cpp" />
     <ClCompile Include="..\Poco\Foundation\Poco\Bugcheck.cpp" />
+    <ClCompile Include="..\Poco\Foundation\Poco\Debugger.cpp" />
     <ClCompile Include="..\Poco\Foundation\Poco\Exception.cpp" />
     <ClCompile Include="..\Poco\Foundation\Poco\RefCountedObject.cpp" />
     <ClCompile Include="..\Poco\Foundation\Poco\Timespan.cpp" />

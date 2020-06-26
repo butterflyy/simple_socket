@@ -510,8 +510,8 @@ inline char* IPAddress::storage()
 #endif
 
 
-BinaryWriter& operator << (BinaryWriter& writer, const IPAddress& value);
-BinaryReader& operator >> (BinaryReader& reader, IPAddress& value);
+//BinaryWriter& operator << (BinaryWriter& writer, const IPAddress& value);
+//BinaryReader& operator >> (BinaryReader& reader, IPAddress& value);
 
 
 } } // namespace Poco::Net
