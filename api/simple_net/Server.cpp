@@ -31,6 +31,7 @@ void Server::run(){
 			peerdes = _socket.peerAddress().toString();
 		EXCEPTION_END
 	}
+	_peerAddressLasting = peerdes;
 
 
 	LOG(INFO) << "Server:" << peerdes << " run begin";

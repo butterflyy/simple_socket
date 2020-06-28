@@ -18,6 +18,7 @@ LOCAL_SRC_FILES:= \
 					$(LIBUSB_ROOT_REL)/../Poco/Foundation/Poco/RefCountedObject.cpp \
 					$(LIBUSB_ROOT_REL)/../Poco/Foundation/Poco/Exception.cpp \
 					$(LIBUSB_ROOT_REL)/../Poco/Foundation/Poco/Bugcheck.cpp \
+					$(LIBUSB_ROOT_REL)/../Poco/Foundation/Poco/Debugger.cpp \
 					$(LIBUSB_ROOT_REL)/../Poco/Foundation/Poco/AtomicCounter.cpp \
 					$(LIBUSB_ROOT_REL)/../Poco/Foundation/Poco/Ascii.cpp \
 					$(LIBUSB_ROOT_REL)/../Poco/Net/Poco/Net/IPAddress.cpp \

@@ -1,6 +1,7 @@
 #include "whsarmserver.h"
 #include "ServerImp.h"
 #include "ServerManagerImp.h"
+#include <common/ConvertSync.h>
 
 #if defined(WIN32) && defined(_DEBUG)
 //#include <vld.h>
@@ -14,6 +15,9 @@ ServerManagerImp* g_serverManagerImp = nullptr;
 
 //Gloable External Variable 
 EventManager* EVENT = nullptr;
+
+//Gloable Convert Sync Variable
+ConvertSync<std::string, std::string>* SYNC_EVENT = nullptr;
 
 inline bool IsInitialize() {
 	if (!g_serverManagerImp) {
@@ -45,6 +49,8 @@ SS_API int WINAPI SS_Initialize(){
 
 	EVENT = new EventManager();
 
+	SYNC_EVENT = new ConvertSync<std::string, std::string>();
+
 	EXCEPTION_BEGIN
 		g_serverManagerImp = new ServerManagerImp();
 	EXCEPTION_END
@@ -72,6 +78,8 @@ SS_API void WINAPI SS_Finalize(){
 	}
 
 	SAFE_DELETE(EVENT);
+
+	SAFE_DELETE(SYNC_EVENT);
 
 	//log shutdown
 #if defined(WIN32) || defined(__gnu_linux__)
@@ -194,4 +202,26 @@ SS_API int WINAPI SS_SendFrame(SS_SESSION session, const unsigned char* data, in
 	EXCEPTION_END
 
 	return ServerManagerImp::TransError(error_code);
+}
+
+SS_API int WINAPI SS_Helper_SetEvent(const char* id, const char* data){
+	if (!SYNC_EVENT || !id || !data){
+		return -1;
+	}
+
+	return SYNC_EVENT->SetEvent(id, data);
+}
+
+SS_API int WINAPI SS_Helper_WaitEvent(const char* id, int timeout, char* data, int len){
+	if (!SYNC_EVENT || !id || !data){
+		return -1;
+	}
+
+	std::string data_buff;
+	int ret = SYNC_EVENT->WaitEvent(id, &data_buff, timeout);
+	if (ret == 0){//successed
+		utils::SafeStrCpy(data, data_buff.c_str(), len);
+	}
+
+	return ret;
 }
