@@ -225,3 +225,33 @@ SS_API int WINAPI SS_Helper_WaitEvent(const char* id, int timeout, char* data, i
 
 	return ret;
 }
+
+SS_API int WINAPI SS_Helper_Log(int level, const char* info) {
+	if (!IsInitialize()) {
+		return SS_ERROR;
+	}
+
+	if (!info){
+		return SS_INVALID_PARAM;
+	}
+
+	switch (level){
+	case 0:
+		LOG(INFO) << info;
+		break;
+	case 1:
+		LOG(WARNING) << info;
+		break;
+	case 2:
+		LOG(ERROR) << info;
+		break;
+	case 3:
+		LOG(FATAL) << info;
+		break;
+	default:
+		LOG(INFO) << info;
+		break;
+	}
+
+	return SS_SUCCESS;
+}

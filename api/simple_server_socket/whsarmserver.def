@@ -10,3 +10,4 @@ EXPORTS
 	SS_SendFrame
 	SS_Helper_SetEvent
 	SS_Helper_WaitEvent
+	SS_Helper_Log
