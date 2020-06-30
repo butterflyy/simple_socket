@@ -7,14 +7,17 @@
 #define PORT  49877
 
 std::map<SS_SESSION, std::string> ss;
+utils::Mutex ss_mutex;
 
 void CALLBACK connected_callback(SS_SESSION session, const char* client_ip){
 	printf("[server] new client connect: %s \n", client_ip);
+	utils::LockGuard<utils::Mutex> lock(ss_mutex);
 	ss[session] = client_ip;
 }
 
 void CALLBACK disconnected_callback(SS_SESSION session){
 	printf("[server] disconnect : %s \n", ss[session].c_str());
+	utils::LockGuard<utils::Mutex> lock(ss_mutex);
 	ss.erase(session);
 }
 
@@ -24,13 +27,15 @@ void CALLBACK error_callback(SS_SESSION session, int error_code){
 
 void CALLBACK recvframe_callback(SS_SESSION session, const unsigned char* data, int len, int type){
 	//encode test
+	ss_mutex.lock();
 	std::string ip = ss[session];
+	ss_mutex.unlock();
 
 	switch (type)
 	{
 	case SS_FRAME_STRING:
 		if (len > 10000){
-			printf("[server] %s recv big string : %d \n",ip.c_str(), len);
+			printf("[server] %s recv big string : %d \n", ip.c_str(), len);
 		}
 		else{
 			printf("[server] %s recv string : %s \n", ip.c_str(), data);
