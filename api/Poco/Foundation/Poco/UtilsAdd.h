@@ -2,6 +2,7 @@
 #define Foundation_UtilsAdd_INCLUDED
 
 #include <stdio.h>
+#include <string.h>
 #include <string>
 
 #ifdef WIN32

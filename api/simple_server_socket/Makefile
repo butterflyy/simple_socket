@@ -1,37 +1,37 @@
 #define complier 
 CC = g++
-CFLAGS = -Wall -std=c++0x -DNDEBUG
+CFLAGS = -Wall -std=c++11 -DNDEBUG
 
 #define include lib path
-INCLUDE_PATH = -I./../../../externals/include/
+INCLUDE_PATH = -I./../../../externals/include -I../simple_net -I../Poco/Foundation -I../Poco/Net
 LIBS = -lglog
 
 OBJS = whsarmserver.o \
 		ServerManagerImp.o \
 		ServerImp.o \
 		EventManager.o \
-		../simple_net/Client.o \
-		../simple_net/NetHelper.o \
-		../Poco/Foundation/Poco/Timestamp.o \
-		../Poco/Foundation/Poco/Timespan.o \
-		../Poco/Foundation/Poco/RefCountedObject.o \
-		../Poco/Foundation/Poco/Exception.o \
-		../Poco/Foundation/Poco/Bugcheck.o \
-		../Poco/Foundation/Poco/Debugger.o \
-		../Poco/Foundation/Poco/AtomicCounter.o \
-		../Poco/Foundation/Poco/Ascii.o \
-		../Poco/Net/Poco/Net/IPAddress.o \
-		../Poco/Net/Poco/Net/IPAddressImpl.o \
-		../Poco/Net/Poco/Net/Net.o \
-		../Poco/Net/Poco/Net/NetException.o \
-		../Poco/Net/Poco/Net/ServerSocket.o \
-		../Poco/Net/Poco/Net/ServerSocketImpl.o \
-		../Poco/Net/Poco/Net/Socket.o \
-		../Poco/Net/Poco/Net/SocketAddress.o \
-		../Poco/Net/Poco/Net/SocketAddressImpl.o \
-		../Poco/Net/Poco/Net/SocketImpl.o \
-		../Poco/Net/Poco/Net/StreamSocket.o \
-		../Poco/Net/Poco/Net/StreamSocketImpl.o \
+		Server.o \
+		NetHelper.o \
+		Timestamp.o \
+		Timespan.o \
+		RefCountedObject.o \
+		Exception.o \
+		Bugcheck.o \
+		Debugger.o \
+		AtomicCounter.o \
+		Ascii.o \
+		IPAddress.o \
+		IPAddressImpl.o \
+		Net.o \
+		NetException.o \
+		ServerSocket.o \
+		ServerSocketImpl.o \
+		Socket.o \
+		SocketAddress.o \
+		SocketAddressImpl.o \
+		SocketImpl.o \
+		StreamSocket.o \
+		StreamSocketImpl.o \
 
 TARGET = libwhsarmserver.so
 
