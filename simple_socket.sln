@@ -20,10 +20,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFCDemoClient", "demo\MFCDemoClient\MFCDemoClient.vcxproj", "{ACE78B6F-8D46-448E-84E4-C8E8DC148C05}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFCDemoServer", "demo\MFCDemoServer\MFCDemoServer.vcxproj", "{046F7490-BDD0-491E-939B-1EA4CA987690}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B4A9FA8D-2909-4C99-8CC7-C45EE32E4DAA} = {B4A9FA8D-2909-4C99-8CC7-C45EE32E4DAA}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api", "api", "{58726E03-43A9-4E09-B0DD-BA00722B315C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "wapper", "wapper", "{327FA26E-D115-4BC4-815E-A118EF8EFE3D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_echo_server", "test\test_echo_server\test_echo_server.vcxproj", "{E3FB69A7-3BB9-48EF-A38C-3A763D9D88D0}"
 EndProject

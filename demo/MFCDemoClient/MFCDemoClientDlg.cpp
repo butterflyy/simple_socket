@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define PORT  49877
+#define PORT  39877
 
 // CAboutDlg dialog used for App About
 

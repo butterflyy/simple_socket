@@ -148,7 +148,7 @@
       <AdditionalDependencies>libglog_static.lib;ws2_32.lib;iphlpapi.lib;</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy D:\Workspace\simple_socket\build\out\Release\Win32\whsarmserver.dll D:\Workspace\simple_socket\guangzhou_yiping\YpDemo\bin\Debug\whsarmserver.dll</Command>
+      <Command>copy D:\Workspace\simple_socket\build\out\Release\Win32\whsarmserver.dll D:\Workspace\hs_d35_sdk\demo\YpDemo\bin\Debug\whsarmserver.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

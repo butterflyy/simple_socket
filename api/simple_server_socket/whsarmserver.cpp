@@ -204,6 +204,26 @@ SS_API int WINAPI SS_SendFrame(SS_SESSION session, const unsigned char* data, in
 	return ServerManagerImp::TransError(error_code);
 }
 
+/**
+* 描述： 启动服务器监听服务。
+* 参数： ip 需要绑定的网卡IP地址。
+* 参数： port 服务器端口号。
+* 返回： 0 成功，其他值失败，参考 ss_error_code。
+*/
+SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port){
+	if (!IsInitialize()) {
+		return SS_ERROR;
+	}
+
+	LOG(INFO) << "SS_StartServerBindAddr";
+
+	EXCEPTION_BEGIN
+		g_serverManagerImp->StartServer(ip, port);
+	EXCEPTION_END
+
+	return ServerManagerImp::TransError(error_code);
+}
+
 SS_API int WINAPI SS_Helper_SetEvent(const char* id, const char* data){
 	if (!SYNC_EVENT || !id || !data){
 		return -1;

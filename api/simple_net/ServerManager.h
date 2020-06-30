@@ -13,6 +13,8 @@ public:
 
 	void StartServer(int port);
 
+	void StartServer(const std::string& ip, int port);
+
 	void StopServer();
 
 	ServerList GetServers();
