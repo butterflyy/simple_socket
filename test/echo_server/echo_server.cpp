@@ -1,7 +1,7 @@
 // test_server.cpp : Defines the entry point for the console application.
 //
 #include <map>
-#include <common\utils.h>
+#include <common/utils.h>
 #include <whsarmserver.h>
 
 #define PORT  49877
@@ -49,16 +49,16 @@ void CALLBACK recvframe_callback(SS_SESSION session, const unsigned char* data, 
 	}
 }
 
-void main(int argc, char* argv[])
+int main()
 {
 	int ret = SS_Initialize();
-	if (ret < 0) return;
+	if (ret < 0) return 0;
 
 	ret = SS_SetCallback(connected_callback, disconnected_callback, error_callback, recvframe_callback);
-	if (ret < 0) return;
+	if (ret < 0) return 0;
 
 	ret = SS_StartServer(PORT);
-	if (ret < 0) return;
+	if (ret < 0) return 0;
 
 	while (getchar() != 'q'){}
 
@@ -67,5 +67,6 @@ void main(int argc, char* argv[])
 	SS_Finalize();
 	
 	system("pause");
+	return 0;
 }
 
