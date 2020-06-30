@@ -1,0 +1,1 @@
+gcc echo_server.cpp -o echo_server -I..\..\api\simple_server_socket -I..\..\..\externals\include -L/usr/lib -lwhsarmserver
