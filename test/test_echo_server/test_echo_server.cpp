@@ -1,11 +1,11 @@
 // test_server.cpp : Defines the entry point for the console application.
 //
-#include <common\utils.h>
-#include <common\ConvertSync.h>
-#include <common\TimeSpan.h>
+#include <common/utils.h>
+#include <common/ConvertSync.h>
+#include <common/TimeSpan.h>
 #include <whsarmclient.h>
 
-#define IP    "111.229.4.210"
+#define IP    "192.168.105.135"
 //#define IP    "127.0.0.1"
 
 #define PORT  49877
@@ -32,19 +32,19 @@ void CALLBACK recvframe_callback(const unsigned char* data, int len, int type){
 	SYNC_EVENT.SetEvent(id, retdata);
 }
 
-void main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 	int ret = SC_Initialize();
-	if (ret < 0) return;
+	if (ret < 0) return 0;
 
 
 	ret = SC_SetCallback(disconnected_callback, error_callback, recvframe_callback);
-	if (ret < 0) return;
+	if (ret < 0) return 0;
 
 	ret = SC_ConnectToHost(IP, PORT);
 	if (ret < 0){
 		printf("[client]  connect failed, err = %s \n", SC_StrError(ret));
-		return;
+		return 0;
 	}
 
 
@@ -52,7 +52,7 @@ void main(int argc, char* argv[])
 	{
 		//build data
 		int bufflen = rand() % 1024 * 1024;
-		if (bufflen < FRAME_ID_SIZE) return;
+		if (bufflen < FRAME_ID_SIZE) continue;
 		utils::auto_array_ptr<byte> buffer(new byte[bufflen]);
 		std::string id = utils::StrFormat("%08d", clock());
 		assert(id.size() == FRAME_ID_SIZE);
@@ -92,5 +92,6 @@ void main(int argc, char* argv[])
 	SC_Finalize();
 
 	system("pause");
+	return 0;
 }
 
