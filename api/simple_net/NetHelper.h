@@ -43,6 +43,10 @@ catch (Poco::Exception& e){                        \
 	error_code = SN_NETWORK_ERROR;                 \
 	error_msg = e.displayText();                   \
 }                                                  \
+catch (...){                                       \
+	error_code = SN_NETWORK_ERROR;                 \
+	error_msg = "Unknow exception";                \
+}                                                  \
 if (error_code != 0){                              \
 	LOG(ERROR) << (peerdes_.empty() ? "" : (peerdes_ + ": "))       \
 		<< "error code : " <<                         \
