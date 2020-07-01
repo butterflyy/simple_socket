@@ -54,66 +54,6 @@ void CALLBACK recvframe_callback(SS_SESSION session, const unsigned char* data, 
 	}
 }
 
-
-//linux exception
-void dump(void)
-{
-	char szLog[MAX_LOG_LEN] = { 0 };
-	int j, nptrs;
-	const int BACKTRACE_SIZE = 16;
-	void *buffer[BACKTRACE_SIZE];
-	char **strings;
-
-
-	nptrs = backtrace(buffer, BACKTRACE_SIZE);
-
-
-	snprintf(szLog, MAX_LOG_LEN, "backtrace() returned %d addresses", nptrs);
-	CLogError(szLog);
-	strings = backtrace_symbols(buffer, nptrs);
-	if (strings == NULL) {
-		perror("backtrace_symbols");
-		exit(EXIT_FAILURE);
-	}
-
-
-	for (j = 0; j < nptrs; j++)
-	{
-		snprintf(szLog, MAX_LOG_LEN, "  [%02d] %s", j, strings[j]);
-		CLogError(szLog);
-	}
-
-
-
-	free(strings);
-	char buff[128] = { 0x00 };
-	snprintf(buff, 128, "cat /proc/%d/maps", getpid());
-	CLogError(buff);
-	system((const char*)buff);
-}
-
-
-void signal_handler(int signo)
-{
-	signal(SIGSEGV, signal_handler);
-
-	signal(SIGABRT, signal_handler);
-
-	char szLog[MAX_LOG_LEN] = { 0 };
-	snprintf(szLog, MAX_LOG_LEN, "\n=========>>>catch signal %d <<<=========\n", signo);
-	CLogError(szLog);
-
-
-	CLogError("Dump stack start...\n");
-	dump();
-	CLogError("Dump stack end...\n");
-
-
-	signal(signo, SIG_DFL);
-	raise(signo);
-
-}
-
 int main()
 {
 	int ret = SS_Initialize();
