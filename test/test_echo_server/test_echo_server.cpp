@@ -34,6 +34,12 @@ void CALLBACK recvframe_callback(const unsigned char* data, int len, int type){
 
 int main(int argc, char* argv[])
 {
+	std::string ip = IP;
+	if (argc == 2){
+		ip = argv[1];
+	}
+	printf("server ip = %s, port = %d \n", ip.c_str(), PORT);
+
 	int ret = SC_Initialize();
 	if (ret < 0) return 0;
 
@@ -41,7 +47,7 @@ int main(int argc, char* argv[])
 	ret = SC_SetCallback(disconnected_callback, error_callback, recvframe_callback);
 	if (ret < 0) return 0;
 
-	ret = SC_ConnectToHost(IP, PORT);
+	ret = SC_ConnectToHost(ip.c_str(), PORT);
 	if (ret < 0){
 		printf("[client]  connect failed, err = %s \n", SC_StrError(ret));
 		return 0;
@@ -85,6 +91,8 @@ int main(int argc, char* argv[])
 				printf("[ERROR] diffent return data \n");
 				break;
 			}
+
+			SAFE_DELETE_ARRAY(retdata);
 		}
 	}
 

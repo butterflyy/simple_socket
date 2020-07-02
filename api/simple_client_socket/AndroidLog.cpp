@@ -11,8 +11,18 @@ std::ofstream* log_file = nullptr;
 utils::Mutex* log_mutex = nullptr;
 
 void InitLogging(){
+	
+	__android_log_print(ANDROID_LOG_INFO, "whsarmclient", "%s", "InitLogging");
+	
+	
 	log_file = new std::ofstream;
 	log_file->open(LOGFILE, std::ios::app);
+	
+	if (!log_file->good()) {
+		__android_log_print(ANDROID_LOG_ERROR, "whsarmclient", "%s", "Open log file failed");
+        return;
+    }
+	
 	size_t size = static_cast<size_t>(log_file->tellp());
 	if (size != 0){ //is add log
 		(*log_file) << "\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n";
@@ -24,6 +34,8 @@ void InitLogging(){
 }
 
 void ShutdownLogging(){
+	__android_log_print(ANDROID_LOG_INFO, "whsarmclient", "%s", "ShutdownLogging");
+	
 	log_file->close();
 	delete log_file;
 
