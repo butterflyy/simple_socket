@@ -2,6 +2,9 @@
 #include "ServerImp.h"
 #include "ServerManagerImp.h"
 #include <common/ConvertSync.h>
+#ifndef WIN32
+#include <signal.h>
+#endif
 
 #if defined(WIN32) && defined(_DEBUG)
 //#include <vld.h>
@@ -47,6 +50,9 @@ SS_API int WINAPI SS_Initialize(){
 	LOG(INFO) << "Builded Time: " << __DATE__ << " " << __TIME__;
 #endif
 
+#ifndef WIN32
+	signal(SIGPIPE, SIG_IGN); //ignore pipe error, when soceket close, but data is send
+#endif
 	EVENT = new EventManager();
 
 	SYNC_EVENT = new ConvertSync<std::string, std::string>();
