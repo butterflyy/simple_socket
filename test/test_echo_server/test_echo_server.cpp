@@ -56,6 +56,7 @@ int main(int argc, char* argv[])
 
 	while (true)
 	{
+		utils::Thread::msleep(5000);
 		//build data
 		int bufflen = rand() % 1024 * 1024;
 		if (bufflen < FRAME_ID_SIZE) continue;

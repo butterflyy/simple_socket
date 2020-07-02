@@ -1,5 +1,8 @@
 #include "whsarmclient.h"
 #include "ClientImp.h"
+#ifndef WIN32
+#include <signal.h>
+#endif
 
 #if defined(WIN32) && defined(_DEBUG)
 //#include <vld.h>
@@ -40,6 +43,9 @@ SC_API int WINAPI SC_Initialize(){
 	InitLogging();
 #endif
 
+#ifndef WIN32
+	signal(SIGPIPE, SIG_IGN); //ignore pipe error, when soceket close, but data is send
+#endif
 
 	LOG(INFO) << "SSAPI_VERSION : " << SC_GetLibVersion();
 
