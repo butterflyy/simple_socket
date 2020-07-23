@@ -11,7 +11,7 @@
 #endif
 
 #define BETA_VERSION  0  //beta version for inner test, if is release beta version is 0.
-#define RC_VERSION      1  //release candidate version. After beta version test ok.
+#define RC_VERSION    1  //release candidate version. After beta version test ok.
 
 //Global Variable
 ServerManagerImp* g_serverManagerImp = nullptr;
@@ -96,12 +96,12 @@ SS_API void WINAPI SS_Finalize(){
 SS_API const char* WINAPI SS_GetLibVersion(){
 	static char str_version[20];
 	if (BETA_VERSION){
-		sprintf(str_version, "%s-Beta%d", SSAPI_VERSION, BETA_VERSION);
+		sprintf(str_version, "%s-beta%d", SSAPI_VERSION, BETA_VERSION);
 
 		return str_version;
 	}
 	else if (RC_VERSION){
-		sprintf(str_version, "%s-RC%d", SSAPI_VERSION, RC_VERSION);
+		sprintf(str_version, "%s-rc%d", SSAPI_VERSION, RC_VERSION);
 
 		return str_version;
 	}

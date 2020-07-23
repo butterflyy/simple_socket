@@ -9,7 +9,7 @@
 #endif
 
 #define BETA_VERSION  0  //beta version for inner test, if is release beta version is 0.
-#define RC_VERSION      1  //release candidate version. After beta version test ok.
+#define RC_VERSION    1  //release candidate version. After beta version test ok.
  
 //Global Variable
 ClientImp* g_clientImp = nullptr;
@@ -94,12 +94,12 @@ SC_API void WINAPI SC_Finalize(){
 SC_API const char* WINAPI SC_GetLibVersion(){
 	static char str_version[20];
 	if (BETA_VERSION){
-		sprintf(str_version, "%s-Beta%d", SCAPI_VERSION, BETA_VERSION);
+		sprintf(str_version, "%s-beta%d", SCAPI_VERSION, BETA_VERSION);
 
 		return str_version;
 	}
 	else if (RC_VERSION){
-		sprintf(str_version, "%s-RC%d", SCAPI_VERSION, RC_VERSION);
+		sprintf(str_version, "%s-rc%d", SCAPI_VERSION, RC_VERSION);
 
 		return str_version;
 	}

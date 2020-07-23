@@ -230,10 +230,14 @@
     <ClInclude Include="..\Poco\Foundation\Poco\Debugger.h">
       <Filter>Foundation</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="whsarmclient.def">
       <Filter>api</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="whsarmclient.rc" />
   </ItemGroup>
 </Project>
