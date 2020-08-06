@@ -17,8 +17,13 @@
 #ifdef ERROR
 #undef ERROR
 #endif
+
+#ifdef __ANDROID__
+#include "AndroidLog.h"
+#else
 #define GOOGLE_GLOG_DLL_DECL //using logging static library
 #include <glog/logging.h>
+#endif
 #else
 #include <iostream>
 #define LOG(s) std::cout

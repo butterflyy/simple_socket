@@ -129,7 +129,7 @@ BOOL CMFCDemoServerDlg::OnInitDialog()
 		return TRUE;
 	}
 
-	ret = SS_StartServer(PORT);
+	ret = SS_StartServerBindAddr("", PORT);
 	if (ret < 0){
 		ShowMessage(utils::StrFormat("Æô¶¯·þÎñÊ§°Ü£¬ err = %s", SS_StrError(ret)));
 		return TRUE;

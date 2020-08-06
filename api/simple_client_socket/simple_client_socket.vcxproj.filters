@@ -7,6 +7,12 @@
     <Filter Include="simple_net">
       <UniqueIdentifier>{7f464e78-e6d4-48d7-bb76-f3db1a766a4d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Foundation">
+      <UniqueIdentifier>{dba295c3-6788-4994-b412-f88243223d54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Net">
+      <UniqueIdentifier>{883e776b-1b08-47b4-b058-44dcc14627b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\simple_net\Client.cpp">
@@ -29,6 +35,66 @@
     </ClCompile>
     <ClCompile Include="EventManager.cpp">
       <Filter>api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Foundation\Poco\Bugcheck.cpp">
+      <Filter>Foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Foundation\Poco\Exception.cpp">
+      <Filter>Foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Foundation\Poco\Timespan.cpp">
+      <Filter>Foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Foundation\Poco\Timestamp.cpp">
+      <Filter>Foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\IPAddress.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\IPAddressImpl.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\Net.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\NetException.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\ServerSocket.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\ServerSocketImpl.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\Socket.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\SocketAddress.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\SocketAddressImpl.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\SocketImpl.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\StreamSocket.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Net\Poco\Net\StreamSocketImpl.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Foundation\Poco\Ascii.cpp">
+      <Filter>Foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Foundation\Poco\RefCountedObject.cpp">
+      <Filter>Foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Foundation\Poco\AtomicCounter.cpp">
+      <Filter>Foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Poco\Foundation\Poco\Debugger.cpp">
+      <Filter>Foundation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -59,10 +125,119 @@
     <ClInclude Include="EventManager.h">
       <Filter>api</Filter>
     </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Bugcheck.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Exception.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Foundation.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Timespan.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Timestamp.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\Net.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\NetException.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\ServerSocket.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\ServerSocketImpl.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\Socket.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\SocketAddress.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\SocketAddressImpl.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\SocketDefs.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\SocketImpl.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\StreamSocket.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\StreamSocketImpl.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Types.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\IPAddress.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\RefCountedObject.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Alignment.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Ascii.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\atomiccounter.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\AutoPtr.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\ByteOrder.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Config.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Platform.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Platform_POSIX.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Platform_VMS.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Platform_VX.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Platform_WIN32.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\string.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\UnWindows.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Net\Poco\Net\IPAddressImpl.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\UtilsAdd.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Poco\Foundation\Poco\Debugger.h">
+      <Filter>Foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="whsarmclient.def">
       <Filter>api</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="whsarmclient.rc" />
   </ItemGroup>
 </Project>

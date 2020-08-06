@@ -31,6 +31,7 @@ void ClientImp::OnDisconnected(){
 		memset(&eventData, 0, sizeof(EventData));
 		eventData.type = EVENT_DISCONNECT;
 
+		LOG(INFO) << "OnDisconnected";
 		EVENT->OnCallback(eventData);
 	}
 }
@@ -42,6 +43,7 @@ void ClientImp::OnError(int error_code, const std::string& error_msg){
 		eventData.type = EVENT_ERROR;
 		eventData.error_code = TransError(error_code);
 
+		LOG(INFO) << "OnError";
 		EVENT->OnCallback(eventData);
 	}
 }
@@ -59,6 +61,7 @@ void ClientImp::OnRecvFrame(const byte* data, int len, int type){
 		eventData.frame.len = len;
 		eventData.frame.type = type;
 
+		LOG(INFO) << "OnRecvFrame";
 		EVENT->OnCallback(eventData);
 	}
 }

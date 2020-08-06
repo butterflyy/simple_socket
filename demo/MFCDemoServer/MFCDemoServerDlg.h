@@ -10,6 +10,7 @@
 
 #define WM_CALLBACK_MSG   WM_USER  + 101
 
+SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port);
 //enum CallbackCommand{
 //	COMMAND_InitClientList,
 //	COMMAND_ShowMessage,

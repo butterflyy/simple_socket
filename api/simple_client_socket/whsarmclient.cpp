@@ -1,12 +1,15 @@
 #include "whsarmclient.h"
 #include "ClientImp.h"
+#ifndef WIN32
+#include <signal.h>
+#endif
 
 #if defined(WIN32) && defined(_DEBUG)
-#include <vld.h>
+//#include <vld.h>
 #endif
 
 #define BETA_VERSION  0  //beta version for inner test, if is release beta version is 0.
-#define RC_VERSION      1  //release candidate version. After beta version test ok.
+#define RC_VERSION    1  //release candidate version. After beta version test ok.
  
 //Global Variable
 ClientImp* g_clientImp = nullptr;
@@ -30,13 +33,18 @@ SC_API int WINAPI SC_Initialize(){
 	}
 
 	//log init
-#if defined(WIN32)
+#if defined(WIN32) || defined(__gnu_linux__)
 	google::InitGoogleLogging("simpleclientsocket");
+	FLAGS_logbuflevel = -1;
+#if defined(_DEBUG) || defined(__gnu_linux__)
+	FLAGS_alsologtostderr = true;
+#endif
+#else//android log
+	InitLogging();
 #endif
 
-#if defined(WIN32) || defined(__gnu_linux__)
-	FLAGS_logbuflevel = -1;
-	FLAGS_alsologtostderr = true;
+#ifndef WIN32
+	signal(SIGPIPE, SIG_IGN); //ignore pipe error, when soceket close, but data is send
 #endif
 
 	LOG(INFO) << "SSAPI_VERSION : " << SC_GetLibVersion();
@@ -59,6 +67,8 @@ SC_API void WINAPI SC_Finalize(){
 		return;
 	}
 
+	LOG(INFO) << "SC_Finalize";
+
 	{
 		EXCEPTION_BEGIN
 			g_clientImp->Disconnect();
@@ -76,18 +86,20 @@ SC_API void WINAPI SC_Finalize(){
 	//log shutdown
 #if defined(WIN32) || defined(__gnu_linux__)
 	google::ShutdownGoogleLogging();
+#else
+	ShutdownLogging();
 #endif
 }
 
 SC_API const char* WINAPI SC_GetLibVersion(){
 	static char str_version[20];
 	if (BETA_VERSION){
-		sprintf(str_version, "%s-Beta%d", SCAPI_VERSION, BETA_VERSION);
+		sprintf(str_version, "%s-beta%d", SCAPI_VERSION, BETA_VERSION);
 
 		return str_version;
 	}
 	else if (RC_VERSION){
-		sprintf(str_version, "%s-RC%d", SCAPI_VERSION, RC_VERSION);
+		sprintf(str_version, "%s-rc%d", SCAPI_VERSION, RC_VERSION);
 
 		return str_version;
 	}
@@ -118,6 +130,8 @@ SC_API int WINAPI SC_SetCallback(sc_disconnected_callback on_disconnected,
 		return SC_ERROR;
 	}
 
+	LOG(INFO) << "SC_SetCallback";
+
 	EVENT->SetCallback(on_disconnected, on_error, on_recvframe);
 
 	return SC_SUCCESS;
@@ -127,6 +141,8 @@ SC_API int WINAPI SC_ConnectToHost(const char* ip, int port){
 	if (!IsInitialize()) {
 		return SC_ERROR;
 	}
+
+	LOG(INFO) << "SC_ConnectToHost";
 
 	EXCEPTION_BEGIN
 		g_clientImp->Connect(ip, port);
@@ -140,6 +156,8 @@ SC_API void WINAPI SC_DisconnectFromHost(){
 		return;
 	}
 
+	LOG(INFO) << "SC_DisconnectFromHost";
+
 	EXCEPTION_BEGIN
 		g_clientImp->Disconnect();
 	EXCEPTION_END
@@ -149,6 +167,8 @@ SC_API int WINAPI SC_SendFrame(const unsigned char* data, int len, int type){
 	if (!IsInitialize()) {
 		return SC_ERROR;
 	}
+
+	LOG(INFO) << "SC_SendFrame";
 
 	if (!data || len <= 0 || (type != SC_FRAME_STRING && type != SC_FRAME_BINARY)){
 		return SC_INVALID_PARAM;

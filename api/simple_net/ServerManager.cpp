@@ -25,6 +25,22 @@ void ServerManager::StartServer(int port){
 	}
 }
 
+void ServerManager::StartServer(const std::string& ip, int port){
+	if (_listening){
+		throw SimpleNetException("Server is already runing", SN_NETWORK_ERROR);
+	}
+	else{
+		Poco::Net::IPAddress ipaddr(ip);
+		Poco::Net::SocketAddress addr(ipaddr, port);
+		_serverSocket.bind(addr, port);
+		_serverSocket.listen();
+
+		Thread::start();
+
+		_listening = true;
+	}
+}
+
 ServerManager::ServerList ServerManager::GetServers(){
 	utils::LockGuard<utils::Mutex> lock(_serversMutex);
 

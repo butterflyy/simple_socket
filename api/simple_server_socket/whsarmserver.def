@@ -8,3 +8,7 @@ EXPORTS
 	SS_StopServer
 	SS_DisconnectClient
 	SS_SendFrame
+	SS_StartServerBindAddr
+	SS_Helper_SetEvent
+	SS_Helper_WaitEvent
+	SS_Helper_Log

@@ -23,7 +23,7 @@ void Client::Connect(const char* ip, int port){
 
 		try{
 			Poco::Timespan timeoutc(2000000);
-			_socket.connect(Poco::Net::SocketAddress(ip, port), timeoutc);
+			_socket.connect(Poco::Net::SocketAddress(Poco::Net::IPAddress(ip), port), timeoutc);
 
 			//handshake
 			sendFrame(MSG_HANDSHAKE, FRAME_BINARY, nullptr, 0);
