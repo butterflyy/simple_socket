@@ -5,7 +5,7 @@
 class ClientImp : public Client
 {
 public:
-	ClientImp();
+	ClientImp(const NetParam& netParam);
 	~ClientImp();
 
 	void OnConnected() override;

@@ -1,8 +1,10 @@
 #include "whsarmserver.h"
 #include "ServerImp.h"
 #include "ServerManagerImp.h"
+#include "Config.h"
 #include <common/ConvertSync.h>
 #include <common/ObjectList.h>
+#include <common/message_.h>
 #ifndef WIN32
 #include <signal.h>
 #endif
@@ -22,6 +24,58 @@ EventManager* EVENT = nullptr;
 
 //Gloable Convert Sync Variable
 ConvertSync<std::string, std::string>* SYNC_EVENT = nullptr;
+
+//Gloable dll dir
+std::string FLAGS_dll_dir;
+
+//get dll dir
+#ifdef WIN32
+
+BOOL APIENTRY DllMain(HMODULE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+	)
+{
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+	case DLL_THREAD_ATTACH:{
+							   char path[MAX_PATH];
+							   GetModuleFileNameA(hModule, path, MAX_PATH);
+							   if (char *ch = strrchr(path, '\\')){
+								   ch[0] = 0;
+							   }
+
+							   FLAGS_dll_dir = path;
+	}
+		break;
+	case DLL_THREAD_DETACH:
+	case DLL_PROCESS_DETACH:
+		break;
+	}
+
+	return TRUE;
+}
+
+#else
+#include <dlfcn.h>
+void fun_hs(){
+}
+
+std::string GetDllDir(){
+
+	Dl_info info;
+
+	int rc = dladdr((void*)fun_hs, &info);
+	char path[255];
+	strcpy(path, info.dli_fname);
+	if (char *ch = strrchr(path, '/')){
+		ch[0] = 0;
+	}
+	return std::string(path);
+}
+
+#endif
 
 inline bool IsInitialize() {
 	if (!g_serverManagerList) {
@@ -64,6 +118,36 @@ SS_API int WINAPI SS_Initialize(){
 #ifndef WIN32
 	signal(SIGPIPE, SIG_IGN); //ignore pipe error, when soceket close, but data is send
 #endif
+
+	//print log path
+#if defined(WIN32) || defined(__gnu_linux__)
+	const std::vector<std::string>& logdirs = google::GetLoggingDirectories();
+	if (!logdirs.empty()){
+		std::string strlogpath = "Default log path : " + logdirs[0];
+		utils::OutputDebugLn(strlogpath);
+	}
+#endif
+
+	//print dll dir
+#ifdef __gnu_linux__
+	FLAGS_dll_dir = GetDllDir();
+#elif __ANDROID__
+	FLAGS_dll_dir = "/sdcard";
+#endif
+
+	LOG(INFO) << "Dll dir : " << FLAGS_dll_dir;
+
+	std::string config_path = FLAGS_dll_dir + "\\whsarmserver.ini";
+
+	LOG(INFO) << "config path : " << config_path;
+	LOG(INFO) << "Check config file existed : " << (utils::CheckFileExist(config_path) ? "Yes" : "No");
+	
+	//config init
+	if (!Config::instance().Init(config_path)){
+		LOG(ERROR) << SimpleConfig<NetParam>::instance().errMsg();
+	}
+	LOG(INFO) << Config::instance().DisplayText();
+
 	EVENT = new EventManager();
 
 	SYNC_EVENT = new ConvertSync<std::string, std::string>();
@@ -151,7 +235,7 @@ SS_API int WINAPI SS_StartServer(int port, SS_SERVER* server){
 	ServerManagerImp* serverManagerImp = nullptr;
 
 	EXCEPTION_BEGIN
-		serverManagerImp = new ServerManagerImp();
+		serverManagerImp = new ServerManagerImp(Config::instance().Data());
 		serverManagerImp->StartServer(port);
 	EXCEPTION_END
 
@@ -252,7 +336,7 @@ SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port, SS_SERVER* se
 	ServerManagerImp* serverManagerImp = nullptr;
 
 	EXCEPTION_BEGIN
-		serverManagerImp = new ServerManagerImp();
+		serverManagerImp = new ServerManagerImp(Config::instance().Data());
 	serverManagerImp->StartServer(ip, port);
 	EXCEPTION_END
 

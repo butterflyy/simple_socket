@@ -3,8 +3,8 @@
 
 
 
-Server::Server(const StreamSocket& socket)
-:NetHelper(socket),
+Server::Server(const StreamSocket& socket, const NetParam& netParam)
+:NetHelper(socket, netParam),
 _dead(false)
 {
 }
@@ -104,7 +104,7 @@ void Server::run(){
 			}
 		}
 		else{//check hearbeat
-			if (_sendSpan.elapsed() > HEARTBEAT_TIME){
+			if (_sendSpan.elapsed() > _netParam.heatbeat_time){
 				utils::LockGuard<utils::Mutex> lock(_sendMutex);
 
 				EXCEPTION_BEGIN_ADDR(addr_info)
@@ -113,7 +113,7 @@ void Server::run(){
 
 				_sendSpan.restart();
 			}
-			else if (_recvSpan.elapsed() > KEEPALIVE_TIMEOUT){
+			else if (_recvSpan.elapsed() > _netParam.heatbeat_time*2){
 				LOG(ERROR) << addr_info << " keepalive timeout";
 				break;//disconnected.
 			}

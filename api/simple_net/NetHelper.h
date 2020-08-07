@@ -1,12 +1,7 @@
 #pragma once
 #include "NetConfig.h"
 #include "NetProtocol.h"
-
-//#define DEFAULT_SND_TIMEOUT 5000
-//#define DEFAULT_RCV_TIMEOUT 5000
-#define HEARTBEAT_TIME                    5000                          //send heartbeat time is 5 second
-#define KEEPALIVE_TIMEOUT               10000                       //keep alive timeout 10 second
-#define RECV_BUFF_SIZE                       5*1024*1024           //recv max buffer is 5MB
+#include "NetParam.h"
 
 
 POCO_DECLARE_EXCEPTION(, SimpleNetException, NetException)
@@ -64,16 +59,15 @@ enum NetError
 	SN_FRAME_ERROR,
 };
 
-
 struct _TCP_HEADER;
 class NetHelper
 {
 public:
 	//if recv buff is small, cause PayloadTooBigException
-	NetHelper(int recvlen = RECV_BUFF_SIZE);
+	NetHelper(const NetParam& netParam);
 
 	//if recv buff is small, cause PayloadTooBigException
-	NetHelper(const StreamSocket& socket, int recvlen = RECV_BUFF_SIZE);
+	NetHelper(const StreamSocket& socket, const NetParam& netParam);
 	virtual ~NetHelper();
 
 	//event
@@ -131,10 +125,12 @@ protected:
 	StreamSocket _socket;
 	utils::Mutex _sendMutex;
 
+	NetParam _netParam;
+
 	bool _connected;
 
+	int _recvlen;
 	byte* _recvbuff;
-	int _recvlen;  //default 1MB
 
 	TimeSpan _sendSpan;
 	TimeSpan _recvSpan;
@@ -202,10 +198,25 @@ inline void NetHelper::close(){
 }
 
 inline void NetHelper::LogFrame(bool send, const byte* data, int len, int type){
-#if LOG_FRAME_DATA
-	LOG(INFO) << FormatAddress() << (send ? "Send frame: " : "Recv frame: ") << " type:" << type
-		<< " len: " << len << " data: " << (type == FRAME_STRING ? std::string((char*)data, len > 256 ? 256 : len) : "");
-#endif
+	if (_netParam.log_frame.is_log){
+		std::string str;
+		
+		if (type == FRAME_BINARY){
+			if (_netParam.log_frame.is_log_binary){
+				str = utils::HexFormat(data, (len * 2) > _netParam.log_frame.max_log_size ?
+					(_netParam.log_frame.max_log_size / 2) : len);
+				if ((len * 2) > _netParam.log_frame.max_log_size) str += "...";
+			}
+		}
+		else{
+			str = std::string((char*)data, len > _netParam.log_frame.max_log_size ? 
+				_netParam.log_frame.max_log_size : len);
+			if (len > _netParam.log_frame.max_log_size) str += "...";
+		}
+
+		LOG(INFO) << FormatAddress() << (send ? "Send frame: " : "Recv frame: ") << " type:" << 
+			(type == FRAME_BINARY ? "BINARY" : "STRING") << " len: " << len << " data: " << str;
+	}
 }
 
 

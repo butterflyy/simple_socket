@@ -231,6 +231,9 @@
       <Filter>Foundation</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Config.h">
+      <Filter>api</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="whsarmclient.def">

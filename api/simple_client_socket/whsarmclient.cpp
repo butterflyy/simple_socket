@@ -1,6 +1,8 @@
 #include "whsarmclient.h"
 #include "ClientImp.h"
+#include "Config.h"
 #include <common/ObjectList.h>
+#include <common/message_.h>
 #ifndef WIN32
 #include <signal.h>
 #endif
@@ -17,6 +19,59 @@ ObjectList<ClientImp*>* g_clientImpList = nullptr;
 
 //Gloable External Variable 
 EventManager* EVENT = nullptr;
+
+//Gloable dll dir
+std::string FLAGS_dll_dir;
+
+//get dll dir
+#ifdef WIN32
+
+BOOL APIENTRY DllMain(HMODULE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+	)
+{
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+	case DLL_THREAD_ATTACH:{
+							   char path[MAX_PATH];
+							   GetModuleFileNameA(hModule, path, MAX_PATH);
+							   if (char *ch = strrchr(path, '\\')){
+								   ch[0] = 0;
+							   }
+
+							   FLAGS_dll_dir = path;
+	}
+		break;
+	case DLL_THREAD_DETACH:
+	case DLL_PROCESS_DETACH:
+		break;
+	}
+
+	return TRUE;
+}
+
+#else
+#include <dlfcn.h>
+void fun_hs(){
+}
+
+std::string GetDllDir(){
+
+	Dl_info info;
+
+	int rc = dladdr((void*)fun_hs, &info);
+	char path[255];
+	strcpy(path, info.dli_fname);
+	if (char *ch = strrchr(path, '/')){
+		ch[0] = 0;
+	}
+	return std::string(path);
+}
+
+#endif
+
 
 //Delete server functional.
 struct ClientDeleter{
@@ -54,15 +109,44 @@ SC_API int WINAPI SC_Initialize(){
 	InitLogging();
 #endif
 
-#ifndef WIN32
-	signal(SIGPIPE, SIG_IGN); //ignore pipe error, when soceket close, but data is send
-#endif
-
 	LOG(INFO) << "SSAPI_VERSION : " << SC_GetLibVersion();
 
 #if defined(__DATE__) && defined(__TIME__)
 	LOG(INFO) << "Builded Time: " << __DATE__ << " " << __TIME__;
 #endif
+
+#ifndef WIN32
+	signal(SIGPIPE, SIG_IGN); //ignore pipe error, when soceket close, but data is send
+#endif
+
+	//print log path
+#if defined(WIN32) || defined(__gnu_linux__)
+	const std::vector<std::string>& logdirs = google::GetLoggingDirectories();
+	if (!logdirs.empty()){
+		std::string strlogpath = "Default log path : " + logdirs[0];
+		utils::OutputDebugLn(strlogpath);
+	}
+#endif
+
+	//print dll dir
+#ifdef __gnu_linux__
+	FLAGS_dll_dir = GetDllDir();
+#elif __ANDROID__
+	FLAGS_dll_dir = "/sdcard";
+#endif
+
+	LOG(INFO) << "Dll dir : " << FLAGS_dll_dir;
+
+	std::string config_path = FLAGS_dll_dir + "\\whsarmclient.ini";
+
+	LOG(INFO) << "config path : " << config_path;
+	LOG(INFO) << "Check config file existed : " << (utils::CheckFileExist(config_path) ? "Yes" : "No");
+
+	//config init
+	if (!Config::instance().Init(config_path)){
+		LOG(ERROR) << Config::instance().errMsg();
+	}
+	LOG(INFO) << Config::instance().DisplayText();
 
 	EVENT = new EventManager();
 
@@ -148,7 +232,7 @@ SC_API int WINAPI SC_ConnectToHost(const char* ip, int port, SC_CLIENT* client){
 	ClientImp* clientImp = nullptr;
 
 	EXCEPTION_BEGIN
-		clientImp = new ClientImp();
+		clientImp = new ClientImp(Config::instance().Data());
 		clientImp->Connect(ip, port);
 	EXCEPTION_END
 

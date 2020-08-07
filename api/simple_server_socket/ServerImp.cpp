@@ -2,8 +2,8 @@
 #include "ServerManagerImp.h"
 
 
-ServerImp::ServerImp(ServerManagerImp* serverManagerImp, const StreamSocket& socket)
-:Server(socket),
+ServerImp::ServerImp(ServerManagerImp* serverManagerImp, const StreamSocket& socket, const NetParam& netParam)
+:Server(socket, netParam),
 _serverManagerImp(serverManagerImp){
 
 }

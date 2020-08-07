@@ -2,7 +2,8 @@
 #include "NetProtocol.h"
 
 
-Client::Client()
+Client::Client(const NetParam& netParam)
+:NetHelper(netParam)
 {
 }
 
@@ -110,7 +111,7 @@ void Client::run(){
 			}
 		}
 		else{//check hearbeat
-			if (_sendSpan.elapsed() > HEARTBEAT_TIME){
+			if (_sendSpan.elapsed() > _netParam.heatbeat_time){
 				utils::LockGuard<utils::Mutex> lock(_sendMutex);
 
 				EXCEPTION_BEGIN_ADDR(addr_info)
@@ -119,7 +120,7 @@ void Client::run(){
 
 				_sendSpan.restart();
 			}
-			else if (_recvSpan.elapsed() > KEEPALIVE_TIMEOUT){
+			else if (_recvSpan.elapsed() > _netParam.heatbeat_time * 2){
 				LOG(ERROR) << addr_info << "keepalive timeout";
 				break;//disconnected.
 			}

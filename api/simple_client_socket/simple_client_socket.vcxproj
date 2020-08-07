@@ -213,6 +213,7 @@
     <ClInclude Include="..\simple_net\Server.h" />
     <ClInclude Include="..\simple_net\ServerManager.h" />
     <ClInclude Include="ClientImp.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="whsarmclient.h" />

@@ -1,7 +1,8 @@
 #include "ClientImp.h"
 
 
-ClientImp::ClientImp(){
+ClientImp::ClientImp(const NetParam& netParam)
+:Client(netParam){
 
 }
 

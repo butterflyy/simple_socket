@@ -2,7 +2,8 @@
 #include "ServerImp.h"
 
 
-ServerManagerImp::ServerManagerImp()
+ServerManagerImp::ServerManagerImp(const NetParam& netParam)
+:_netParam(netParam)
 {
 }
 
@@ -12,7 +13,7 @@ ServerManagerImp::~ServerManagerImp()
 }
 
 Server* ServerManagerImp::createConnection(const StreamSocket& socket){
-	return new ServerImp(this, socket);
+	return new ServerImp(this, socket, _netParam);
 }
 
 int ServerManagerImp::TransError(int error){
