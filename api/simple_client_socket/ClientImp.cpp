@@ -30,6 +30,7 @@ void ClientImp::OnDisconnected(){
 		EventData eventData;
 		memset(&eventData, 0, sizeof(EventData));
 		eventData.type = EVENT_DISCONNECT;
+		eventData.client = this;
 
 		LOG(INFO) << "OnDisconnected";
 		EVENT->OnCallback(eventData);
@@ -41,6 +42,8 @@ void ClientImp::OnError(int error_code, const std::string& error_msg){
 		EventData eventData;
 		memset(&eventData, 0, sizeof(EventData));
 		eventData.type = EVENT_ERROR;
+		eventData.client = this;
+
 		eventData.error_code = TransError(error_code);
 
 		LOG(INFO) << "OnError";
@@ -53,6 +56,7 @@ void ClientImp::OnRecvFrame(const byte* data, int len, int type){
 		EventData eventData;
 		memset(&eventData, 0, sizeof(EventData));
 		eventData.type = EVENT_RECV_FRAME;
+		eventData.client = this;
 
 		eventData.frame.data = new byte[len + 1];
 		memcpy(eventData.frame.data, data, len);

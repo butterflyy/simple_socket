@@ -17,7 +17,12 @@ struct EventData{
 	SS_SESSION session;
 	union
 	{
-		char client_ip[50];
+		struct{
+			SS_SERVER server;
+			char client_ip[50];
+			int client_port;
+		}client;
+
 		int error_code;
 		struct
 		{

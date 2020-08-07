@@ -97,8 +97,14 @@ public:
 	//local address
 	std::string Address();
 
+	//local port
+	int Port();
+
 	//remote address
 	std::string RemoteAddress();
+
+	//remote port
+	int RemotePort();
 	
 	bool IsConnected() const;
 
@@ -146,8 +152,16 @@ inline std::string NetHelper::Address(){
 	return _socket.address().host().toString();
 }
 
+inline int NetHelper::Port(){
+	return _socket.address().port();
+}
+
 inline std::string NetHelper::RemoteAddress(){
 	return _socket.peerAddress().host().toString();
+}
+
+inline int NetHelper::RemotePort(){
+	return _socket.peerAddress().port();
 }
 
 inline bool NetHelper::IsConnected() const{

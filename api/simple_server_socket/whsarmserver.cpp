@@ -2,6 +2,7 @@
 #include "ServerImp.h"
 #include "ServerManagerImp.h"
 #include <common/ConvertSync.h>
+#include <common/ObjectList.h>
 #ifndef WIN32
 #include <signal.h>
 #endif
@@ -13,8 +14,8 @@
 #define BETA_VERSION  0  //beta version for inner test, if is release beta version is 0.
 #define RC_VERSION    1  //release candidate version. After beta version test ok.
 
-//Global Variable
-ServerManagerImp* g_serverManagerImp = nullptr;
+//Gloable Server list
+ObjectList<ServerManagerImp*>* g_serverManagerList = nullptr;
 
 //Gloable External Variable 
 EventManager* EVENT = nullptr;
@@ -23,7 +24,7 @@ EventManager* EVENT = nullptr;
 ConvertSync<std::string, std::string>* SYNC_EVENT = nullptr;
 
 inline bool IsInitialize() {
-	if (!g_serverManagerImp) {
+	if (!g_serverManagerList) {
 		LOG(ERROR) << "API not initialized";
 		return false;
 	}
@@ -31,8 +32,18 @@ inline bool IsInitialize() {
 	return true;
 }
 
+//Delete server functional.
+struct ServerManagerDeleter{
+	void operator()(ServerManagerImp* item){
+		if (item){
+			item->StopServer();
+			delete item;
+		}
+	}
+};
+
 SS_API int WINAPI SS_Initialize(){
-	if (g_serverManagerImp) {
+	if (g_serverManagerList) {
 		LOG(ERROR) << "API Already initialized";
 		return SS_ERROR;
 	}
@@ -57,11 +68,9 @@ SS_API int WINAPI SS_Initialize(){
 
 	SYNC_EVENT = new ConvertSync<std::string, std::string>();
 
-	EXCEPTION_BEGIN
-		g_serverManagerImp = new ServerManagerImp();
-	EXCEPTION_END
+	g_serverManagerList = new ObjectList<ServerManagerImp*>();
 
-	return ServerManagerImp::TransError(error_code);
+	return SS_SUCCESS;
 }
 
 SS_API void WINAPI SS_Finalize(){
@@ -70,18 +79,10 @@ SS_API void WINAPI SS_Finalize(){
 	}
 
 	LOG(INFO) << "SS_Finalize";
+	
+	g_serverManagerList->Clear(ServerManagerDeleter());
 
-	{
-		EXCEPTION_BEGIN
-			g_serverManagerImp->StopServer();
-		EXCEPTION_END
-	}
-
-	{
-		EXCEPTION_BEGIN
-			SAFE_DELETE(g_serverManagerImp);
-		EXCEPTION_END
-	}
+	SAFE_DELETE(g_serverManagerList);
 
 	SAFE_DELETE(EVENT);
 
@@ -140,31 +141,56 @@ SS_API int WINAPI SS_SetCallback(ss_connected_callback on_connected,
 	return SS_SUCCESS;
 }
 
-SS_API int WINAPI SS_StartServer(int port){
+SS_API int WINAPI SS_StartServer(int port, SS_SERVER* server){
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}
 
 	LOG(INFO) << "SS_StartServer";
 
+	ServerManagerImp* serverManagerImp = nullptr;
+
 	EXCEPTION_BEGIN
-		g_serverManagerImp->StartServer(port);
+		serverManagerImp = new ServerManagerImp();
+		serverManagerImp->StartServer(port);
 	EXCEPTION_END
 
-	return ServerManagerImp::TransError(error_code);
+	int ret = ServerManagerImp::TransError(error_code);
+	if (ret < 0){
+		EXCEPTION_BEGIN
+			SAFE_DELETE(serverManagerImp);
+		EXCEPTION_END
+	}
+
+	*server = serverManagerImp;
+
+	g_serverManagerList->Add(serverManagerImp);
+
+	return ret;
 }
 
 
-SS_API void WINAPI SS_StopServer(){
+SS_API int WINAPI SS_StopServer(SS_SERVER server){
 	if (!IsInitialize()) {
-		return;
+		return SS_ERROR;
 	}
 
 	LOG(INFO) << "SS_StopServer";
 
+	ServerManagerImp* serverManagerImp = reinterpret_cast<ServerManagerImp*>(server);
+	if (!serverManagerImp){
+		return SS_INVALID_PARAM;
+	}
+
 	EXCEPTION_BEGIN
-		g_serverManagerImp->StopServer();
+		serverManagerImp->StopServer();
 	EXCEPTION_END
+
+	int ret = ServerManagerImp::TransError(error_code);
+
+	g_serverManagerList->Remove(serverManagerImp);
+
+	return ret;
 }
 
 SS_API int WINAPI SS_DisconnectClient(SS_SESSION session){
@@ -216,18 +242,30 @@ SS_API int WINAPI SS_SendFrame(SS_SESSION session, const unsigned char* data, in
 * 参数： port 服务器端口号。
 * 返回： 0 成功，其他值失败，参考 ss_error_code。
 */
-SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port){
+SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port, SS_SERVER* server){
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}
 
 	LOG(INFO) << "SS_StartServerBindAddr";
 
+	ServerManagerImp* serverManagerImp = nullptr;
+
 	EXCEPTION_BEGIN
-		g_serverManagerImp->StartServer(ip, port);
+		serverManagerImp = new ServerManagerImp();
+	serverManagerImp->StartServer(ip, port);
 	EXCEPTION_END
 
-	return ServerManagerImp::TransError(error_code);
+		int ret = ServerManagerImp::TransError(error_code);
+	if (ret < 0){
+		EXCEPTION_BEGIN
+			SAFE_DELETE(serverManagerImp);
+		EXCEPTION_END
+	}
+
+	*server = serverManagerImp;
+
+	return ret;
 }
 
 SS_API int WINAPI SS_Helper_SetEvent(const char* id, const char* data){

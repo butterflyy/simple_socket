@@ -62,7 +62,14 @@ extern "C" {
 		SS_FRAME_BINARY = 2,
 	};
 
-	/** 连接会话对象指针 */
+	/** 服务器对象
+	 *  当监听不同的端口，启动多个服务器时，标识不同的服务器。
+	 */
+	typedef void* SS_SERVER;
+
+	/** 客户端连接会话对象
+	 *  多个客户端连接服务器后，标识不同的客户端。
+	 */
 	typedef void* SS_SESSION;
 
 
@@ -71,7 +78,7 @@ extern "C" {
 	* 参数： session 客户端连接会话对象。
 	* 参数： client_ip 客户端IP地址。
 	*/
-	typedef void(CALLBACK *ss_connected_callback)(SS_SESSION session, const char* client_ip);
+	typedef void(CALLBACK *ss_connected_callback)(SS_SERVER server, SS_SESSION session, const char* client_ip, int client_port);
 
 	/**
 	* 描述： 客户端断开后，触发此事件回调。
@@ -139,13 +146,14 @@ extern "C" {
 	* 参数： port 服务器端口号。
 	* 返回： 0 成功，其他值失败，参考 ss_error_code。
 	*/
-	SS_API int WINAPI SS_StartServer(int port);
+	SS_API int WINAPI SS_StartServer(int port, SS_SERVER* server);
 
 
 	/**
 	* 描述： 关闭服务器监听服务。
+	* 返回： 0 成功，其他值失败，参考 ss_error_code。
 	*/
-	SS_API void WINAPI SS_StopServer();
+	SS_API int WINAPI SS_StopServer(SS_SERVER server);
 
 
 	/**

@@ -61,17 +61,22 @@ extern "C" {
 		SC_FRAME_BINARY = 2,
 	};
 
+	/** 客户端对象
+	*   当连接多个服务器时，标识不同的客户端。
+	*/
+	typedef void* SC_CLIENT;
+
 	/**
 	* 描述： 连接断开后，触发此事件回调。
 	*/
-	typedef void(CALLBACK *sc_disconnected_callback)();
+	typedef void(CALLBACK *sc_disconnected_callback)(SC_CLIENT client);
 
 
 	/**
 	* 描述： 连接出现错误后，触发此事件回调。
 	* 参数： error_code 错误码，参考 sc_error_code。
 	*/
-	typedef void(CALLBACK *sc_error_callback)(int error_code);
+	typedef void(CALLBACK *sc_error_callback)(SC_CLIENT client, int error_code);
 
 	/**
 	* 描述： 接受到服务器数据帧后，触发此事件回调。
@@ -79,7 +84,7 @@ extern "C" {
 	* 参数： len 数据帧长度。
 	* 参数： type 数据帧类型， 参考 sc_frame_type。
 	*/
-	typedef void(CALLBACK *sc_recvframe_callback)(const unsigned char* data, int len, int type);
+	typedef void(CALLBACK *sc_recvframe_callback)(SC_CLIENT client, const unsigned char* data, int len, int type);
 
 
 	/**
@@ -123,12 +128,12 @@ extern "C" {
 	* 参数： port 服务器端口号。
 	* 返回： 0 成功，其他值失败，参考 sc_error_code。
 	*/
-	SC_API int WINAPI SC_ConnectToHost(const char* ip, int port);
+	SC_API int WINAPI SC_ConnectToHost(const char* ip, int port, SC_CLIENT* client);
 
 	/**
 	* 描述： 断开连接。
 	*/
-	SC_API void WINAPI SC_DisconnectFromHost();
+	SC_API int WINAPI SC_DisconnectFromHost(SC_CLIENT client);
 
 	/**
 	* 描述： 发送数据给服务器。
@@ -137,7 +142,7 @@ extern "C" {
 	* 参数： type 数据帧类型， 参考 sc_frame_type。
 	* 返回： 0 成功，其他值失败，参考 sc_error_code。
 	*/
-	SC_API int WINAPI SC_SendFrame(const unsigned char* data, int len, int type);
+	SC_API int WINAPI SC_SendFrame(SC_CLIENT client, const unsigned char* data, int len, int type);
 
 #ifdef __cplusplus
 } // extern "C"

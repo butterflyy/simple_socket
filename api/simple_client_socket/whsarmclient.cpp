@@ -1,5 +1,6 @@
 #include "whsarmclient.h"
 #include "ClientImp.h"
+#include <common/ObjectList.h>
 #ifndef WIN32
 #include <signal.h>
 #endif
@@ -12,13 +13,23 @@
 #define RC_VERSION    1  //release candidate version. After beta version test ok.
  
 //Global Variable
-ClientImp* g_clientImp = nullptr;
+ObjectList<ClientImp*>* g_clientImpList = nullptr;
 
 //Gloable External Variable 
 EventManager* EVENT = nullptr;
 
+//Delete server functional.
+struct ClientDeleter{
+	void operator()(ClientImp* item){
+		if (item){
+			item->Disconnect();
+			delete item;
+		}
+	}
+};
+
 inline bool IsInitialize() {
-	if (!g_clientImp) {
+	if (!g_clientImpList) {
 		LOG(ERROR) << "API not initialized";
 		return false;
 	}
@@ -27,7 +38,7 @@ inline bool IsInitialize() {
 }
 
 SC_API int WINAPI SC_Initialize(){
-	if (g_clientImp) {
+	if (g_clientImpList) {
 		LOG(ERROR) << "API Already initialized";
 		return SC_ERROR;
 	}
@@ -55,11 +66,9 @@ SC_API int WINAPI SC_Initialize(){
 
 	EVENT = new EventManager();
 
-	EXCEPTION_BEGIN
-		g_clientImp = new ClientImp();
-	EXCEPTION_END
+	g_clientImpList = new ObjectList<ClientImp*>();
 
-	return ClientImp::TransError(error_code);
+	return SC_SUCCESS;
 }
 
 SC_API void WINAPI SC_Finalize(){
@@ -69,17 +78,9 @@ SC_API void WINAPI SC_Finalize(){
 
 	LOG(INFO) << "SC_Finalize";
 
-	{
-		EXCEPTION_BEGIN
-			g_clientImp->Disconnect();
-		EXCEPTION_END
-	}
+	g_clientImpList->Clear(ClientDeleter());
 
-	{
-		EXCEPTION_BEGIN
-			SAFE_DELETE(g_clientImp);
-		EXCEPTION_END
-	}
+	SAFE_DELETE(g_clientImpList);
 
 	SAFE_DELETE(EVENT);
 
@@ -137,33 +138,57 @@ SC_API int WINAPI SC_SetCallback(sc_disconnected_callback on_disconnected,
 	return SC_SUCCESS;
 }
 
-SC_API int WINAPI SC_ConnectToHost(const char* ip, int port){
+SC_API int WINAPI SC_ConnectToHost(const char* ip, int port, SC_CLIENT* client){
 	if (!IsInitialize()) {
 		return SC_ERROR;
 	}
 
 	LOG(INFO) << "SC_ConnectToHost";
 
+	ClientImp* clientImp = nullptr;
+
 	EXCEPTION_BEGIN
-		g_clientImp->Connect(ip, port);
+		clientImp = new ClientImp();
+		clientImp->Connect(ip, port);
 	EXCEPTION_END
 
-	return ClientImp::TransError(error_code);
+	int ret = ClientImp::TransError(error_code);
+	if (ret < 0){
+		EXCEPTION_BEGIN
+			SAFE_DELETE(clientImp);
+		EXCEPTION_END
+	}
+
+	*client = clientImp;
+
+	g_clientImpList->Add(clientImp);
+	return ret;
 }
 
-SC_API void WINAPI SC_DisconnectFromHost(){
+SC_API int WINAPI SC_DisconnectFromHost(SC_CLIENT client){
 	if (!IsInitialize()) {
-		return;
+		return SC_ERROR;
 	}
 
 	LOG(INFO) << "SC_DisconnectFromHost";
 
+	ClientImp* clientImp = reinterpret_cast<ClientImp*>(client);
+	if (!clientImp){
+		return SC_INVALID_PARAM;
+	}
+
 	EXCEPTION_BEGIN
-		g_clientImp->Disconnect();
+		clientImp->Disconnect();
 	EXCEPTION_END
+
+	int ret = ClientImp::TransError(error_code);
+
+	g_clientImpList->Remove(clientImp);
+
+	return ret;
 }
 
-SC_API int WINAPI SC_SendFrame(const unsigned char* data, int len, int type){
+SC_API int WINAPI SC_SendFrame(SC_CLIENT client, const unsigned char* data, int len, int type){
 	if (!IsInitialize()) {
 		return SC_ERROR;
 	}
@@ -174,8 +199,13 @@ SC_API int WINAPI SC_SendFrame(const unsigned char* data, int len, int type){
 		return SC_INVALID_PARAM;
 	}
 
+	ClientImp* clientImp = reinterpret_cast<ClientImp*>(client);
+	if (!clientImp){
+		return SC_INVALID_PARAM;
+	}
+
 	EXCEPTION_BEGIN
-		g_clientImp->SendFrame(data, len, type);
+		clientImp->SendFrame(data, len, type);
 	EXCEPTION_END
 
 	return ClientImp::TransError(error_code);

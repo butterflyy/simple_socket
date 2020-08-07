@@ -16,11 +16,15 @@ void ServerImp::OnConnected(){
 	if (IsCalled()){
 		EXCEPTION_BEGIN
 			std::string client_ip = RemoteAddress();
+			int client_port = RemotePort();
+
 			EventData eventData;
 			memset(&eventData, 0, sizeof(EventData));
 			eventData.type = EVENT_CONNECT;
 			eventData.session = this;
-			utils::SafeStrCpy(eventData.client_ip, client_ip.c_str(), 50);
+			eventData.client.server = _serverManagerImp;
+			utils::SafeStrCpy(eventData.client.client_ip, client_ip.c_str(), 50);
+			eventData.client.client_port = client_port;
 		
 			LOG(INFO) <<  PeerAddressLasting() << " OnConnected";
 			EVENT->OnCallback(eventData);

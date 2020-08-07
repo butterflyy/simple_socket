@@ -13,6 +13,7 @@ enum EventType
 
 struct EventData{
 	EventType type;
+	SC_CLIENT client;
 	union
 	{
 		int error_code;
