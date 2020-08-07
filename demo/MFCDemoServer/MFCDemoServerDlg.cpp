@@ -227,19 +227,19 @@ void CMFCDemoServerDlg::InitClientList(){
 			++its){
 			if (it->server == its->server){
 				find = true;
-				str = utils::StrFormat("ServerPort(%d)", its->server_port);
+				str = utils::StrFormat("S(%d)", its->server_port);
 				break;
 			}
 		}
 
 		assert(find);
 
-		str += utils::StrFormat("_Client(%s:%d)", it->client_ip.c_str(), it->client_port);
+		str += utils::StrFormat("_C(%s:%d)", it->client_ip.c_str(), it->client_port);
 
 		listclient.push_back(str);
 	}
-	m_servers.Lock();
-	m_clients.Lock();
+	m_servers.Unlock();
+	m_clients.Unlock();
 
 	for (int i = 0; i < listclient.size(); i++){
 		m_cmbClientList.AddString(utils::s2ws(utils::StrFormat("%d_%s", i, listclient[i].c_str())).c_str());
@@ -308,7 +308,7 @@ std::string CMFCDemoServerDlg::GetClientInfo(SS_SESSION session){
 		}
 	}
 	assert(find);
-	m_clients.Lock();
+	m_clients.Unlock();
 
 
 	m_servers.Lock();
@@ -326,9 +326,9 @@ std::string CMFCDemoServerDlg::GetClientInfo(SS_SESSION session){
 		}
 	}
 	assert(find);
-	m_servers.Lock();
+	m_servers.Unlock();
 
-	return utils::StrFormat("ServerPort(%d)_Client(%s:%d)", sinfo.server_port, cinfo.client_ip.c_str(), cinfo.client_port);
+	return utils::StrFormat("S(%d)_C(%s:%d)", sinfo.server_port, cinfo.client_ip.c_str(), cinfo.client_port);
 }
 
 afx_msg LRESULT CMFCDemoServerDlg::OnCallbackMsg(WPARAM wParam, LPARAM lParam){

@@ -1,6 +1,6 @@
 #pragma once
 
-#define USING_GLOG                             1
+#define USING_GLOG                      1
 #define LOG_FRAME_DATA                  1
 
 #include <Poco/Timespan.h>

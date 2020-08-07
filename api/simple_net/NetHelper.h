@@ -12,16 +12,16 @@
 POCO_DECLARE_EXCEPTION(, SimpleNetException, NetException)
 
 //handle exception begin
-#define EXCEPTION_BEGIN_PEER(peerdes)      \
-	int error_code(0);                                 \
-	std::string error_msg;                             \
-	std::string peerdes_(peerdes);        \
+#define EXCEPTION_BEGIN_ADDR(addr)                 \
+	int error_code(0);                             \
+	std::string error_msg;                         \
+	std::string addr_(addr);                   \
 try{                                               \
 
-#define EXCEPTION_BEGIN EXCEPTION_BEGIN_PEER("")
+#define EXCEPTION_BEGIN EXCEPTION_BEGIN_ADDR("")
 
 //handle exception end
-#define EXCEPTION_END        \
+#define EXCEPTION_END                              \
 }                                                  \
 catch (Poco::Net::ConnectionResetException& e){    \
 	error_code = SN_NETWORK_DISCONNECTED;          \
@@ -48,8 +48,8 @@ catch (...){                                       \
 	error_msg = "Unknow exception";                \
 }                                                  \
 if (error_code != 0){                              \
-	LOG(ERROR) << (peerdes_.empty() ? "" : (peerdes_ + ": "))       \
-		<< "error code : " <<                         \
+	LOG(ERROR) << addr_                            \
+		<< "error code : " <<                      \
 		NetHelper::StrError(error_code)            \
 		<< "  error msg : " << error_msg;          \
 }
@@ -105,6 +105,8 @@ public:
 
 	//remote port
 	int RemotePort();
+
+	std::string FormatAddress();
 	
 	bool IsConnected() const;
 
@@ -164,6 +166,11 @@ inline int NetHelper::RemotePort(){
 	return _socket.peerAddress().port();
 }
 
+inline std::string NetHelper::FormatAddress(){
+	return "[Local_" + _socket.address().toString() +
+		" Remote_" + _socket.peerAddress().toString() + "] ";
+}
+
 inline bool NetHelper::IsConnected() const{
 	return _connected;
 }
@@ -196,7 +203,7 @@ inline void NetHelper::close(){
 
 inline void NetHelper::LogFrame(bool send, const byte* data, int len, int type){
 #if LOG_FRAME_DATA
-	LOG(INFO) << (send ? "Send frame   to: " : "Recv frame from: ") << RemoteAddress() << " type:" << type
+	LOG(INFO) << FormatAddress() << (send ? "Send frame: " : "Recv frame: ") << " type:" << type
 		<< " len: " << len << " data: " << (type == FRAME_STRING ? std::string((char*)data, len > 256 ? 256 : len) : "");
 #endif
 }

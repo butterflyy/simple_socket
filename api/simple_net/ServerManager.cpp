@@ -32,7 +32,7 @@ void ServerManager::StartServer(const std::string& ip, int port){
 	else{
 		Poco::Net::IPAddress ipaddr(ip);
 		Poco::Net::SocketAddress addr(ipaddr, port);
-		_serverSocket.bind(addr, port);
+		_serverSocket.bind(addr);
 		_serverSocket.listen();
 
 		Thread::start();
@@ -91,7 +91,15 @@ void ServerManager::removeDeadConnect(){
 }
 
 void ServerManager::run(){
-	LOG(INFO) << "ServerManager run begin";
+	std::string addr_info;
+	{
+		EXCEPTION_BEGIN
+			std::string str = _serverSocket.address().toString();
+			addr_info = "[" + str + "] ";
+		EXCEPTION_END
+	}
+
+	LOG(INFO) << addr_info << "ServerManager run begin";
 
 	while (!Thread::isQuit()){
 		//recv client connect
@@ -119,5 +127,5 @@ void ServerManager::run(){
 		_serversMutex.unlock();
 	}
 
-	LOG(INFO) << "ServerManager run end";
+	LOG(INFO) << addr_info << "ServerManager run end";
 }

@@ -25,19 +25,20 @@ void Server::Disconnect(){
 }
 
 void Server::run(){
-	std::string peerdes;
+	std::string addr_info;
 	{
 		EXCEPTION_BEGIN
-			peerdes = _socket.peerAddress().toString();
+			addr_info = FormatAddress();
 		EXCEPTION_END
 	}
-	_peerAddressLasting = peerdes;
+
+	_peerAddressLasting = addr_info;
 
 
-	LOG(INFO) << "Server:" << peerdes << " run begin";
+	LOG(INFO) << addr_info << "run begin";
 
 	{
-		EXCEPTION_BEGIN_PEER(peerdes)
+		EXCEPTION_BEGIN_ADDR(addr_info)
 			Poco::Timespan timeout(2000000);
 			if (_socket.poll(timeout, Socket::SELECT_READ)){
 				int msgtype;
@@ -70,7 +71,7 @@ void Server::run(){
 	while (!Thread::isQuit()){
 		Poco::Timespan timeout(1000000);
 		if (_socket.poll(timeout, Socket::SELECT_READ)){
-			EXCEPTION_BEGIN_PEER(peerdes)
+			EXCEPTION_BEGIN_ADDR(addr_info)
 				int msgtype;
 				int frametype;
 				int nRecv = recvFrame(&msgtype, &frametype, _recvbuff, _recvlen);
@@ -92,7 +93,7 @@ void Server::run(){
 				else{
 					//error handle
 					if (error_code == SN_PAYLOAD_TOO_BIG || error_code == SN_FRAME_ERROR){
-						EXCEPTION_BEGIN_PEER(peerdes)
+						EXCEPTION_BEGIN_ADDR(addr_info)
 							//read empty buffer
 							readEmptyBuffer();
 						EXCEPTION_END
@@ -106,19 +107,19 @@ void Server::run(){
 			if (_sendSpan.elapsed() > HEARTBEAT_TIME){
 				utils::LockGuard<utils::Mutex> lock(_sendMutex);
 
-				EXCEPTION_BEGIN_PEER(peerdes)
+				EXCEPTION_BEGIN_ADDR(addr_info)
 					sendFrame(MSG_HEARBEAT, FRAME_BINARY, nullptr, 0);
 				EXCEPTION_END
 
 				_sendSpan.restart();
 			}
 			else if (_recvSpan.elapsed() > KEEPALIVE_TIMEOUT){
-				LOG(ERROR) << peerdes << " keepalive timeout";
+				LOG(ERROR) << addr_info << " keepalive timeout";
 				break;//disconnected.
 			}
 		}
 	}
-	EXCEPTION_BEGIN_PEER(peerdes)
+	EXCEPTION_BEGIN_ADDR(addr_info)
 		close();
 	EXCEPTION_END
 
@@ -126,7 +127,7 @@ void Server::run(){
 	_dead = true;
 	OnDisconnected();
 
-	LOG(INFO) << "Server:" << peerdes << " run end";
+	LOG(INFO) << addr_info << "run end";
 }
 
 
