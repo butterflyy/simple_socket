@@ -14,15 +14,15 @@
 
 ConvertSync<std::string, byte*> SYNC_EVENT;
 
-void CALLBACK disconnected_callback(){
+void CALLBACK disconnected_callback(SC_CLIENT client){
 	printf("[client] disconnect \n");
 }
 
-void CALLBACK error_callback(int error_code){
+void CALLBACK error_callback(SC_CLIENT client, int error_code){
 	printf("[client]  error callback, err = %s \n", SC_StrError(error_code));
 }
 
-void CALLBACK recvframe_callback(const unsigned char* data, int len, int type){
+void CALLBACK recvframe_callback(SC_CLIENT client, const unsigned char* data, int len, int type){
 	assert(type == SC_FRAME_BINARY);
 	assert(len >= FRAME_ID_SIZE);
 	std::string id((char*)data, FRAME_ID_SIZE);
@@ -47,7 +47,8 @@ int main(int argc, char* argv[])
 	ret = SC_SetCallback(disconnected_callback, error_callback, recvframe_callback);
 	if (ret < 0) return 0;
 
-	ret = SC_ConnectToHost(ip.c_str(), PORT);
+	SC_CLIENT client(nullptr);
+	ret = SC_ConnectToHost(ip.c_str(), PORT, &client);
 	if (ret < 0){
 		printf("[client]  connect failed, err = %s \n", SC_StrError(ret));
 		return 0;
@@ -69,7 +70,7 @@ int main(int argc, char* argv[])
 			buffer[i] = rand() & 0xFF;
 		}
 
-		ret = SC_SendFrame(buffer.get(), bufflen, SC_FRAME_BINARY);
+		ret = SC_SendFrame(client, buffer.get(), bufflen, SC_FRAME_BINARY);
 		if (ret < 0) {
 			printf("[ERROR]  send frame failed, err = %s \n", SC_StrError(ret));
 			break;

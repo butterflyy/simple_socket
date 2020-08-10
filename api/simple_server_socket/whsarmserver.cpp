@@ -104,7 +104,7 @@ SS_API int WINAPI SS_Initialize(){
 
 	//log init
 #if defined(WIN32) || defined(__gnu_linux__)
-	google::InitGoogleLogging("simpleserversocket");
+	google::InitGoogleLogging("whsarmserver");
 	FLAGS_logbuflevel = -1;
 	FLAGS_alsologtostderr = true;
 #endif

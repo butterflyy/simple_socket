@@ -10,7 +10,7 @@
 
 std::map<SS_SESSION, std::string> ss;
 
-void CALLBACK connected_callback(SS_SESSION session, const char* client_ip){
+void CALLBACK connected_callback(SS_SERVER server, SS_SESSION session, const char* client_ip, int client_port){
 	printf("[server] new client connect: %s \n", client_ip);
 	ss[session] = client_ip;
 }
@@ -59,12 +59,13 @@ void main(int argc, char* argv[])
 	ret = SS_SetCallback(connected_callback, disconnected_callback, error_callback, recvframe_callback);
 	if (ret < 0) return;
 
-	ret = SS_StartServer(PORT);
+	SS_SERVER server(nullptr);
+	ret = SS_StartServer(PORT, &server);
 	if (ret < 0) return;
 
 	while (getchar() != 'q'){}
 
-	SS_StopServer();
+	SS_StopServer(server);
 
 	SS_Finalize();
 	

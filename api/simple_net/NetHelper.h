@@ -43,10 +43,19 @@ catch (...){                                       \
 	error_msg = "Unknow exception";                \
 }                                                  \
 if (error_code != 0){                              \
-	LOG(ERROR) << addr_                            \
-		<< "error code : " <<                      \
-		NetHelper::StrError(error_code)            \
-		<< "  error msg : " << error_msg;          \
+	if (error_code == SN_NETWORK_DISCONNECTED)     \
+	{                                              \
+		LOG(INFO) << addr_                         \
+			<< "error code : " <<                  \
+			NetHelper::StrError(error_code)        \
+			<< "  error msg : " << error_msg;      \
+	}											   \
+	else{										   \
+		LOG(ERROR) << addr_                        \
+			<< "error code : " << 				   \
+			NetHelper::StrError(error_code)        \
+			<< "  error msg : " << error_msg;      \
+	}                                              \
 }
 
 
