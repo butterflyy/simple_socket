@@ -104,7 +104,7 @@ SS_API int WINAPI SS_Initialize(){
 
 	//log init
 #if defined(WIN32) || defined(__gnu_linux__)
-	if (FLAGS_glog_init){
+	if (!FLAGS_glog_init){
 		google::InitGoogleLogging("whsarmserver");
 		FLAGS_glog_init = true;
 	}

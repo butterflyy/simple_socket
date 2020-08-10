@@ -1,6 +1,5 @@
 ﻿// UnitTest.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
-#include <atomic>
 #include <gtest/gtest.h>
 #include <whsarmserver.h>
 #include <whsarmclient.h>
@@ -129,10 +128,6 @@ namespace {
 		}
 
 		static ConvertSync<std::string, void*> Sync;
-		static int GenUID(){
-			static std::atomic<int> uid = 0;
-			return ++uid;
-		}
 	};
 
 
