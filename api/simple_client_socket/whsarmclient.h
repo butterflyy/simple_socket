@@ -45,7 +45,7 @@ extern "C" {
 		/** 网络超时 */
 		SC_NETWORK_TIMEOUT = -5,
 
-		/** 数据帧超过5MB */
+		/** 数据帧过大，默认最大不超过5MB */
 		SC_PAYLOAD_TOO_BIG = -6,
 
 		/** 数据帧错误 */
@@ -63,23 +63,27 @@ extern "C" {
 
 	/** 客户端对象
 	*   当连接多个服务器时，标识不同的客户端。
+	*   通过比较这个值，可以区分不同的客户端。
 	*/
 	typedef void* SC_CLIENT;
 
 	/**
 	* 描述： 连接断开后，触发此事件回调。
+	* 参数： client 客户端对象。
 	*/
 	typedef void(CALLBACK *sc_disconnected_callback)(SC_CLIENT client);
 
 
 	/**
 	* 描述： 连接出现错误后，触发此事件回调。
+	* 参数： client 客户端对象。
 	* 参数： error_code 错误码，参考 sc_error_code。
 	*/
 	typedef void(CALLBACK *sc_error_callback)(SC_CLIENT client, int error_code);
 
 	/**
 	* 描述： 接受到服务器数据帧后，触发此事件回调。
+	* 参数： client 客户端对象。
 	* 参数： data 数据帧的指针。
 	* 参数： len 数据帧长度。
 	* 参数： type 数据帧类型， 参考 sc_frame_type。
@@ -126,19 +130,22 @@ extern "C" {
 	* 描述： 连接服务器。
 	* 参数： ip 服务器IP地址。
 	* 参数： port 服务器端口号。
+	* 参数： client 客户端对象，连接服务器成功后获取到的客户端对象。
 	* 返回： 0 成功，其他值失败，参考 sc_error_code。
 	*/
 	SC_API int WINAPI SC_ConnectToHost(const char* ip, int port, SC_CLIENT* client);
 
 	/**
 	* 描述： 断开连接。
+	* 参数： client 客户端对象。
 	*/
 	SC_API int WINAPI SC_DisconnectFromHost(SC_CLIENT client);
 
 	/**
 	* 描述： 发送数据给服务器。
+	* 参数： client 客户端对象。
 	* 参数： data 数据帧的指针。
-	* 参数： len 数据帧长度，最大不超过5MB。
+	* 参数： len 数据帧长度，默认最大不超过5MB。
 	* 参数： type 数据帧类型， 参考 sc_frame_type。
 	* 返回： 0 成功，其他值失败，参考 sc_error_code。
 	*/

@@ -212,6 +212,7 @@
     <ClInclude Include="..\simple_net\NetProtocol.h" />
     <ClInclude Include="..\simple_net\Server.h" />
     <ClInclude Include="..\simple_net\ServerManager.h" />
+    <ClInclude Include="..\simple_server_socket\resource.h" />
     <ClInclude Include="ClientImp.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="EventManager.h" />
@@ -251,6 +252,7 @@
     <None Include="whsarmclient.def" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="..\simple_server_socket\whsarmserver.rc" />
     <ResourceCompile Include="whsarmclient.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -228,7 +228,6 @@
     <ClInclude Include="..\Poco\Foundation\Poco\UtilsAdd.h">
       <Filter>Foundation</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="..\simple_net\NetParam.h">
       <Filter>simple_net</Filter>
     </ClInclude>
@@ -254,8 +253,5 @@
     <None Include="whsarmserver.def">
       <Filter>api</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="whsarmserver.rc" />
   </ItemGroup>
 </Project>

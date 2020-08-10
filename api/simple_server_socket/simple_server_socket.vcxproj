@@ -220,7 +220,6 @@
     <ClInclude Include="..\simple_net\ServerManager.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="EventManager.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="ServerImp.h" />
     <ClInclude Include="ServerManagerImp.h" />
     <ClInclude Include="whsarmserver.h" />
@@ -257,9 +256,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="whsarmserver.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="whsarmserver.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
