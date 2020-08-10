@@ -104,10 +104,16 @@ SS_API int WINAPI SS_Initialize(){
 
 	//log init
 #if defined(WIN32) || defined(__gnu_linux__)
-	google::InitGoogleLogging("whsarmserver");
+	if (FLAGS_glog_init){
+		google::InitGoogleLogging("whsarmserver");
+		FLAGS_glog_init = true;
+	}
 	FLAGS_logbuflevel = -1;
+#if defined(_DEBUG) || defined(__gnu_linux__)
 	FLAGS_alsologtostderr = true;
 #endif
+#endif
+	FLAGS_glog_init = true;
 
 	LOG(INFO) << "SSAPI_VERSION : " << SS_GetLibVersion();
 

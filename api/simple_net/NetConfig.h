@@ -29,6 +29,9 @@
 #define LOG(s) std::cout
 #endif
 
+//on linux if call 2 dll, may be used this
+extern bool FLAGS_glog_init;
+
 using Poco::Net::Socket;
 using Poco::Net::ServerSocket;
 using Poco::Net::StreamSocket;

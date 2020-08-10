@@ -100,7 +100,10 @@ SC_API int WINAPI SC_Initialize(){
 
 	//log init
 #if defined(WIN32) || defined(__gnu_linux__)
-	google::InitGoogleLogging("whsarmclient");
+	if (FLAGS_glog_init){
+		google::InitGoogleLogging("whsarmclient");
+		FLAGS_glog_init = true;
+	}
 	FLAGS_logbuflevel = -1;
 #if defined(_DEBUG) || defined(__gnu_linux__)
 	FLAGS_alsologtostderr = true;
