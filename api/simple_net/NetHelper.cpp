@@ -1,6 +1,7 @@
 #include "NetHelper.h"
 
 bool FLAGS_glog_init = false;
+bool FLAGS_glog_shutdown = false;
 
 POCO_IMPLEMENT_EXCEPTION(SimpleNetException, NetException, "SimpleNet exception")
 

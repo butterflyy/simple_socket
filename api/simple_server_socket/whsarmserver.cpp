@@ -121,6 +121,7 @@ SS_API int WINAPI SS_Initialize(){
 	if (!FLAGS_glog_init){
 		google::InitGoogleLogging("whsarmserver");
 		FLAGS_glog_init = true;
+		FLAGS_glog_shutdown = false;
 	}
 	FLAGS_logbuflevel = -1;
 #if defined(_DEBUG) || defined(__gnu_linux__)
@@ -196,7 +197,11 @@ SS_API void WINAPI SS_Finalize(){
 
 	//log shutdown
 #if defined(WIN32) || defined(__gnu_linux__)
-	google::ShutdownGoogleLogging();
+	if (!FLAGS_glog_shutdown){
+		google::ShutdownGoogleLogging();
+		FLAGS_glog_shutdown = true;
+		FLAGS_glog_init = false;
+	}
 #endif
 }
 

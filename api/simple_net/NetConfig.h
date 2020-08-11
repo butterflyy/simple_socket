@@ -31,6 +31,7 @@
 
 //on linux if call 2 dll, may be used this
 extern bool FLAGS_glog_init;
+extern bool FLAGS_glog_shutdown;
 
 using Poco::Net::Socket;
 using Poco::Net::ServerSocket;
