@@ -155,7 +155,7 @@ SC_API int WINAPI SC_Initialize(){
 
 	LOG(INFO) << "Dll dir : " << FLAGS_dll_dir;
 
-	std::string config_path = FLAGS_dll_dir + "\\whsarmclient.ini";
+	std::string config_path = Config::MakePath(FLAGS_dll_dir, "whsarmclient.ini");
 
 	LOG(INFO) << "config path : " << config_path;
 	LOG(INFO) << "Check config file existed : " << (utils::CheckFileExist(config_path) ? "Yes" : "No");
