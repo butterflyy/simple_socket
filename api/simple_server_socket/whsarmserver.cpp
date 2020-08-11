@@ -1,4 +1,5 @@
 #include "whsarmserver.h"
+#include "Common.h"
 #include "ServerImp.h"
 #include "ServerManagerImp.h"
 #include "Config.h"
@@ -16,6 +17,8 @@
 #define BETA_VERSION  0  //beta version for inner test, if is release beta version is 0.
 #define RC_VERSION    1  //release candidate version. After beta version test ok.
 
+_SS_BEGIN
+
 //Gloable Server list
 ObjectList<ServerManagerImp*>* g_serverManagerList = nullptr;
 
@@ -27,6 +30,8 @@ ConvertSync<std::string, std::string>* SYNC_EVENT = nullptr;
 
 //Gloable dll dir
 std::string FLAGS_dll_dir;
+
+_SS_END
 
 //get dll dir
 #ifdef WIN32
@@ -46,7 +51,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 								   ch[0] = 0;
 							   }
 
-							   FLAGS_dll_dir = path;
+							   _SS FLAGS_dll_dir = path;
 	}
 		break;
 	case DLL_THREAD_DETACH:
@@ -58,6 +63,8 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 }
 
 #else
+_SS_BEGIN
+
 #include <dlfcn.h>
 void fun_hs(){
 }
@@ -75,8 +82,11 @@ std::string GetDllDir(){
 	return std::string(path);
 }
 
+_SS_END
+
 #endif
 
+_SS_BEGIN
 inline bool IsInitialize() {
 	if (!g_serverManagerList) {
 		LOG(ERROR) << "API not initialized";
@@ -96,7 +106,11 @@ struct ServerManagerDeleter{
 	}
 };
 
+_SS_END
+
 SS_API int WINAPI SS_Initialize(){
+	using namespace ss;
+
 	if (g_serverManagerList) {
 		LOG(ERROR) << "API Already initialized";
 		return SS_ERROR;
@@ -164,6 +178,8 @@ SS_API int WINAPI SS_Initialize(){
 }
 
 SS_API void WINAPI SS_Finalize(){
+	using namespace ss;
+
 	if (!IsInitialize()) {
 		return;
 	}
@@ -220,6 +236,8 @@ SS_API int WINAPI SS_SetCallback(ss_connected_callback on_connected,
 	ss_disconnected_callback on_disconnected,
 	ss_error_callback on_error,
 	ss_recvframe_callback on_recvframe){
+	using namespace ss;
+
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}
@@ -232,6 +250,8 @@ SS_API int WINAPI SS_SetCallback(ss_connected_callback on_connected,
 }
 
 SS_API int WINAPI SS_StartServer(int port, SS_SERVER* server){
+	using namespace ss;
+
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}
@@ -261,6 +281,8 @@ SS_API int WINAPI SS_StartServer(int port, SS_SERVER* server){
 
 
 SS_API int WINAPI SS_StopServer(SS_SERVER server){
+	using namespace ss;
+
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}
@@ -284,6 +306,8 @@ SS_API int WINAPI SS_StopServer(SS_SERVER server){
 }
 
 SS_API int WINAPI SS_DisconnectClient(SS_SESSION session){
+	using namespace ss;
+
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}
@@ -304,6 +328,8 @@ SS_API int WINAPI SS_DisconnectClient(SS_SESSION session){
 
 
 SS_API int WINAPI SS_SendFrame(SS_SESSION session, const unsigned char* data, int len, int type){
+	using namespace ss;
+
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}
@@ -333,6 +359,8 @@ SS_API int WINAPI SS_SendFrame(SS_SESSION session, const unsigned char* data, in
 * 返回： 0 成功，其他值失败，参考 ss_error_code。
 */
 SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port, SS_SERVER* server){
+	using namespace ss;
+
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}
@@ -359,6 +387,8 @@ SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port, SS_SERVER* se
 }
 
 SS_API int WINAPI SS_Helper_SetEvent(const char* id, const char* data){
+	using namespace ss;
+
 	if (!SYNC_EVENT || !id || !data){
 		return -1;
 	}
@@ -367,6 +397,8 @@ SS_API int WINAPI SS_Helper_SetEvent(const char* id, const char* data){
 }
 
 SS_API int WINAPI SS_Helper_WaitEvent(const char* id, int timeout, char* data, int len){
+	using namespace ss;
+
 	if (!SYNC_EVENT || !id || !data){
 		return -1;
 	}
@@ -381,6 +413,8 @@ SS_API int WINAPI SS_Helper_WaitEvent(const char* id, int timeout, char* data, i
 }
 
 SS_API int WINAPI SS_Helper_Log(int level, const char* info) {
+	using namespace ss;
+
 	if (!IsInitialize()) {
 		return SS_ERROR;
 	}

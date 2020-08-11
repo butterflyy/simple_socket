@@ -233,10 +233,10 @@
     <ClInclude Include="Config.h">
       <Filter>api</Filter>
     </ClInclude>
-    <ClInclude Include="..\simple_server_socket\resource.h">
+    <ClInclude Include="resource.h">
       <Filter>api</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="Common.h">
       <Filter>api</Filter>
     </ClInclude>
   </ItemGroup>
@@ -246,9 +246,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\simple_server_socket\whsarmserver.rc">
-      <Filter>api</Filter>
-    </ResourceCompile>
     <ResourceCompile Include="whsarmclient.rc">
       <Filter>api</Filter>
     </ResourceCompile>

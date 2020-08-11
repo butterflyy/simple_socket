@@ -1,5 +1,6 @@
 #include "ClientImp.h"
 
+_SC_BEGIN
 
 ClientImp::ClientImp(const NetParam& netParam)
 :Client(netParam){
@@ -70,3 +71,5 @@ void ClientImp::OnRecvFrame(const byte* data, int len, int type){
 		EVENT->OnCallback(eventData);
 	}
 }
+
+_SC_END

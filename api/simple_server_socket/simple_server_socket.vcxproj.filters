@@ -234,6 +234,12 @@
     <ClInclude Include="Config.h">
       <Filter>api</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>api</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="simple_net">
@@ -253,5 +259,10 @@
     <None Include="whsarmserver.def">
       <Filter>api</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="whsarmserver.rc">
+      <Filter>api</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 #include "ServerManagerImp.h"
 #include "ServerImp.h"
 
+_SS_BEGIN
 
 ServerManagerImp::ServerManagerImp(const NetParam& netParam)
 :_netParam(netParam)
@@ -28,3 +29,5 @@ int ServerManagerImp::TransError(int error){
 	default: assert(false);  return SS_ERROR;
 	}
 }
+
+_SS_END
