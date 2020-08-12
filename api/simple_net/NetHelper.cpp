@@ -1,4 +1,5 @@
 #include "NetHelper.h"
+#include <typeinfo>
 
 bool FLAGS_glog_init = false;
 bool FLAGS_glog_shutdown = false;

@@ -1,0 +1,13 @@
+test_echo_server : test_echo_server.o
+	arm-linux-gnueabi-g++  test_echo_server.o -o test_echo_server -L/usr/lib -lwhsarmclient -lglog -L/opt/hs_project/sunxi/hslib/lib
+
+
+test_echo_server.o : test_echo_server.cpp
+	arm-linux-gnueabi-g++  -c test_echo_server.cpp -I../../api/simple_client_socket -I../../../externals/include
+
+
+clean :
+	rm test_echo_server test_echo_server.o
+
+install:
+	cp test_echo_server  /home/embest/Documents/tftpboot
