@@ -130,7 +130,7 @@ extern "C" {
 	* 描述： 连接服务器。
 	* 参数： ip 服务器IP地址。
 	* 参数： port 服务器端口号。
-	* 参数： client 客户端对象，连接服务器成功后获取到的客户端对象。
+	* 参数： client [out] 客户端对象，连接服务器成功后获取到的客户端对象。
 	* 返回： 0 成功，其他值失败，参考 sc_error_code。
 	*/
 	SC_API int WINAPI SC_ConnectToHost(const char* ip, int port, SC_CLIENT* client);

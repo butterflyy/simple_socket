@@ -148,7 +148,7 @@ extern "C" {
 	/**
 	* 描述： 启动服务器监听服务。
 	* 参数： port 服务器端口号。
-	* 参数： server 服务器对象，启动服务器成功后获取到的服务器对象。
+	* 参数： server [out] 服务器对象，启动服务器成功后获取到的服务器对象。
 	* 返回： 0 成功，其他值失败，参考 ss_error_code。
 	*/
 	SS_API int WINAPI SS_StartServer(int port, SS_SERVER* server);
