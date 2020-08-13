@@ -1,7 +1,7 @@
 #define complier 
 #CC = g++
 CC = arm-linux-gnueabi-g++
-CFLAGS = -DNDEBUG
+CFLAGS = -Wall -DNDEBUG -D ARM_D20
 
 #define include lib path
 INCLUDE_PATH = -I/opt/hs_project/sunxi/hslib/include -I./../../../externals/include -I../simple_net -I../Poco/Foundation -I../Poco/Net
