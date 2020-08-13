@@ -36,9 +36,9 @@ void NetHelper::SendFrame(const byte* data, int len, int type){
 
 	LogFrame(true, data, len, type);
 
-	_recvSpan.restart();
-
 	sendFrame(MSG_NORMAL, type, data, len);
+
+	_sendSpan.restart();
 }
 
 

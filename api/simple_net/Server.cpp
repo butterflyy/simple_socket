@@ -64,6 +64,7 @@ void Server::run(){
 
 	_sendSpan.start();
 	_recvSpan.start();
+	long noalive_times = 0;
 
 	_connected = true;
 	OnConnected();
@@ -78,6 +79,7 @@ void Server::run(){
 				assert(msgtype == MSG_NORMAL || msgtype == MSG_HEARBEAT);
 
 				_recvSpan.restart();
+				noalive_times = 0;
 
 				if (msgtype == MSG_NORMAL){
 					LogFrame(false, _recvbuff, nRecv, frametype);
@@ -104,7 +106,7 @@ void Server::run(){
 			}
 		}
 		else{//check hearbeat
-			if (_sendSpan.elapsed() > _netParam.heatbeat_time){
+			if (_sendSpan.elapsed() > _netParam.keep_alive.heatbeat_time){
 				utils::LockGuard<utils::Mutex> lock(_sendMutex);
 
 				EXCEPTION_BEGIN_ADDR(addr_info)
@@ -113,9 +115,14 @@ void Server::run(){
 
 				_sendSpan.restart();
 			}
-			else if (_recvSpan.elapsed() > _netParam.heatbeat_time*2){
-				LOG(ERROR) << addr_info << " keepalive timeout";
-				break;//disconnected.
+			else if (_recvSpan.elapsed() > _netParam.keep_alive.keepalive_time){
+				noalive_times++;
+				LOG(INFO) << addr_info << " keepalive timeout, no alive times = " << noalive_times;
+				if (noalive_times >= _netParam.keep_alive.keepalive_count){
+					LOG(INFO) << addr_info << "keepalive timeout times > _netParam.keep_alive.keepalive_count, disconnect";
+					break;//disconnected.
+				}
+				_recvSpan.restart();
 			}
 		}
 	}
