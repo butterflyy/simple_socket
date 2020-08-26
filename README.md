@@ -54,5 +54,12 @@ http://wiki.hongshi-tech.com/pages/viewpage.action?pageId=22579152
 
 1. D20e平台集成
 
+服务器是WINDOWS或者LINUX的web服务器，Qt开发或者Java语言开发，管理多台D20e门禁设备
+客户端是多台D20e设备，平台是ARM，Qt开发
+
 2. 农商行
-	git代码页面： http://git.hongshi-tech.com/projects/HSNSH/repos/hs_d35_sdk/browse?at=refs%2Fheads%2Fdevelop
+
+git代码页面： http://git.hongshi-tech.com/projects/HSNSH/repos/hs_d35_sdk/browse?at=refs%2Fheads%2Fdevelop
+服务器是YP的平台服务器，C#语言开发，管理多台D35门禁机
+客户端是多台D35设备，平台是ANDROID，Java语言开发
+里面包括完整的C#二次封装和使用示例，ANDROID使用示例，测试用例
