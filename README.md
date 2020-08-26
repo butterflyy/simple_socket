@@ -35,3 +35,10 @@
 ## 发布页面
 
 http://wiki.hongshi-tech.com/pages/viewpage.action?pageId=22579152
+
+## 实战项目
+
+1. D20e平台集成
+
+2. 农商行
+	git代码页面： http://git.hongshi-tech.com/projects/HSNSH/repos/hs_d35_sdk/browse?at=refs%2Fheads%2Fdevelop
