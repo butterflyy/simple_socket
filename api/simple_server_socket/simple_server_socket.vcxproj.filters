@@ -228,7 +228,18 @@
     <ClInclude Include="..\Poco\Foundation\Poco\UtilsAdd.h">
       <Filter>Foundation</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="..\simple_net\NetParam.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>api</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="simple_net">
@@ -250,6 +261,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="whsarmserver.rc" />
+    <ResourceCompile Include="whsarmserver.rc">
+      <Filter>api</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

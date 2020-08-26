@@ -6,11 +6,12 @@
 #include "afxwin.h"
 #include <common\utils.h>
 #include <common\ConvertSync.h>
+#include <common\ObjectList.h>
 #include <whsarmserver.h>
 
 #define WM_CALLBACK_MSG   WM_USER  + 101
 
-SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port);
+SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port, SS_SERVER* server);
 //enum CallbackCommand{
 //	COMMAND_InitClientList,
 //	COMMAND_ShowMessage,
@@ -19,9 +20,30 @@ SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port);
 //};
 
 struct ClientInfo{
+	SS_SERVER server;
 	SS_SESSION session;
 	std::string client_ip;
+	int client_port;
+
+	bool operator==(const ClientInfo& info){
+		return (this->session == info.session);
+	}
 };
+
+typedef ObjectList<ClientInfo> ClientList;
+
+struct ServerInfo{
+	SS_SERVER server;
+	std::string server_ip;
+	int server_port;
+
+	bool operator==(const ServerInfo& info){
+		return (this->server == info.server);
+	}
+};
+
+//use one add lock list
+typedef ObjectList<ServerInfo> ServerList;
 
 // CMFCDemoServerDlg dialog
 class CMFCDemoServerDlg : public CDialogEx
@@ -61,14 +83,15 @@ protected:
 	void InitClientList();
 	void appendRecvMsg(const std::string& msg);
 	void appendSendMsg(const std::string& msg);
-	std::string GetClientIp(SS_SESSION session);
+	std::string GetClientInfo(SS_SESSION session);
 
 	int SendStringFrame(SS_SESSION session, const std::string& str);
 	int SendBinaryFrame(SS_SESSION session, const byte* data, int len);
 public:
 	CComboBox m_cmbClientList;
 	CComboBox m_cmbCommand;
-	std::vector<ClientInfo> m_clients;
+	ServerList m_servers;
+	ClientList m_clients;
 
 	std::string m_imagePath;
 	std::vector<std::string> m_tmplPaths;
@@ -76,7 +99,8 @@ public:
 	bool _sync_request = false;
 	ConvertSync<std::string, std::string> _convertSync; //Asynchronous to synchronous
 public:
-	static void CALLBACK connected_callback(SS_SESSION session, const char* client_ip);
+	static void CALLBACK connected_callback(SS_SESSION server, SS_SESSION session,
+		const char* client_ip, int port);
 	static void CALLBACK disconnected_callback(SS_SESSION session);
 	static void CALLBACK error_callback(SS_SESSION session, int error_code);
 	static void CALLBACK recvframe_callback(SS_SESSION session, const unsigned char* data, int len, int type);

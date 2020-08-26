@@ -1,8 +1,10 @@
 #pragma once
-
+#include "Common.h"
 #include <common/utils.h>
 #include <list>
 #include "whsarmclient.h" //for callback
+
+_SC_BEGIN
 
 enum EventType
 {
@@ -13,6 +15,7 @@ enum EventType
 
 struct EventData{
 	EventType type;
+	SC_CLIENT client;
 	union
 	{
 		int error_code;
@@ -64,3 +67,4 @@ inline void EventManager::SetCallback(sc_disconnected_callback on_disconnected,
 
 extern EventManager* EVENT;
 
+_SC_END

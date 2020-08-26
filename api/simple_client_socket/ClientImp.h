@@ -1,11 +1,14 @@
 #pragma once
+#include "Common.h"
 #include "Client.h"
 #include "EventManager.h"
+
+_SC_BEGIN
 
 class ClientImp : public Client
 {
 public:
-	ClientImp();
+	ClientImp(const NetParam& netParam);
 	~ClientImp();
 
 	void OnConnected() override;
@@ -16,6 +19,8 @@ public:
 	static int TransError(int err);
 private:
 };
+
+_SC_END
 
 
 

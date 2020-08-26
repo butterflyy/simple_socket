@@ -1,8 +1,10 @@
 #pragma once
-
+#include "Common.h"
 #include <common/utils.h>
 #include <list>
 #include "whsarmserver.h" //for callback
+
+_SS_BEGIN
 
 enum EventType
 {
@@ -17,7 +19,12 @@ struct EventData{
 	SS_SESSION session;
 	union
 	{
-		char client_ip[50];
+		struct{
+			SS_SERVER server;
+			char client_ip[50];
+			int client_port;
+		}client;
+
 		int error_code;
 		struct
 		{
@@ -70,4 +77,6 @@ inline void EventManager::SetCallback(ss_connected_callback on_connected,
 
 
 extern EventManager* EVENT;
+
+_SS_END
 

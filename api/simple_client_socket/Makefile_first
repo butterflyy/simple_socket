@@ -6,12 +6,10 @@ CFLAGS = -std=c++11 -DNDEBUG -Wl,-Bsymbolic
 INCLUDE_PATH = -I./../../../externals/include -I../simple_net -I../Poco/Foundation -I../Poco/Net
 LIBS = -ldl -lglog
 
-OBJS = whsarmserver.o \
-		ServerManagerImp.o \
-		ServerImp.o \
+OBJS = whsarmclient.o \
+		ClientImp.o \
 		EventManager.o \
-		../simple_net/Server.o \
-		../simple_net/ServerManager.o \
+		../simple_net/Client.o \
 		../simple_net/NetHelper.o \
 		../Poco/Foundation/Poco/Timestamp.o \
 		../Poco/Foundation/Poco/Timespan.o \
@@ -34,7 +32,7 @@ OBJS = whsarmserver.o \
 		../Poco/Net/Poco/Net/StreamSocket.o \
 		../Poco/Net/Poco/Net/StreamSocketImpl.o \
 
-TARGET = libwhsarmserver.so
+TARGET = libwhsarmclient.so
 
 $(TARGET) : $(OBJS) 
 	$(CC) -shared -o $@ $(OBJS)  $(LIBS)

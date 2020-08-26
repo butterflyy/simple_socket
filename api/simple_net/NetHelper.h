@@ -1,27 +1,22 @@
 #pragma once
 #include "NetConfig.h"
 #include "NetProtocol.h"
-
-//#define DEFAULT_SND_TIMEOUT 5000
-//#define DEFAULT_RCV_TIMEOUT 5000
-#define HEARTBEAT_TIME                    5000                          //send heartbeat time is 5 second
-#define KEEPALIVE_TIMEOUT               10000                       //keep alive timeout 10 second
-#define RECV_BUFF_SIZE                       5*1024*1024           //recv max buffer is 5MB
+#include "NetParam.h"
 
 
 POCO_DECLARE_EXCEPTION(, SimpleNetException, NetException)
 
 //handle exception begin
-#define EXCEPTION_BEGIN_PEER(peerdes)      \
-	int error_code(0);                                 \
-	std::string error_msg;                             \
-	std::string peerdes_(peerdes);        \
+#define EXCEPTION_BEGIN_ADDR(addr)                 \
+	int error_code(0);                             \
+	std::string error_msg;                         \
+	std::string addr_(addr);                   \
 try{                                               \
 
-#define EXCEPTION_BEGIN EXCEPTION_BEGIN_PEER("")
+#define EXCEPTION_BEGIN EXCEPTION_BEGIN_ADDR("")
 
 //handle exception end
-#define EXCEPTION_END        \
+#define EXCEPTION_END                              \
 }                                                  \
 catch (Poco::Net::ConnectionResetException& e){    \
 	error_code = SN_NETWORK_DISCONNECTED;          \
@@ -48,10 +43,19 @@ catch (...){                                       \
 	error_msg = "Unknow exception";                \
 }                                                  \
 if (error_code != 0){                              \
-	LOG(ERROR) << (peerdes_.empty() ? "" : (peerdes_ + ": "))       \
-		<< "error code : " <<                         \
-		NetHelper::StrError(error_code)            \
-		<< "  error msg : " << error_msg;          \
+	if (error_code == SN_NETWORK_DISCONNECTED)     \
+	{                                              \
+		LOG(INFO) << addr_                         \
+			<< "error code : " <<                  \
+			NetHelper::StrError(error_code)        \
+			<< "  error msg : " << error_msg;      \
+	}											   \
+	else{										   \
+		LOG(ERROR) << addr_                        \
+			<< "error code : " << 				   \
+			NetHelper::StrError(error_code)        \
+			<< "  error msg : " << error_msg;      \
+	}                                              \
 }
 
 
@@ -64,16 +68,15 @@ enum NetError
 	SN_FRAME_ERROR,
 };
 
-
 struct _TCP_HEADER;
 class NetHelper
 {
 public:
 	//if recv buff is small, cause PayloadTooBigException
-	NetHelper(int recvlen = RECV_BUFF_SIZE);
+	NetHelper(const NetParam& netParam);
 
 	//if recv buff is small, cause PayloadTooBigException
-	NetHelper(const StreamSocket& socket, int recvlen = RECV_BUFF_SIZE);
+	NetHelper(const StreamSocket& socket, const NetParam& netParam);
 	virtual ~NetHelper();
 
 	//event
@@ -97,8 +100,16 @@ public:
 	//local address
 	std::string Address();
 
+	//local port
+	int Port();
+
 	//remote address
 	std::string RemoteAddress();
+
+	//remote port
+	int RemotePort();
+
+	std::string FormatAddress();
 	
 	bool IsConnected() const;
 
@@ -123,10 +134,12 @@ protected:
 	StreamSocket _socket;
 	utils::Mutex _sendMutex;
 
+	NetParam _netParam;
+
 	bool _connected;
 
+	int _recvlen;
 	byte* _recvbuff;
-	int _recvlen;  //default 1MB
 
 	TimeSpan _sendSpan;
 	TimeSpan _recvSpan;
@@ -146,8 +159,21 @@ inline std::string NetHelper::Address(){
 	return _socket.address().host().toString();
 }
 
+inline int NetHelper::Port(){
+	return _socket.address().port();
+}
+
 inline std::string NetHelper::RemoteAddress(){
 	return _socket.peerAddress().host().toString();
+}
+
+inline int NetHelper::RemotePort(){
+	return _socket.peerAddress().port();
+}
+
+inline std::string NetHelper::FormatAddress(){
+	return "[Local_" + _socket.address().toString() +
+		" Remote_" + _socket.peerAddress().toString() + "] ";
 }
 
 inline bool NetHelper::IsConnected() const{
@@ -181,10 +207,25 @@ inline void NetHelper::close(){
 }
 
 inline void NetHelper::LogFrame(bool send, const byte* data, int len, int type){
-#if LOG_FRAME_DATA
-	LOG(INFO) << (send ? "Send frame   to: " : "Recv frame from: ") << RemoteAddress() << " type:" << type
-		<< " len: " << len << " data: " << (type == FRAME_STRING ? std::string((char*)data, len > 256 ? 256 : len) : "");
-#endif
+	if (_netParam.log_frame.is_log){
+		std::string str;
+		
+		if (type == FRAME_BINARY){
+			if (_netParam.log_frame.is_log_binary){
+				str = utils::HexFormat(data, (len * 2) > _netParam.log_frame.max_log_size ?
+					(_netParam.log_frame.max_log_size / 2) : len);
+				if ((len * 2) > _netParam.log_frame.max_log_size) str += "...";
+			}
+		}
+		else{
+			str = std::string((char*)data, len > _netParam.log_frame.max_log_size ? 
+				_netParam.log_frame.max_log_size : len);
+			if (len > _netParam.log_frame.max_log_size) str += "...";
+		}
+
+		LOG(INFO) << FormatAddress() << (send ? "Send frame: " : "Recv frame: ") << " type:" << 
+			(type == FRAME_BINARY ? "BINARY" : "STRING") << " len: " << len << " data: " << str;
+	}
 }
 
 

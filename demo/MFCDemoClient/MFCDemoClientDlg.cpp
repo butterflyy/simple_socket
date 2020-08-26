@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define PORT  39877
+#define PORT_BEGIN  39870
 
 // CAboutDlg dialog used for App About
 
@@ -50,7 +50,8 @@ END_MESSAGE_MAP()
 
 CMFCDemoClientDlg* CMFCDemoClientDlg::m_pThis = NULL;
 CMFCDemoClientDlg::CMFCDemoClientDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CMFCDemoClientDlg::IDD, pParent)
+	: CDialogEx(CMFCDemoClientDlg::IDD, pParent),
+	HelperDlg(this)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_pThis = this;
@@ -112,6 +113,7 @@ BOOL CMFCDemoClientDlg::OnInitDialog()
 	SetWindowTextA(GetSafeHwnd(), title.c_str());
 
 	SetDlgItemText(IDC_EDIT_IP, L"127.0.0.1");
+	SetDlgInt(IDC_EDIT_PORT, PORT_BEGIN);
 
 	m_cmbCommand.AddString(L"上传考勤");
 	m_cmbCommand.AddString(L"上传设备信息");
@@ -239,15 +241,19 @@ void CMFCDemoClientDlg::appendSendMsg(const std::string& msg){
 void CMFCDemoClientDlg::OnBnClickedButtonConnect()
 {
 	// TODO: Add your control notification handler code here
-	char buff[100];
-	GetDlgItemTextA(GetSafeHwnd(), IDC_EDIT_IP, buff, 100);
-	std::string ip(buff);
+	std::string ip = GetDlgText(IDC_EDIT_IP);
+	int port = GetDlgInt(IDC_EDIT_PORT);
+
 	if (ip.empty()){
 		ShowMessage("IP地址为空！");
 		return;
 	}
+	if (port == 0){
+		ShowMessage("端口为空！");
+		return;
+	}
 
-	int ret = SC_ConnectToHost(ip.c_str(), PORT);
+	int ret = SC_ConnectToHost(ip.c_str(), port, &m_client);
 	if (ret < 0){
 		ShowMessage(utils::StrFormat("连接服务器失败， err = %s", SC_StrError(ret)));
 		return;
@@ -258,7 +264,7 @@ void CMFCDemoClientDlg::OnBnClickedButtonConnect()
 void CMFCDemoClientDlg::OnBnClickedButtonDisconnect()
 {
 	// TODO: Add your control notification handler code here
-	SC_DisconnectFromHost();
+	SC_DisconnectFromHost(m_client);
 }
 
 afx_msg LRESULT CMFCDemoClientDlg::OnCallbackMsg(WPARAM wParam, LPARAM lParam){
@@ -339,7 +345,8 @@ afx_msg LRESULT CMFCDemoClientDlg::OnCallbackMsg(WPARAM wParam, LPARAM lParam){
 	return 0;
 }
 
-void CALLBACK CMFCDemoClientDlg::disconnected_callback(){
+void CALLBACK CMFCDemoClientDlg::disconnected_callback(SC_CLIENT client){
+	assert(m_pThis->m_client == client);
 	//同步回调过程，避免阻塞
 	CallbackMsg* pMsg = new CallbackMsg();
 	memset(pMsg, 0, sizeof(CallbackMsg));
@@ -347,7 +354,8 @@ void CALLBACK CMFCDemoClientDlg::disconnected_callback(){
 	m_pThis->PostMessage(WM_CALLBACK_MSG, COMMAND_DISCONNECTED, (LPARAM)pMsg);
 }
 
-void CALLBACK CMFCDemoClientDlg::error_callback(int error_code){
+void CALLBACK CMFCDemoClientDlg::error_callback(SC_CLIENT client, int error_code){
+	assert(m_pThis->m_client == client);
 	//同步回调过程，避免阻塞
 	CallbackMsg* pMsg = new CallbackMsg();
 	memset(pMsg, 0, sizeof(CallbackMsg));
@@ -356,7 +364,8 @@ void CALLBACK CMFCDemoClientDlg::error_callback(int error_code){
 	m_pThis->PostMessage(WM_CALLBACK_MSG, COMMAND_ERROR, (LPARAM)pMsg);
 }
 
-void CALLBACK CMFCDemoClientDlg::recvframe_callback(const unsigned char* data, int len, int type){
+void CALLBACK CMFCDemoClientDlg::recvframe_callback(SC_CLIENT client, const unsigned char* data, int len, int type){
+	assert(m_pThis->m_client == client);
 	//同步回调过程，避免阻塞
 	CallbackMsg* pMsg = new CallbackMsg();
 	memset(pMsg, 0, sizeof(CallbackMsg));

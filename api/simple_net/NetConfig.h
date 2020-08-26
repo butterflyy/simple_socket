@@ -1,6 +1,6 @@
 #pragma once
 
-#define USING_GLOG                             1
+#define USING_GLOG                      1
 #define LOG_FRAME_DATA                  1
 
 #include <Poco/Timespan.h>
@@ -28,6 +28,10 @@
 #include <iostream>
 #define LOG(s) std::cout
 #endif
+
+//on linux if call 2 dll, may be used this
+extern bool FLAGS_glog_init;
+extern bool FLAGS_glog_shutdown;
 
 using Poco::Net::Socket;
 using Poco::Net::ServerSocket;

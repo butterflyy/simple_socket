@@ -9,7 +9,7 @@
 std::map<SS_SESSION, std::string> ss;
 utils::Mutex ss_mutex;
 
-void CALLBACK connected_callback(SS_SESSION session, const char* client_ip){
+void CALLBACK connected_callback(SS_SERVER server, SS_SESSION session, const char* client_ip, int client_port){
 	printf("[server] new client connect: %s \n", client_ip);
 	utils::LockGuard<utils::Mutex> lock(ss_mutex);
 	ss[session] = client_ip;
@@ -62,12 +62,13 @@ int main()
 	ret = SS_SetCallback(connected_callback, disconnected_callback, error_callback, recvframe_callback);
 	if (ret < 0) return 0;
 
-	ret = SS_StartServer(PORT);
+	SS_SERVER server(nullptr);
+	ret = SS_StartServer(PORT, &server);
 	if (ret < 0) return 0;
 
 	while (getchar() != 'q'){}
 
-	SS_StopServer();
+	SS_StopServer(server);
 
 	SS_Finalize();
 	

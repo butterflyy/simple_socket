@@ -13,7 +13,7 @@
 #endif
 
 
-#define PORT  39877
+#define PORT_BEGIN  39870
 
 // CAboutDlg dialog used for App About
 
@@ -129,12 +129,21 @@ BOOL CMFCDemoServerDlg::OnInitDialog()
 		return TRUE;
 	}
 
-	ret = SS_StartServerBindAddr("", PORT);
-	if (ret < 0){
-		ShowMessage(utils::StrFormat("启动服务失败， err = %s", SS_StrError(ret)));
-		return TRUE;
-	}
+	for (int i = 0; i < 10; i++){
+		int port = PORT_BEGIN + i;
+		SS_SERVER server;
+		ret = SS_StartServerBindAddr("", PORT_BEGIN + i, &server);
+		if (ret < 0){
+			ShowMessage(utils::StrFormat("启动服务(port = %d)失败， err = %s", port, SS_StrError(ret)));
+			return TRUE;
+		}
 
+		ServerInfo info;
+		info.server = server;
+		info.server_ip = "0.0.0.0";
+		info.server_port = port;
+		m_servers.Add(info);
+	}
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -142,8 +151,6 @@ BOOL CMFCDemoServerDlg::OnInitDialog()
 void CMFCDemoServerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-
-	SS_StopServer();
 
 	SS_Finalize();
 }
@@ -201,10 +208,41 @@ HCURSOR CMFCDemoServerDlg::OnQueryDragIcon()
 void CMFCDemoServerDlg::InitClientList(){
 	m_cmbClientList.ResetContent();
 
-	for (std::vector<ClientInfo>::const_iterator it = m_clients.begin();
-		it != m_clients.end();
+	stringvec listclient;
+
+	m_clients.Lock();
+	m_servers.Lock();
+
+	ClientList::List& clients = m_clients.Data();
+	for (ClientList::List::const_iterator it = clients.begin();
+		it != clients.end();
 		++it){
-		m_cmbClientList.AddString(utils::s2ws(it->client_ip).c_str());
+		std::string str;
+
+		//get server info
+		bool find = false;
+		ServerList::List& servers = m_servers.Data();
+		for (ServerList::List::const_iterator its = servers.begin();
+			its != servers.end();
+			++its){
+			if (it->server == its->server){
+				find = true;
+				str = utils::StrFormat("S(%d)", its->server_port);
+				break;
+			}
+		}
+
+		assert(find);
+
+		str += utils::StrFormat("_C(%s:%d)", it->client_ip.c_str(), it->client_port);
+
+		listclient.push_back(str);
+	}
+	m_servers.Unlock();
+	m_clients.Unlock();
+
+	for (int i = 0; i < listclient.size(); i++){
+		m_cmbClientList.AddString(utils::s2ws(utils::StrFormat("%d_%s", i, listclient[i].c_str())).c_str());
 	}
 
 	m_cmbClientList.SetCurSel(0);
@@ -255,43 +293,70 @@ void CMFCDemoServerDlg::appendSendMsg(const std::string& msg){
 }
 
 
-std::string CMFCDemoServerDlg::GetClientIp(SS_SESSION session){
-	for (std::vector<ClientInfo>::const_iterator it = m_clients.begin();
-		it != m_clients.end();
+std::string CMFCDemoServerDlg::GetClientInfo(SS_SESSION session){
+	m_clients.Lock();
+	ClientInfo cinfo;
+	bool find = false;
+	ClientList::List& clients = m_clients.Data();
+	for (ClientList::List::const_iterator it = clients.begin();
+		it != clients.end();
 		++it){
 		if (it->session == session){
-			return it->client_ip;
+			cinfo = *it;
+			find = true;
+			break;
 		}
 	}
-	assert(false);
-	return "";
+	assert(find);
+	m_clients.Unlock();
+
+
+	m_servers.Lock();
+
+	ServerInfo sinfo;
+	find = false;
+	ServerList::List& servers = m_servers.Data();
+	for (ServerList::List::const_iterator its = servers.begin();
+		its != servers.end();
+		++its){
+		if (its->server == cinfo.server){
+			sinfo = *its;
+			find = true;
+			break;
+		}
+	}
+	assert(find);
+	m_servers.Unlock();
+
+	return utils::StrFormat("S(%d)_C(%s:%d)", sinfo.server_port, cinfo.client_ip.c_str(), cinfo.client_port);
 }
 
 afx_msg LRESULT CMFCDemoServerDlg::OnCallbackMsg(WPARAM wParam, LPARAM lParam){
 	return 0;
 }
 
-void CALLBACK CMFCDemoServerDlg::connected_callback(SS_SESSION session, const char* client_ip){
+void CALLBACK CMFCDemoServerDlg::connected_callback(SS_SESSION server, SS_SESSION session, 
+	const char* client_ip, int port){
+
 	ClientInfo info;
+	info.server = server;
 	info.session = session;
 	info.client_ip = client_ip;
-	m_pThis->m_clients.push_back(info);
+	info.client_port = port;
+	m_pThis->m_clients.Add(info);
+	
 	m_pThis->InitClientList();
 
 	m_pThis->ShowMessage(utils::StrFormat("设备连接"));
 }
 
 void CALLBACK CMFCDemoServerDlg::disconnected_callback(SS_SESSION session){
-	std::vector<ClientInfo> clients;
-	for (std::vector<ClientInfo>::const_iterator it = m_pThis->m_clients.begin();
-		it != m_pThis->m_clients.end();
-		++it){
-		if (it->session != session){
-			clients.push_back(*it);
-		}
-	}
 
-	m_pThis->m_clients = clients;
+	ClientInfo info;
+	info.session = session;
+
+	m_pThis->m_clients.Remove(info);
+
 	m_pThis->InitClientList();
 
 	m_pThis->ShowMessage(utils::StrFormat("设备断开"));
@@ -302,7 +367,7 @@ void CALLBACK CMFCDemoServerDlg::error_callback(SS_SESSION session, int error_co
 }
 
 void CALLBACK CMFCDemoServerDlg::recvframe_callback(SS_SESSION session, const unsigned char* data, int len, int type){
-	std::string client_ip = m_pThis->GetClientIp(session);
+	std::string client_ip = m_pThis->GetClientInfo(session);
 	switch (type){
 	case SS_FRAME_STRING:{
 							 std::string str((char*)data, len);

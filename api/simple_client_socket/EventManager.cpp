@@ -1,6 +1,7 @@
 #include "EventManager.h"
 #include "NetConfig.h" //for glog
 
+_SC_BEGIN
 
 class EventThread : public utils::Thread
 {
@@ -30,15 +31,15 @@ public:
 		{
 		case EVENT_DISCONNECT:
 			if (_manager->_on_disconnected)
-				_manager->_on_disconnected();
+				_manager->_on_disconnected(_eventData.client);
 			break;
 		case EVENT_ERROR:
 			if (_manager->_on_error)
-				_manager->_on_error(_eventData.error_code);
+				_manager->_on_error(_eventData.client, _eventData.error_code);
 			break;
 		case EVENT_RECV_FRAME:
 			if (_manager->_on_disconnected)
-				_manager->_on_recvframe( _eventData.frame.data,
+				_manager->_on_recvframe(_eventData.client, _eventData.frame.data,
 				_eventData.frame.len, _eventData.frame.type);
 			break;
 		default:
@@ -106,3 +107,5 @@ void EventManager::ClearThreadEvent()
 		}
 	}
 }
+
+_SC_END

@@ -6,7 +6,7 @@ class Server : public NetHelper, private utils::Thread
 {
 public:
 	friend class ServerManager;
-	Server(const StreamSocket& socket);
+	Server(const StreamSocket& socket, const NetParam& netParam);
 	virtual ~Server();
 
 	void Disconnect();

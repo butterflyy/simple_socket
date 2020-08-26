@@ -1,21 +1,26 @@
 #include "NetHelper.h"
+#include <typeinfo>
 
+bool FLAGS_glog_init = false;
+bool FLAGS_glog_shutdown = false;
 
 POCO_IMPLEMENT_EXCEPTION(SimpleNetException, NetException, "SimpleNet exception")
 
-NetHelper::NetHelper(int recvlen)
-:_connected(false), 
-_recvbuff(new byte[recvlen]),
-_recvlen(recvlen),
+NetHelper::NetHelper(const NetParam& netParam)
+:_netParam(netParam),
+_connected(false), 
+_recvlen(netParam.recv_buff_size * 1024 * 1024),
+_recvbuff(new byte[_recvlen]),
 _called(true)
 {
 }
 
-NetHelper::NetHelper(const StreamSocket& socket, int recvlen)
+NetHelper::NetHelper(const StreamSocket& socket, const NetParam& netParam)
 :_socket(socket),
+_netParam(netParam),
 _connected(false),
-_recvbuff(new byte[recvlen]),
-_recvlen(recvlen),
+_recvlen(netParam.recv_buff_size * 1024 * 1024),
+_recvbuff(new byte[_recvlen]),
 _called(true)
 {
 }
@@ -31,9 +36,9 @@ void NetHelper::SendFrame(const byte* data, int len, int type){
 
 	LogFrame(true, data, len, type);
 
-	_recvSpan.restart();
-
 	sendFrame(MSG_NORMAL, type, data, len);
+
+	_sendSpan.restart();
 }
 
 

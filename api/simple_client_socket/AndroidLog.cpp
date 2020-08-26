@@ -3,7 +3,7 @@
 #include <common/utils.h>
 #include <android/log.h>
 
-const std::string LOGFILE = "/sdcard/simpleclientsocket.txt";
+const std::string LOGFILE = "/sdcard/whsarmclient.txt";
 
 const int MAX_LOGFILE_SIZE = 10 * 1024 * 1024; //10M
 

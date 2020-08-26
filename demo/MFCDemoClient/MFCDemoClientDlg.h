@@ -5,6 +5,7 @@
 #pragma once
 #include "afxwin.h"
 #include <common\utils.h>
+#include <MFC\HelperDlg.h>
 #include <whsarmclient.h>
 
 
@@ -31,7 +32,7 @@ struct CallbackMsg
 
 
 // CMFCDemoClientDlg dialog
-class CMFCDemoClientDlg : public CDialogEx
+class CMFCDemoClientDlg : public CDialogEx, public HelperDlg
 {
 // Construction
 public:
@@ -43,7 +44,7 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 
-
+	SC_CLIENT m_client = NULL;
 // Implementation
 protected:
 	HICON m_hIcon;
@@ -71,9 +72,9 @@ public:
 	int SendStringFrame(const std::string& str);
 	int SendBinaryFrame(const byte* data, int len);
 public:
-	static void CALLBACK disconnected_callback();
-	static void CALLBACK error_callback(int error_code);
-	static void CALLBACK recvframe_callback(const unsigned char* data, int len, int type);
+	static void CALLBACK disconnected_callback(SC_CLIENT client);
+	static void CALLBACK error_callback(SC_CLIENT client, int error_code);
+	static void CALLBACK recvframe_callback(SC_CLIENT client, const unsigned char* data, int len, int type);
 };
 
 inline void CMFCDemoClientDlg::ShowMessage(const std::string& msg){
@@ -81,9 +82,9 @@ inline void CMFCDemoClientDlg::ShowMessage(const std::string& msg){
 }
 
 inline int CMFCDemoClientDlg::SendStringFrame(const std::string& str){
-	return SC_SendFrame((byte*)str.c_str(), str.size(), SC_FRAME_STRING);
+	return SC_SendFrame(m_client, (byte*)str.c_str(), str.size(), SC_FRAME_STRING);
 }
 
 inline int CMFCDemoClientDlg::SendBinaryFrame(const byte* data, int len){
-	return SC_SendFrame(data, len, SC_FRAME_BINARY);
+	return SC_SendFrame(m_client, data, len, SC_FRAME_BINARY);
 }

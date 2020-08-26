@@ -1,12 +1,15 @@
 #pragma once
+#include "Common.h"
 #include "Server.h"
 #include "EventManager.h"
+
+_SS_BEGIN
 
 class ServerManagerImp;
 class ServerImp : public Server
 {
 public:
-	ServerImp(ServerManagerImp* serverManagerImp, const StreamSocket& socket);
+	ServerImp(ServerManagerImp* serverManagerImp, const StreamSocket& socket, const NetParam& netParam);
 	~ServerImp();
 
 	void OnConnected() override;
@@ -16,5 +19,7 @@ public:
 private:
 	ServerManagerImp* _serverManagerImp;
 };
+
+_SS_END
 
 

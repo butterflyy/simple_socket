@@ -1,10 +1,10 @@
 #define complier 
 CC = g++
-CFLAGS = -Wall -std=c++11 -DNDEBUG
+CFLAGS = -std=c++11 -DNDEBUG -Wl,-Bsymbolic
 
 #define include lib path
 INCLUDE_PATH = -I./../../../externals/include -I../simple_net -I../Poco/Foundation -I../Poco/Net
-LIBS = -lglog
+LIBS = -ldl -lglog
 
 OBJS = whsarmserver.o \
 		ServerManagerImp.o \

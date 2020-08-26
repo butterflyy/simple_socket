@@ -1,6 +1,7 @@
 #include "EventManager.h"
 #include "NetConfig.h" //for glog
 
+_SS_BEGIN
 
 class EventThread : public utils::Thread
 {
@@ -30,7 +31,8 @@ public:
 		{
 		case EVENT_CONNECT:
 			if (_manager->_on_connected)
-				_manager->_on_connected(_eventData.session, _eventData.client_ip);
+				_manager->_on_connected(_eventData.client.server, _eventData.session,
+				_eventData.client.client_ip, _eventData.client.client_port);
 			break;
 		case EVENT_DISCONNECT:
 			if (_manager->_on_disconnected)
@@ -111,3 +113,5 @@ void EventManager::ClearThreadEvent()
 		}
 	}
 }
+
+_SS_END
