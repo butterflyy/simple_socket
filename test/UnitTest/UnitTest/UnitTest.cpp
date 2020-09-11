@@ -5,6 +5,22 @@
 #include <whsarmclient.h>
 #include <common/ConvertSync.h>
 
+//指定测试选项
+// --gtest_filter=TestServerClient.BigFrame
+
+struct KeepAlive {
+	long heatbeat_time;
+	long keepalive_time;
+	long keepalive_count;
+};
+
+struct NetParam {
+	long recv_buff_size;
+	KeepAlive keep_alive;
+};
+
+SS_API int WINAPI SS_GetNetParam(struct NetParam* param);
+SS_API int WINAPI SS_SetNetParam(const struct NetParam* param);
 
 namespace {
 	class TestServerClient : public testing::Test {
@@ -30,6 +46,11 @@ namespace {
 			SS_Finalize();
 		}
 
+		static void BuildRandomData(utils::Buffer& buff) {
+			for (int i = 0; i < buff.size(); i++) {
+				buff[i] = rand() & 0xFF;
+			}
+		}
 
 		struct ss_connected_callback_data {
 			SS_SERVER server;
@@ -40,6 +61,11 @@ namespace {
 
 		struct ss_disconnected_callback_data {
 			SS_SESSION session;
+		};
+
+		struct ss_error_callback_data {
+			SS_SESSION session;
+			int error_code;
 		};
 
 		struct ss_recvframe_callback_data {
@@ -53,6 +79,10 @@ namespace {
 			SC_CLIENT client;
 		};
 
+		struct sc_error_callback_data {
+			SC_CLIENT client;
+			int error_code;
+		};
 
 		struct sc_recvframe_callback_data {
 			SC_CLIENT client;
@@ -71,7 +101,7 @@ namespace {
 			data->client_ip = client_ip;
 			data->client_port = client_port;
 
-			utils::Thread::msleep(10);
+			utils::Thread::msleep(100);
 			int ret = Sync.SetEvent("ss_connected_callback", data);
 			EXPECT_EQ(ret, 0);
 		}
@@ -86,7 +116,13 @@ namespace {
 		}
 												 
 		static void CALLBACK  ss_error_callback(SS_SESSION session, int error_code) {
-			EXPECT_TRUE(false);
+			ss_error_callback_data* data = new ss_error_callback_data();
+			data->session = session;
+			data->error_code = error_code;
+
+			utils::Thread::msleep(10);
+			int ret = Sync.SetEvent("ss_error_callback", data);
+			EXPECT_EQ(ret, 0);
 		}
 												 
 		static void CALLBACK  ss_recvframe_callback(SS_SESSION session, const unsigned char* data_, int len, int type) {
@@ -112,7 +148,13 @@ namespace {
 		}
 												 
 		static void CALLBACK  sc_error_callback(SC_CLIENT client, int error_code) {
-			EXPECT_TRUE(false);
+			sc_error_callback_data* data = new sc_error_callback_data();
+			data->client = client;
+			data->error_code = error_code;
+
+			utils::Thread::msleep(10);
+			int ret = Sync.SetEvent("sc_error_callback", data);
+			EXPECT_EQ(ret, 0);
 		}
 												 
 		static void CALLBACK  sc_recvframe_callback(SC_CLIENT client, const unsigned char* data_, int len, int type) {
@@ -169,7 +211,8 @@ namespace {
 			
 			if (ret == 0) {
 				EXPECT_EQ(data->client, client);
-				std::string recvstr((char*)data->data, data->len);
+				EXPECT_EQ(data->len, teststr.length());
+				std::string recvstr((char*)data->data);
 				EXPECT_EQ(teststr, recvstr);
 				EXPECT_EQ(data->type, SS_FRAME_STRING);
 
@@ -192,6 +235,7 @@ namespace {
 
 			if (ret == 0) {
 				EXPECT_EQ(data->client, client);
+				EXPECT_EQ(data->len, 12);
 				EXPECT_EQ(memcmp(data->data, sendbt, 12), 0);
 				EXPECT_EQ(data->type, SC_FRAME_BINARY);
 
@@ -212,7 +256,8 @@ namespace {
 
 			if (ret == 0) {
 				EXPECT_EQ(data->session, session);
-				std::string recvstr((char*)data->data, data->len);
+				EXPECT_EQ(data->len, teststr.length());
+				std::string recvstr((char*)data->data);
 				EXPECT_EQ(teststr, recvstr);
 				EXPECT_EQ(data->type, SS_FRAME_STRING);
 
@@ -236,6 +281,7 @@ namespace {
 
 			if (ret == 0) {
 				EXPECT_EQ(data->session, session);
+				EXPECT_EQ(data->len, 12);
 				EXPECT_EQ(memcmp(data->data, sendbt, 12), 0);
 				EXPECT_EQ(data->type, SC_FRAME_BINARY);
 
@@ -515,6 +561,247 @@ namespace {
 					delete[]data->data;
 					delete data;
 				}
+			}
+		}
+
+		//disconnect
+		for (int i = 0; i < clientsize; i++) {
+			{
+				ret = SC_DisconnectFromHost(clients[i]);
+				EXPECT_EQ(ret, 0);
+
+				ss_disconnected_callback_data* data(nullptr);
+				ret = Sync.WaitEvent("ss_disconnected_callback", (void**)&data, 5000);
+				EXPECT_EQ(ret, 0);
+
+				if (ret == 0) {
+					EXPECT_EQ(data->session, sessions[i]);
+					delete data;
+				}
+			}
+		}
+	}
+
+	TEST_F(TestServerClient, Function) {
+		NetParam param;
+		memset(&param, 0, sizeof(NetParam));
+
+		int ret = SS_GetNetParam(&param);
+		ASSERT_EQ(ret, 0);
+
+
+		const std::string ip = "127.0.0.1";
+		const int port = 56234;
+
+		SS_SERVER server = nullptr;
+		ret = SS_StartServer(port, &server);
+		EXPECT_EQ(ret, 0);
+		EXPECT_NE(server, nullptr);
+
+		SC_CLIENT client = nullptr;
+		ret = SC_ConnectToHost(ip.c_str(), port, &client);
+		EXPECT_EQ(ret, 0);
+		EXPECT_NE(client, nullptr);
+
+		ss_connected_callback_data* data(nullptr);
+		ret = Sync.WaitEvent("ss_connected_callback", (void**)&data, 5000);
+		EXPECT_EQ(ret, 0);
+		EXPECT_EQ(data->server, server);
+		EXPECT_EQ(data->client_ip, ip);
+
+		SS_SESSION session = data->session;
+		delete data;
+
+
+		//make max package  test
+		utils::Buffer max_buff(param.recv_buff_size * 1024 * 1024);
+		BuildRandomData(max_buff);
+		utils::Buffer max_buff_1(param.recv_buff_size * 1024 * 1024 + 1);
+		//server send binary to client frame
+		{
+			ret = SS_SendFrame(session, max_buff.data(), max_buff.size(), SS_FRAME_BINARY);
+			EXPECT_EQ(ret, 0);
+
+			sc_recvframe_callback_data* data(nullptr);
+			ret = Sync.WaitEvent("sc_recvframe_callback", (void**)&data, 5000);
+			EXPECT_EQ(ret, 0);
+
+			if (ret == 0) {
+				EXPECT_EQ(data->client, client);
+				EXPECT_EQ(data->len, max_buff.size());
+				EXPECT_EQ(memcmp(data->data, max_buff.data(), max_buff.size()), 0);
+				EXPECT_EQ(data->type, SC_FRAME_BINARY);
+
+				delete[]data->data;
+				delete data;
+			}
+		}
+
+		{
+			ret = SS_SendFrame(session, max_buff_1.data(), max_buff_1.size(), SS_FRAME_BINARY);
+			EXPECT_EQ(ret, SS_PAYLOAD_TOO_BIG);
+
+			//sc_error_callback_data* data(nullptr);
+			//ret = Sync.WaitEvent("sc_error_callback", (void**)&data, 5000);
+			//EXPECT_EQ(ret, 0);
+
+			//if (ret == 0) {
+			//	EXPECT_EQ(data->client, client);
+			//	EXPECT_EQ(data->error_code, SC_PAYLOAD_TOO_BIG);
+
+			//	delete data;
+			//}
+		}
+
+
+		//client send binary to server frame
+		{
+			ret = SC_SendFrame(client, max_buff.data(), max_buff.size(), SC_FRAME_BINARY);
+			EXPECT_EQ(ret, 0);
+
+			ss_recvframe_callback_data* data(nullptr);
+			ret = Sync.WaitEvent("ss_recvframe_callback", (void**)&data, 5000);
+			EXPECT_EQ(ret, 0);
+
+			if (ret == 0) {
+				EXPECT_EQ(data->session, session);
+				EXPECT_EQ(data->len, max_buff.size());
+				EXPECT_EQ(memcmp(data->data, max_buff.data(), max_buff.size()), 0);
+				EXPECT_EQ(data->type, SC_FRAME_BINARY);
+
+				delete[]data->data;
+				delete data;
+			}
+		}
+		{
+			ret = SC_SendFrame(client, max_buff_1.data(), max_buff_1.size(), SS_FRAME_BINARY);
+			EXPECT_EQ(ret, SC_PAYLOAD_TOO_BIG);
+
+			//ss_error_callback_data* data(nullptr);
+			//ret = Sync.WaitEvent("ss_error_callback", (void**)&data, 5000);
+			//EXPECT_EQ(ret, 0);
+
+			//if (ret == 0) {
+			//	EXPECT_EQ(data->session, session);
+			//	EXPECT_EQ(data->error_code, SC_PAYLOAD_TOO_BIG);
+
+			//	delete data;
+			//}
+		}
+
+
+		//test string boundary
+		//OneClient has tested
+
+		//disconnect
+		{
+			ret = SC_DisconnectFromHost(client);
+			EXPECT_EQ(ret, 0);
+
+			ss_disconnected_callback_data* data(nullptr);
+			ret = Sync.WaitEvent("ss_disconnected_callback", (void**)&data, 5000);
+			EXPECT_EQ(ret, 0);
+
+			if (ret == 0) {
+				EXPECT_EQ(data->session, session);
+				delete data;
+			}
+		}
+	}
+
+	TEST_F(TestServerClient, BigFrame) {
+		enum {
+			MAX_FRAME_SIZE = 100//MB
+		};
+
+		NetParam param;
+		memset(&param, 0, sizeof(NetParam));
+
+		int ret = SS_GetNetParam(&param);
+		ASSERT_EQ(ret, 0);
+
+		param.recv_buff_size = MAX_FRAME_SIZE;
+
+		ret = SS_SetNetParam(&param);
+		ASSERT_EQ(ret, 0);
+
+		const int clientsize = 2;
+
+		const std::string ip = "127.0.0.1";
+		const int port = 56234;
+
+		SS_SERVER server = nullptr;
+		ret = SS_StartServer(port, &server);
+		EXPECT_EQ(ret, 0);
+		EXPECT_NE(server, nullptr);
+
+		SC_CLIENT clients[clientsize] = { 0 };
+		SS_SESSION sessions[clientsize] = { 0 };
+
+		for (int i = 0; i < clientsize; i++) {
+			ret = SC_ConnectToHost(ip.c_str(), port, &clients[i]);
+			EXPECT_EQ(ret, 0);
+			EXPECT_NE(clients[i], nullptr);
+
+			ss_connected_callback_data* data(nullptr);
+			ret = Sync.WaitEvent("ss_connected_callback", (void**)&data, 8000);
+			EXPECT_EQ(ret, 0);
+			EXPECT_EQ(data->server, server);
+			EXPECT_EQ(data->client_ip, ip);
+
+			sessions[i] = data->session;
+			delete data;
+		}
+
+		//build data
+		//make max package  test
+		utils::Buffer max_buff(param.recv_buff_size * 1024 * 1024);
+
+		std::cout << "begin build random data over";
+		BuildRandomData(max_buff);
+		std::cout << "build random data over";
+
+		for (int i = 0; i < clientsize; i++) {
+			//server send to client frame
+			{
+				ret = SS_SendFrame(sessions[i], max_buff.data(), max_buff.size(), SS_FRAME_BINARY);
+				EXPECT_EQ(ret, 0);
+
+				sc_recvframe_callback_data* data(nullptr);
+				ret = Sync.WaitEvent("sc_recvframe_callback", (void**)&data, 10000);
+				EXPECT_EQ(ret, 0);
+
+				if (ret == 0) {
+					EXPECT_EQ(data->client, clients[i]);
+					EXPECT_EQ(data->len, max_buff.size());
+					EXPECT_EQ(memcmp(data->data, max_buff.data(), max_buff.size()), 0);
+					EXPECT_EQ(data->type, SS_FRAME_BINARY);
+
+					delete[]data->data;
+					delete data;
+				}
+			}
+
+
+			//client send to server frame
+			{
+				ret = SC_SendFrame(clients[i], max_buff.data(), max_buff.size(), SC_FRAME_BINARY);
+				EXPECT_EQ(ret, 0);
+
+				ss_recvframe_callback_data* data(nullptr);
+				ret = Sync.WaitEvent("ss_recvframe_callback", (void**)&data, 10000);
+				EXPECT_EQ(ret, 0);
+
+				if (ret == 0) {
+					EXPECT_EQ(data->session, sessions[i]);
+					EXPECT_EQ(data->len, max_buff.size());
+					EXPECT_EQ(memcmp(data->data, max_buff.data(), max_buff.size()), 0);
+					EXPECT_EQ(data->type, SC_FRAME_BINARY);
+
+					delete[]data->data;
+					delete data;
+				}
+
 			}
 		}
 

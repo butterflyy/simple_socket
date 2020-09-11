@@ -1,9 +1,9 @@
 EXPORTS
-	SC_Initialize
-	SC_Finalize
-	SC_GetLibVersion
-	SC_StrError
-	SC_SetCallback
-	SC_ConnectToHost
-	SC_DisconnectFromHost
-	SC_SendFrame
+	SC_Initialize @1
+	SC_Finalize @2
+	SC_GetLibVersion @3
+	SC_StrError @4
+	SC_SetCallback @5
+	SC_ConnectToHost @6
+	SC_DisconnectFromHost @7
+	SC_SendFrame @8

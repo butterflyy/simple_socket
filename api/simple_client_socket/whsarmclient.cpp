@@ -323,6 +323,10 @@ SC_API int WINAPI SC_SendFrame(SC_CLIENT client, const unsigned char* data, int 
 		return SC_INVALID_PARAM;
 	}
 
+	if (len > clientImp->GetNetParam().recv_buff_size * 1024 * 1024){
+		return SC_PAYLOAD_TOO_BIG;
+	}
+
 	EXCEPTION_BEGIN
 		clientImp->SendFrame(data, len, type);
 	EXCEPTION_END

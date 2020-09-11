@@ -38,6 +38,10 @@ catch (Poco::Exception& e){                        \
 	error_code = SN_NETWORK_ERROR;                 \
 	error_msg = e.displayText();                   \
 }                                                  \
+catch (std::exception& e){                         \
+	error_code = SN_NETWORK_ERROR;                 \
+	error_msg = e.what();                          \
+}                                                  \
 catch (...){                                       \
 	error_code = SN_NETWORK_ERROR;                 \
 	error_msg = "Unknow exception";                \
@@ -80,6 +84,8 @@ public:
 	virtual ~NetHelper();
 
 	void SetNetParam(const NetParam& param);
+	NetParam GetNetParam() const;
+
 	void SetLogFrameParam(const LogFrameParam& param);
 
 	//event
@@ -153,6 +159,10 @@ protected:
 	bool _called; //if event called.
 };
 
+inline NetParam NetHelper::GetNetParam() const{
+	return _netParam;
+}
+
 inline void NetHelper::SetNetParam(const NetParam& param){
 	_netParam = param;
 }
@@ -212,10 +222,13 @@ inline const char* NetHelper::StrError(int err){
 
 inline void NetHelper::createRecvBuffer(){
 	assert(_netParam.recv_buff_size > 0);
-	if (_recvlen != _netParam.recv_buff_size * 1024 * 1024){
+	int newRecvLen = _netParam.recv_buff_size * 1024 * 1024;
+	if (_recvlen != newRecvLen){
 		SAFE_DELETE_ARRAY(_recvbuff);
-		_recvlen = _netParam.recv_buff_size * 1024 * 1024;
-		_recvbuff = new byte[_recvlen];
+		_recvlen = newRecvLen;
+
+		//string add \0
+		_recvbuff = new byte[_recvlen + 1];
 		if (!_recvbuff){
 			throw Poco::OutOfMemoryException();
 		}

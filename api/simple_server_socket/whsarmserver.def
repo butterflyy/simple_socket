@@ -1,14 +1,16 @@
 EXPORTS
-	SS_Initialize
-	SS_Finalize
-	SS_GetLibVersion
-	SS_StrError
-	SS_SetCallback
-	SS_StartServer
-	SS_StopServer
-	SS_DisconnectClient
-	SS_SendFrame
-	SS_StartServerBindAddr
-	SS_Helper_SetEvent
-	SS_Helper_WaitEvent
-	SS_Helper_Log
+	SS_Initialize @1
+	SS_Finalize @2
+	SS_GetLibVersion @3
+	SS_StrError @4
+	SS_SetCallback @5
+	SS_StartServer @6
+	SS_StopServer @7
+	SS_DisconnectClient @8
+	SS_SendFrame @9
+	SS_StartServerBindAddr @10
+	SS_GetNetParam @11
+	SS_SetNetParam @12
+	SS_Helper_SetEvent @13
+	SS_Helper_WaitEvent @14
+	SS_Helper_Log @15

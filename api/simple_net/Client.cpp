@@ -52,9 +52,6 @@ void Client::Connect(const char* ip, int port){
 					<< " heatbeat_time=" << _netParam.keep_alive.heatbeat_time
 					<< " keepalive_count=" << _netParam.keep_alive.keepalive_count
 					<< " keepalive_time=" << _netParam.keep_alive.keepalive_time;
-
-				//create recv buffer
-				createRecvBuffer();
 			}
 			else{
 				throw Poco::TimeoutException("No handshake ack");
@@ -82,6 +79,12 @@ void Client::Disconnect(){
 }
 
 void Client::run(){
+	{
+		EXCEPTION_BEGIN
+		createRecvBuffer();
+		EXCEPTION_END
+	}
+
 	std::string addr_info;
 	{
 		EXCEPTION_BEGIN

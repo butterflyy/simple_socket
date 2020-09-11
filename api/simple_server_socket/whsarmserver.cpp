@@ -350,6 +350,10 @@ SS_API int WINAPI SS_SendFrame(SS_SESSION session, const unsigned char* data, in
 		return SS_INVALID_PARAM;
 	}
 
+	if (len > serverImp->GetNetParam().recv_buff_size * 1024 * 1024){
+		return SS_PAYLOAD_TOO_BIG;
+	}
+
 	EXCEPTION_BEGIN
 		serverImp->SendFrame(data, len, type);
 	EXCEPTION_END
@@ -389,6 +393,39 @@ SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port, SS_SERVER* se
 	*server = serverManagerImp;
 
 	return ret;
+}
+
+SS_API int WINAPI SS_GetNetParam(struct NetParam* param){
+	using namespace ss;
+
+	if (!IsInitialize()) {
+		return SS_ERROR;
+	}
+
+	if (!param){
+		return SS_INVALID_PARAM;
+	}
+
+	*param = Config::instance().Data().net;
+
+	return SS_SUCCESS;
+}
+
+SS_API int WINAPI SS_SetNetParam(const struct NetParam* param){
+	using namespace ss;
+
+	if (!IsInitialize()) {
+		return SS_ERROR;
+	}
+
+	if (!param){
+		return SS_INVALID_PARAM;
+	}
+
+	//do not save log file
+	Config::instance().Data_().net = *param;
+
+	return SS_SUCCESS;
 }
 
 SS_API int WINAPI SS_Helper_SetEvent(const char* id, const char* data){
