@@ -20,7 +20,7 @@
 * whsarmserver 库版本号
 * 头文件声明的库版本号， 通过 SS_GetLibVersion 接口获取实际加载库的版本号。
 */
-#define SSAPI_VERSION "1.2.0"
+#define SSAPI_VERSION "2.0.0"
 
 #ifdef __cplusplus
 extern "C" {
