@@ -262,7 +262,8 @@ SC_API int WINAPI SC_ConnectToHost(const char* ip, int port, SC_CLIENT* client){
 	ClientImp* clientImp = nullptr;
 
 	EXCEPTION_BEGIN
-		clientImp = new ClientImp(Config::instance().Data());
+		clientImp = new ClientImp();
+		clientImp->SetLogFrameParam(Config::instance().Data().log_frame);
 		clientImp->Connect(ip, port);
 	EXCEPTION_END
 

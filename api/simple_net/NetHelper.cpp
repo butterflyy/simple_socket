@@ -6,23 +6,25 @@ bool FLAGS_glog_shutdown = false;
 
 POCO_IMPLEMENT_EXCEPTION(SimpleNetException, NetException, "SimpleNet exception")
 
-NetHelper::NetHelper(const NetParam& netParam)
-:_netParam(netParam),
-_connected(false), 
-_recvlen(netParam.recv_buff_size * 1024 * 1024),
-_recvbuff(new byte[_recvlen]),
+NetHelper::NetHelper()
+:_connected(false), 
+_recvlen(0),
+_recvbuff(nullptr),
 _called(true)
 {
+	memset(&_netParam, 0, sizeof(_netParam));
+	memset(&_logFrameParam, 0, sizeof(_logFrameParam));
 }
 
-NetHelper::NetHelper(const StreamSocket& socket, const NetParam& netParam)
+NetHelper::NetHelper(const StreamSocket& socket)
 :_socket(socket),
-_netParam(netParam),
 _connected(false),
-_recvlen(netParam.recv_buff_size * 1024 * 1024),
-_recvbuff(new byte[_recvlen]),
+_recvlen(0),
+_recvbuff(nullptr),
 _called(true)
 {
+	memset(&_netParam, 0, sizeof(_netParam));
+	memset(&_logFrameParam, 0, sizeof(_logFrameParam));
 }
 
 
@@ -115,9 +117,9 @@ void NetHelper::checkHeader(const _TCP_HEADER& header){
 	}
 }
 
-void NetHelper::readEmptyBuffer(){
+void NetHelper::readEmptyBuffer(byte* data, int len){
 	Poco::Timespan timeout(100000);
 	while (_socket.poll(timeout, Socket::SELECT_READ)){
-		_socket.receiveBytes(_recvbuff, _recvlen);
+		_socket.receiveBytes(data, len);
 	}
 }

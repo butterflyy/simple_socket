@@ -72,12 +72,15 @@ struct _TCP_HEADER;
 class NetHelper
 {
 public:
-	//if recv buff is small, cause PayloadTooBigException
-	NetHelper(const NetParam& netParam);
+	//if recv buff is small, cause PayloadTooBigException, client use
+	NetHelper();
 
-	//if recv buff is small, cause PayloadTooBigException
-	NetHelper(const StreamSocket& socket, const NetParam& netParam);
+	//if recv buff is small, cause PayloadTooBigException, server use
+	NetHelper(const StreamSocket& socket);
 	virtual ~NetHelper();
+
+	void SetNetParam(const NetParam& param);
+	void SetLogFrameParam(const LogFrameParam& param);
 
 	//event
 	virtual void OnConnected() = 0;
@@ -121,6 +124,8 @@ public:
 	void LogFrame(bool send, const byte* data, int len, int type);
 
 protected:
+	void createRecvBuffer();
+
 	void close();
 	void sendFrame(int msgtype, int frametype, const byte* data, int len);
 	//return msglen
@@ -129,12 +134,13 @@ protected:
 	void sendAll(const byte* data, int len);
 	void recvAll(byte* data, int len);
 	void checkHeader(const _TCP_HEADER& header);
-	void readEmptyBuffer();
+	void readEmptyBuffer(byte* data, int len);
 protected:
 	StreamSocket _socket;
 	utils::Mutex _sendMutex;
 
 	NetParam _netParam;
+	LogFrameParam _logFrameParam;
 
 	bool _connected;
 
@@ -146,6 +152,14 @@ protected:
 
 	bool _called; //if event called.
 };
+
+inline void NetHelper::SetNetParam(const NetParam& param){
+	_netParam = param;
+}
+
+inline void NetHelper::SetLogFrameParam(const LogFrameParam& param){
+	_logFrameParam = param;
+}
 
 inline void NetHelper::SendFrameString(const std::string& data){
 	return SendFrame((byte*)data.c_str(), data.length(), FRAME_STRING);
@@ -196,6 +210,18 @@ inline const char* NetHelper::StrError(int err){
 	}
 }
 
+inline void NetHelper::createRecvBuffer(){
+	assert(_netParam.recv_buff_size > 0);
+	if (_recvlen != _netParam.recv_buff_size * 1024 * 1024){
+		SAFE_DELETE_ARRAY(_recvbuff);
+		_recvlen = _netParam.recv_buff_size * 1024 * 1024;
+		_recvbuff = new byte[_recvlen];
+		if (!_recvbuff){
+			throw Poco::OutOfMemoryException();
+		}
+	}
+}
+
 inline void NetHelper::close(){
 	try{
 		_socket.shutdown();
@@ -207,20 +233,20 @@ inline void NetHelper::close(){
 }
 
 inline void NetHelper::LogFrame(bool send, const byte* data, int len, int type){
-	if (_netParam.log_frame.is_log){
+	if (_logFrameParam.is_log){
 		std::string str;
 		
 		if (type == FRAME_BINARY){
-			if (_netParam.log_frame.is_log_binary){
-				str = utils::HexFormat(data, (len * 2) > _netParam.log_frame.max_log_size ?
-					(_netParam.log_frame.max_log_size / 2) : len);
-				if ((len * 2) > _netParam.log_frame.max_log_size) str += "...";
+			if (_logFrameParam.is_log_binary){
+				str = utils::HexFormat(data, (len * 2) > _logFrameParam.max_log_size ?
+					(_logFrameParam.max_log_size / 2) : len);
+				if ((len * 2) > _logFrameParam.max_log_size) str += "...";
 			}
 		}
 		else{
-			str = std::string((char*)data, len > _netParam.log_frame.max_log_size ? 
-				_netParam.log_frame.max_log_size : len);
-			if (len > _netParam.log_frame.max_log_size) str += "...";
+			str = std::string((char*)data, len > _logFrameParam.max_log_size ?
+				_logFrameParam.max_log_size : len);
+			if (len > _logFrameParam.max_log_size) str += "...";
 		}
 
 		LOG(INFO) << FormatAddress() << (send ? "Send frame: " : "Recv frame: ") << " type:" << 

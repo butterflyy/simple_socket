@@ -4,7 +4,7 @@
 class Client : public NetHelper, private utils::Thread
 {
 public:
-	Client(const NetParam& netParam);
+	Client();
 	virtual ~Client();
 
 	void Connect(const char* ip, int port);

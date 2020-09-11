@@ -2,8 +2,8 @@
 #include "NetProtocol.h"
 
 
-Client::Client(const NetParam& netParam)
-:NetHelper(netParam)
+Client::Client()
+:NetHelper()
 {
 }
 
@@ -30,12 +30,31 @@ void Client::Connect(const char* ip, int port){
 			sendFrame(MSG_HANDSHAKE, FRAME_BINARY, nullptr, 0);
 			Poco::Timespan timeout(2000000);
 			if (_socket.poll(timeout, Socket::SELECT_READ)){
+				byte paramBuff[MAX_TCP_PARAM];
 				int msgtype;
 				int frametype;
-				recvFrame(&msgtype, &frametype, nullptr, 0);
+				int msglen = recvFrame(&msgtype, &frametype, paramBuff, MAX_TCP_PARAM);
 				if (msgtype != MSG_HANDSHAKE){
 					throw SimpleNetException("Recv handshake ack error", SN_NETWORK_ERROR);
 				}
+
+				if (msglen < sizeof(TCP_PARAM)){
+					throw SimpleNetException("Recv tcp param size error, less than TCP_PARAM", SN_FRAME_ERROR);
+				}
+
+				PTCP_PARAM tcp_param = (PTCP_PARAM)paramBuff;
+				_netParam.recv_buff_size = tcp_param->recv_buff_size;
+				_netParam.keep_alive.heatbeat_time = tcp_param->heatbeat_time;
+				_netParam.keep_alive.keepalive_count = tcp_param->keepalive_count;
+				_netParam.keep_alive.keepalive_time = tcp_param->keepalive_time;
+
+				LOG(INFO) << "recv_buff_size=" << _netParam.recv_buff_size
+					<< " heatbeat_time=" << _netParam.keep_alive.heatbeat_time
+					<< " keepalive_count=" << _netParam.keep_alive.keepalive_count
+					<< " keepalive_time=" << _netParam.keep_alive.keepalive_time;
+
+				//create recv buffer
+				createRecvBuffer();
 			}
 			else{
 				throw Poco::TimeoutException("No handshake ack");
@@ -104,7 +123,7 @@ void Client::run(){
 					if (error_code == SN_PAYLOAD_TOO_BIG || error_code == SN_FRAME_ERROR){
 						EXCEPTION_BEGIN_ADDR(addr_info)
 							//read empty buffer
-							readEmptyBuffer();
+							readEmptyBuffer(_recvbuff, _recvlen);
 						EXCEPTION_END
 					}
 

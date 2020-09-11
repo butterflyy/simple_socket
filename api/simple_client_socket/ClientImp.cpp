@@ -2,8 +2,8 @@
 
 _SC_BEGIN
 
-ClientImp::ClientImp(const NetParam& netParam)
-:Client(netParam){
+ClientImp::ClientImp()
+:Client(){
 
 }
 

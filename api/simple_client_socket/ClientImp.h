@@ -8,7 +8,7 @@ _SC_BEGIN
 class ClientImp : public Client
 {
 public:
-	ClientImp(const NetParam& netParam);
+	ClientImp();
 	~ClientImp();
 
 	void OnConnected() override;

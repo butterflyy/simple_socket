@@ -239,6 +239,9 @@
     <ClInclude Include="Common.h">
       <Filter>api</Filter>
     </ClInclude>
+    <ClInclude Include="..\simple_net\NetParam.h">
+      <Filter>simple_net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="whsarmclient.def">

@@ -3,8 +3,8 @@
 
 _SS_BEGIN
 
-ServerImp::ServerImp(ServerManagerImp* serverManagerImp, const StreamSocket& socket, const NetParam& netParam)
-:Server(socket, netParam),
+ServerImp::ServerImp(ServerManagerImp* serverManagerImp, const StreamSocket& socket)
+:Server(socket),
 _serverManagerImp(serverManagerImp){
 
 }

@@ -1,10 +1,10 @@
 #include "ServerManagerImp.h"
 #include "ServerImp.h"
+#include "Config.h"
 
 _SS_BEGIN
 
-ServerManagerImp::ServerManagerImp(const NetParam& netParam)
-:_netParam(netParam)
+ServerManagerImp::ServerManagerImp()
 {
 }
 
@@ -14,7 +14,11 @@ ServerManagerImp::~ServerManagerImp()
 }
 
 Server* ServerManagerImp::createConnection(const StreamSocket& socket){
-	return new ServerImp(this, socket, _netParam);
+	ServerImp* imp = new ServerImp(this, socket);
+	imp->SetNetParam(Config::instance().Data().net);
+	imp->SetLogFrameParam(Config::instance().Data().log_frame);
+
+	return imp;
 }
 
 int ServerManagerImp::TransError(int error){

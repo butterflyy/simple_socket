@@ -3,8 +3,8 @@
 
 
 
-Server::Server(const StreamSocket& socket, const NetParam& netParam)
-:NetHelper(socket, netParam),
+Server::Server(const StreamSocket& socket)
+:NetHelper(socket),
 _dead(false)
 {
 }
@@ -25,6 +25,12 @@ void Server::Disconnect(){
 }
 
 void Server::run(){
+	{
+		EXCEPTION_BEGIN
+		createRecvBuffer();
+		EXCEPTION_END
+	}
+
 	std::string addr_info;
 	{
 		EXCEPTION_BEGIN
@@ -41,9 +47,10 @@ void Server::run(){
 		EXCEPTION_BEGIN_ADDR(addr_info)
 			Poco::Timespan timeout(2000000);
 			if (_socket.poll(timeout, Socket::SELECT_READ)){
+				byte paramBuff[MAX_TCP_PARAM];
 				int msgtype;
 				int frametype;
-				recvFrame(&msgtype, &frametype, nullptr, 0);
+				recvFrame(&msgtype, &frametype, paramBuff, MAX_TCP_PARAM);
 				if (msgtype != MSG_HANDSHAKE){
 					close();
 					throw SimpleNetException("Recv handshake ack error", SN_NETWORK_ERROR);
@@ -53,7 +60,15 @@ void Server::run(){
 				close();
 				throw Poco::TimeoutException("No handshake ack");
 			}
-			sendFrame(MSG_HANDSHAKE, FRAME_BINARY, nullptr, 0);
+
+			//send net param
+			TCP_PARAM param;
+			memset(&param, 0, sizeof(TCP_PARAM));
+			param.recv_buff_size = _netParam.recv_buff_size;
+			param.heatbeat_time = _netParam.keep_alive.heatbeat_time;
+			param.keepalive_time = _netParam.keep_alive.keepalive_time;
+			param.keepalive_count = _netParam.keep_alive.keepalive_count;
+			sendFrame(MSG_HANDSHAKE, FRAME_BINARY, (byte*)&param, sizeof(TCP_PARAM));
 		EXCEPTION_END
 		if (error_code != 0){
 			_dead = true;
@@ -97,7 +112,7 @@ void Server::run(){
 					if (error_code == SN_PAYLOAD_TOO_BIG || error_code == SN_FRAME_ERROR){
 						EXCEPTION_BEGIN_ADDR(addr_info)
 							//read empty buffer
-							readEmptyBuffer();
+							readEmptyBuffer(_recvbuff, _recvlen);
 						EXCEPTION_END
 					}
 

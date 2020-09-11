@@ -266,7 +266,7 @@ SS_API int WINAPI SS_StartServer(int port, SS_SERVER* server){
 	ServerManagerImp* serverManagerImp = nullptr;
 
 	EXCEPTION_BEGIN
-		serverManagerImp = new ServerManagerImp(Config::instance().Data());
+		serverManagerImp = new ServerManagerImp();
 		serverManagerImp->StartServer(port);
 	EXCEPTION_END
 
@@ -375,7 +375,7 @@ SS_API int WINAPI SS_StartServerBindAddr(const char* ip, int port, SS_SERVER* se
 	ServerManagerImp* serverManagerImp = nullptr;
 
 	EXCEPTION_BEGIN
-		serverManagerImp = new ServerManagerImp(Config::instance().Data());
+		serverManagerImp = new ServerManagerImp();
 	serverManagerImp->StartServer(ip, port);
 	EXCEPTION_END
 

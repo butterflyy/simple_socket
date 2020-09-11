@@ -1,29 +1,19 @@
 #pragma once
 
-
-/*
-* data type define
-*/
-typedef signed char        int8;
-typedef short              int16;
-typedef int                int32;
-typedef unsigned char      uint8;
-typedef unsigned short     uint16;
-typedef unsigned int       uint32;
-#ifdef _WIN32
-typedef __int64            int64;
-typedef unsigned __int64   uint64;
-#else
-typedef long long          int64;
-typedef unsigned long long uint64;
-#endif
-
+#include <cstdint>
 typedef unsigned char      byte;
 
 #pragma pack (push, 1)
 
 #define TCP_FLAG              "tcp_post"  //tcp flag
-#define PROTOCOL_VERSION      "01"        //protocol version
+
+//version comment
+// 01 : first edition
+// 02 : Handlshake carry tcp param, param can extended, max len is MAX_TCP_PARAM-1
+#define PROTOCOL_VERSION      "02"        //protocol version
+
+//max tcp param len, now used sizeof(TCP_PARAM)
+#define MAX_TCP_PARAM         1025
 
 
 enum MSG_TYPE{
@@ -38,25 +28,33 @@ enum FRAME_TYPE{
 };
 
 /*
-* protocol header
+* protocol udp header
 */
 typedef struct _TCP_HEADER
 {
-	char     flag[10];         //message flag
-	char     version[2];       //protocol version
-	char     reserve[8];      //reserve
-	uint8    msgtype;          //MSG_TYPE
-	uint8    frametype;        //FRAME_TYPE
-	uint32   msglen;           //message length
+	char       flag[10];         //message flag
+	char       version[2];       //protocol version
+	char       reserve[8];       //reserve
+	uint8_t    msgtype;          //MSG_TYPE
+	uint8_t    frametype;        //FRAME_TYPE
+	uint32_t   msglen;           //message length
 }TCP_HEADER, *PTCP_HEADER;
+
+//server send to client param
+typedef struct _TCP_PARAM{
+	uint32_t recv_buff_size;
+	uint32_t heatbeat_time; //millsecond
+	uint32_t keepalive_time;//millsecond
+	uint32_t keepalive_count;
+}TCP_PARAM, *PTCP_PARAM;
 
 typedef struct _UDP_HEADER
 {
-	char     flag[10];         //message flag
-	uint32   msglen;           //message length
-	uint16   pkgcount;         //package count
-	uint16   curpkgindex;      //current package count
-	uint16   crc;
+	char       flag[10];         //message flag
+	uint32_t   msglen;           //message length
+	uint16_t   pkgcount;         //package count
+	uint16_t   curpkgindex;      //current package count
+	uint16_t   crc;
 }UDP_HEADER, *PUPD_HEADER;
 
 #pragma pack (pop)

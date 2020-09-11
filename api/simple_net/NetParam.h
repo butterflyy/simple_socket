@@ -8,7 +8,7 @@ const bool DEFAULT_IS_LOG = true;
 const bool DEFAULT_IS_LOG_BINARY = false;
 const long DEFAULT_MAX_LOG_SIZE = 512;
 
-struct LogFrame{
+struct LogFrameParam{
 	bool is_log;
 	bool is_log_binary;
 	long max_log_size;
@@ -23,8 +23,6 @@ struct KeepAlive{
 struct NetParam{
 	long recv_buff_size;
 	KeepAlive keep_alive;
-	LogFrame log_frame;
 };
-
 
 

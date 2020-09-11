@@ -9,7 +9,7 @@ class ServerManagerImp;
 class ServerImp : public Server
 {
 public:
-	ServerImp(ServerManagerImp* serverManagerImp, const StreamSocket& socket, const NetParam& netParam);
+	ServerImp(ServerManagerImp* serverManagerImp, const StreamSocket& socket);
 	~ServerImp();
 
 	void OnConnected() override;

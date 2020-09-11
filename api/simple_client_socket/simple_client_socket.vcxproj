@@ -209,6 +209,7 @@
     <ClInclude Include="..\simple_net\Client.h" />
     <ClInclude Include="..\simple_net\NetConfig.h" />
     <ClInclude Include="..\simple_net\NetHelper.h" />
+    <ClInclude Include="..\simple_net\NetParam.h" />
     <ClInclude Include="..\simple_net\NetProtocol.h" />
     <ClInclude Include="..\simple_net\Server.h" />
     <ClInclude Include="..\simple_net\ServerManager.h" />
