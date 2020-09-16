@@ -3,7 +3,8 @@
 #include <gtest/gtest.h>
 #include <whsarmserver.h>
 #include <whsarmclient.h>
-#include <common/ConvertSync.h>
+#include <common/utils.h> //for msleep
+#include <commonex/convert_sync.h>
 
 //指定测试选项
 // --gtest_filter=TestServerClient.BigFrame
@@ -101,17 +102,15 @@ namespace {
 			data->client_ip = client_ip;
 			data->client_port = client_port;
 
-			utils::Thread::msleep(100);
-			int ret = Sync.SetEvent("ss_connected_callback", data);
-			EXPECT_EQ(ret, 0);
+			bool ret = Sync.set("ss_connected_callback", data);
+			EXPECT_EQ(ret, true);
 		}
 												 
 		static void CALLBACK  ss_disconnected_callback(SS_SESSION session) {
 			ss_disconnected_callback_data* data = new ss_disconnected_callback_data();
 			data->session = session;
 
-			utils::Thread::msleep(10);
-			int ret = Sync.SetEvent("ss_disconnected_callback", data);
+			bool ret = Sync.set("ss_disconnected_callback", data);
 			//EXPECT_EQ(ret, 0);
 		}
 												 
@@ -120,21 +119,21 @@ namespace {
 			data->session = session;
 			data->error_code = error_code;
 
-			utils::Thread::msleep(10);
-			int ret = Sync.SetEvent("ss_error_callback", data);
-			EXPECT_EQ(ret, 0);
+			bool ret = Sync.set("ss_error_callback", data);
+			EXPECT_EQ(ret, true);
 		}
 												 
 		static void CALLBACK  ss_recvframe_callback(SS_SESSION session, const unsigned char* data_, int len, int type) {
 			ss_recvframe_callback_data* data = new ss_recvframe_callback_data();
 			data->session = session;
-			data->data = new byte[len];
+			data->data = new byte[len + 1];
 			memcpy(data->data, data_, len);
+			data->data[len] = 0;
 			data->len = len;
 			data->type = type;
 
-			int ret = Sync.SetEvent("ss_recvframe_callback", data);
-			EXPECT_EQ(ret, 0);
+			bool ret = Sync.set("ss_recvframe_callback", data);
+			EXPECT_EQ(ret, true);
 		}
 												 
 		//client callback			  
@@ -142,8 +141,7 @@ namespace {
 			sc_disconnected_callback_data* data = new sc_disconnected_callback_data();
 			data->client = client;
 
-			utils::Thread::msleep(10);
-			int ret = Sync.SetEvent("sc_disconnected_callback", data);
+			bool ret = Sync.set("sc_disconnected_callback", data);
 			//EXPECT_EQ(ret, 0);
 		}
 												 
@@ -152,28 +150,28 @@ namespace {
 			data->client = client;
 			data->error_code = error_code;
 
-			utils::Thread::msleep(10);
-			int ret = Sync.SetEvent("sc_error_callback", data);
-			EXPECT_EQ(ret, 0);
+			bool ret = Sync.set("sc_error_callback", data);
+			EXPECT_EQ(ret, true);
 		}
 												 
 		static void CALLBACK  sc_recvframe_callback(SC_CLIENT client, const unsigned char* data_, int len, int type) {
 			sc_recvframe_callback_data* data = new sc_recvframe_callback_data();
 			data->client = client;
-			data->data = new byte[len];
+			data->data = new byte[len+1];
 			memcpy(data->data, data_, len);
+			data->data[len] = 0;
 			data->len = len;
 			data->type = type;
 
-			int ret = Sync.SetEvent("sc_recvframe_callback", data);
-			EXPECT_EQ(ret, 0);
+			bool ret = Sync.set("sc_recvframe_callback", data);
+			EXPECT_EQ(ret, true);
 		}
 
-		static ConvertSync<std::string, void*> Sync;
+		static utils::convert_sync<std::string, void*> Sync;
 	};
 
 
-	ConvertSync<std::string, void*> TestServerClient::Sync;
+	utils::convert_sync<std::string, void*> TestServerClient::Sync;
 
 	TEST_F(TestServerClient, OneClient)
 	{
@@ -185,13 +183,15 @@ namespace {
 		EXPECT_EQ(ret, 0);
 		EXPECT_NE(server, nullptr);
 
+		EXPECT_TRUE(Sync.add("ss_connected_callback"));
+
 		SC_CLIENT client = nullptr;
 		ret = SC_ConnectToHost(ip.c_str(), port, &client);
 		EXPECT_EQ(ret, 0);
 		EXPECT_NE(client, nullptr);
 
 		ss_connected_callback_data* data(nullptr);
-		ret = Sync.WaitEvent("ss_connected_callback", (void**)&data, 5000);
+		ret = Sync.wait_once("ss_connected_callback", (void**)&data, 5000);
 		EXPECT_EQ(ret, 0);
 		EXPECT_EQ(data->server, server);
 		EXPECT_EQ(data->client_ip, ip);
@@ -201,12 +201,14 @@ namespace {
 
 		//server send string to client frame
 		{
+			EXPECT_TRUE(Sync.add("sc_recvframe_callback"));
+
 			std::string teststr = "Just a test frame data";
 			ret = SS_SendFrame(session, (byte*)teststr.c_str(), teststr.length(), SS_FRAME_STRING);
 			EXPECT_EQ(ret, 0);
 
 			sc_recvframe_callback_data* data(nullptr);
-			ret = Sync.WaitEvent("sc_recvframe_callback", (void**)&data, 5000);
+			ret = Sync.wait_once("sc_recvframe_callback", (void**)&data, 5000);
 			EXPECT_EQ(ret, 0);
 			
 			if (ret == 0) {
@@ -224,13 +226,15 @@ namespace {
 
 		//server send binary to client frame
 		{
+			EXPECT_TRUE(Sync.add("sc_recvframe_callback"));
+
 			byte sendbt[12] = { 0x42, 0x4D, 0x16, 0x52, 0xF2, 0x32, 0x12, 0x12, 0x92, 0xA2, 0x12, 0x32 };
 
 			ret = SS_SendFrame(session, sendbt, 12, SS_FRAME_BINARY);
 			EXPECT_EQ(ret, 0);
 
 			sc_recvframe_callback_data* data(nullptr);
-			ret = Sync.WaitEvent("sc_recvframe_callback", (void**)&data, 5000);
+			ret = Sync.wait_once("sc_recvframe_callback", (void**)&data, 5000);
 			EXPECT_EQ(ret, 0);
 
 			if (ret == 0) {
@@ -246,12 +250,14 @@ namespace {
 
 		//client send string to server frame
 		{
+			EXPECT_TRUE(Sync.add("ss_recvframe_callback"));
+
 			std::string teststr = "Just a test frame data";
 			ret = SC_SendFrame(client, (byte*)teststr.c_str(), teststr.length(), SS_FRAME_STRING);
 			EXPECT_EQ(ret, 0);
 
 			ss_recvframe_callback_data* data(nullptr);
-			ret = Sync.WaitEvent("ss_recvframe_callback", (void**)&data, 5000);
+			ret = Sync.wait_once("ss_recvframe_callback", (void**)&data, 5000);
 			EXPECT_EQ(ret, 0);
 
 			if (ret == 0) {
@@ -270,13 +276,15 @@ namespace {
 
 		//client send binary to server frame
 		{
+			EXPECT_TRUE(Sync.add("ss_recvframe_callback"));
+
 			byte sendbt[12] = { 0x42, 0x4D, 0x16, 0x52, 0xF2, 0x32, 0x12, 0x12, 0x92, 0xA2, 0x12, 0x32 };
 
 			ret = SC_SendFrame(client, sendbt, 12, SS_FRAME_BINARY);
 			EXPECT_EQ(ret, 0);
 
 			ss_recvframe_callback_data* data(nullptr);
-			ret = Sync.WaitEvent("ss_recvframe_callback", (void**)&data, 5000);
+			ret = Sync.wait_once("ss_recvframe_callback", (void**)&data, 5000);
 			EXPECT_EQ(ret, 0);
 
 			if (ret == 0) {
@@ -292,11 +300,13 @@ namespace {
 
 		//disconnect
 		{
+			EXPECT_TRUE(Sync.add("ss_disconnected_callback"));
+
 			ret = SC_DisconnectFromHost(client);
 			EXPECT_EQ(ret, 0);
 
 			ss_disconnected_callback_data* data(nullptr);
-			ret = Sync.WaitEvent("ss_disconnected_callback", (void**)&data, 5000);
+			ret = Sync.wait_once("ss_disconnected_callback", (void**)&data, 5000);
 			EXPECT_EQ(ret, 0);
 
 			if (ret == 0) {
@@ -322,12 +332,14 @@ namespace {
 		SS_SESSION sessions[clientsize] = {0};
 
 		for (int i = 0; i < clientsize; i++) {
+			EXPECT_TRUE(Sync.add("ss_connected_callback"));
+
 			ret = SC_ConnectToHost(ip.c_str(), port, &clients[i]);
 			EXPECT_EQ(ret, 0);
 			EXPECT_NE(clients[i], nullptr);
 
 			ss_connected_callback_data* data(nullptr);
-			ret = Sync.WaitEvent("ss_connected_callback", (void**)&data, 5000);
+			ret = Sync.wait_once("ss_connected_callback", (void**)&data, 5000);
 			EXPECT_EQ(ret, 0);
 			EXPECT_EQ(data->server, server);
 			EXPECT_EQ(data->client_ip, ip);
@@ -339,12 +351,14 @@ namespace {
 		for (int i = 0; i < clientsize; i++) {
 			//server send string to client frame
 			{
+				EXPECT_TRUE(Sync.add("sc_recvframe_callback"));
+
 				std::string teststr = "Just a test frame data";
 				ret = SS_SendFrame(sessions[i], (byte*)teststr.c_str(), teststr.length(), SS_FRAME_STRING);
 				EXPECT_EQ(ret, 0);
 
 				sc_recvframe_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("sc_recvframe_callback", (void**)&data, 5000);
+				ret = Sync.wait_once("sc_recvframe_callback", (void**)&data, 5000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -360,13 +374,15 @@ namespace {
 
 			//server send binary to client frame
 			{
+				EXPECT_TRUE(Sync.add("sc_recvframe_callback"));
+
 				byte sendbt[12] = { 0x42, 0x4D, 0x16, 0x52, 0xF2, 0x32, 0x12, 0x12, 0x92, 0xA2, 0x12, 0x32 };
 
 				ret = SS_SendFrame(sessions[i], sendbt, 12, SS_FRAME_BINARY);
 				EXPECT_EQ(ret, 0);
 
 				sc_recvframe_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("sc_recvframe_callback", (void**)&data, 5000);
+				ret = Sync.wait_once("sc_recvframe_callback", (void**)&data, 5000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -381,12 +397,14 @@ namespace {
 
 			//client send string to server frame
 			{
+				EXPECT_TRUE(Sync.add("ss_recvframe_callback"));
+
 				std::string teststr = "Just a test frame data";
 				ret = SC_SendFrame(clients[i], (byte*)teststr.c_str(), teststr.length(), SS_FRAME_STRING);
 				EXPECT_EQ(ret, 0);
 
 				ss_recvframe_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("ss_recvframe_callback", (void**)&data, 5000);
+				ret = Sync.wait_once("ss_recvframe_callback", (void**)&data, 5000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -404,13 +422,15 @@ namespace {
 
 			//client send binary to server frame
 			{
+				EXPECT_TRUE(Sync.add("ss_recvframe_callback"));
+
 				byte sendbt[12] = { 0x42, 0x4D, 0x16, 0x52, 0xF2, 0x32, 0x12, 0x12, 0x92, 0xA2, 0x12, 0x32 };
 
 				ret = SC_SendFrame(clients[i], sendbt, 12, SS_FRAME_BINARY);
 				EXPECT_EQ(ret, 0);
 
 				ss_recvframe_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("ss_recvframe_callback", (void**)&data, 5000);
+				ret = Sync.wait_once("ss_recvframe_callback", (void**)&data, 5000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -427,11 +447,13 @@ namespace {
 		//disconnect
 		for (int i = 0; i < clientsize; i++) {
 			{
+				EXPECT_TRUE(Sync.add("ss_disconnected_callback"));
+
 				ret = SC_DisconnectFromHost(clients[i]);
 				EXPECT_EQ(ret, 0);
 
 				ss_disconnected_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("ss_disconnected_callback", (void**)&data, 5000);
+				ret = Sync.wait_once("ss_disconnected_callback", (void**)&data, 5000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -462,12 +484,14 @@ namespace {
 		}
 
 		for (int i = 0; i < clientsize; i++) {
+			EXPECT_TRUE(Sync.add("ss_connected_callback"));
+
 			int ret = SC_ConnectToHost(ip.c_str(), port + i, &clients[i]);
 			EXPECT_EQ(ret, 0);
 			EXPECT_NE(clients[i], nullptr);
 
 			ss_connected_callback_data* data(nullptr);
-			ret = Sync.WaitEvent("ss_connected_callback", (void**)&data, 5000);
+			ret = Sync.wait_once("ss_connected_callback", (void**)&data, 5000);
 			EXPECT_EQ(ret, 0);
 			EXPECT_EQ(data->server, servers[i]);
 			EXPECT_EQ(data->client_ip, ip);
@@ -479,12 +503,14 @@ namespace {
 		for (int i = 0; i < clientsize; i++) {
 			//server send string to client frame
 			{
+				EXPECT_TRUE(Sync.add("sc_recvframe_callback"));
+
 				std::string teststr = "Just a test frame data";
 				ret = SS_SendFrame(sessions[i], (byte*)teststr.c_str(), teststr.length(), SS_FRAME_STRING);
 				EXPECT_EQ(ret, 0);
 
 				sc_recvframe_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("sc_recvframe_callback", (void**)&data, 5000);
+				ret = Sync.wait_once("sc_recvframe_callback", (void**)&data, 5000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -500,13 +526,15 @@ namespace {
 
 			//server send binary to client frame
 			{
+				EXPECT_TRUE(Sync.add("sc_recvframe_callback"));
+
 				byte sendbt[12] = { 0x42, 0x4D, 0x16, 0x52, 0xF2, 0x32, 0x12, 0x12, 0x92, 0xA2, 0x12, 0x32 };
 
 				ret = SS_SendFrame(sessions[i], sendbt, 12, SS_FRAME_BINARY);
 				EXPECT_EQ(ret, 0);
 
 				sc_recvframe_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("sc_recvframe_callback", (void**)&data, 5000);
+				ret = Sync.wait_once("sc_recvframe_callback", (void**)&data, 5000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -521,12 +549,14 @@ namespace {
 
 			//client send string to server frame
 			{
+				EXPECT_TRUE(Sync.add("ss_recvframe_callback"));
+
 				std::string teststr = "Just a test frame data";
 				ret = SC_SendFrame(clients[i], (byte*)teststr.c_str(), teststr.length(), SS_FRAME_STRING);
 				EXPECT_EQ(ret, 0);
 
 				ss_recvframe_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("ss_recvframe_callback", (void**)&data, 5000);
+				ret = Sync.wait_once("ss_recvframe_callback", (void**)&data, 5000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -544,13 +574,15 @@ namespace {
 
 			//client send binary to server frame
 			{
+				EXPECT_TRUE(Sync.add("ss_recvframe_callback"));
+
 				byte sendbt[12] = { 0x42, 0x4D, 0x16, 0x52, 0xF2, 0x32, 0x12, 0x12, 0x92, 0xA2, 0x12, 0x32 };
 
 				ret = SC_SendFrame(clients[i], sendbt, 12, SS_FRAME_BINARY);
 				EXPECT_EQ(ret, 0);
 
 				ss_recvframe_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("ss_recvframe_callback", (void**)&data, 5000);
+				ret = Sync.wait_once("ss_recvframe_callback", (void**)&data, 5000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -567,11 +599,13 @@ namespace {
 		//disconnect
 		for (int i = 0; i < clientsize; i++) {
 			{
+				EXPECT_TRUE(Sync.add("ss_disconnected_callback"));
+
 				ret = SC_DisconnectFromHost(clients[i]);
 				EXPECT_EQ(ret, 0);
 
 				ss_disconnected_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("ss_disconnected_callback", (void**)&data, 5000);
+				ret = Sync.wait_once("ss_disconnected_callback", (void**)&data, 5000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -598,13 +632,15 @@ namespace {
 		EXPECT_EQ(ret, 0);
 		EXPECT_NE(server, nullptr);
 
+		EXPECT_TRUE(Sync.add("ss_connected_callback"));
+
 		SC_CLIENT client = nullptr;
 		ret = SC_ConnectToHost(ip.c_str(), port, &client);
 		EXPECT_EQ(ret, 0);
 		EXPECT_NE(client, nullptr);
 
 		ss_connected_callback_data* data(nullptr);
-		ret = Sync.WaitEvent("ss_connected_callback", (void**)&data, 5000);
+		ret = Sync.wait_once("ss_connected_callback", (void**)&data, 5000);
 		EXPECT_EQ(ret, 0);
 		EXPECT_EQ(data->server, server);
 		EXPECT_EQ(data->client_ip, ip);
@@ -619,11 +655,13 @@ namespace {
 		utils::Buffer max_buff_1(param.recv_buff_size * 1024 * 1024 + 1);
 		//server send binary to client frame
 		{
+			EXPECT_TRUE(Sync.add("sc_recvframe_callback"));
+
 			ret = SS_SendFrame(session, max_buff.data(), max_buff.size(), SS_FRAME_BINARY);
 			EXPECT_EQ(ret, 0);
 
 			sc_recvframe_callback_data* data(nullptr);
-			ret = Sync.WaitEvent("sc_recvframe_callback", (void**)&data, 5000);
+			ret = Sync.wait_once("sc_recvframe_callback", (void**)&data, 5000);
 			EXPECT_EQ(ret, 0);
 
 			if (ret == 0) {
@@ -642,7 +680,7 @@ namespace {
 			EXPECT_EQ(ret, SS_PAYLOAD_TOO_BIG);
 
 			//sc_error_callback_data* data(nullptr);
-			//ret = Sync.WaitEvent("sc_error_callback", (void**)&data, 5000);
+			//ret = Sync.wait_once("sc_error_callback", (void**)&data, 5000);
 			//EXPECT_EQ(ret, 0);
 
 			//if (ret == 0) {
@@ -656,11 +694,13 @@ namespace {
 
 		//client send binary to server frame
 		{
+			EXPECT_TRUE(Sync.add("ss_recvframe_callback"));
+
 			ret = SC_SendFrame(client, max_buff.data(), max_buff.size(), SC_FRAME_BINARY);
 			EXPECT_EQ(ret, 0);
 
 			ss_recvframe_callback_data* data(nullptr);
-			ret = Sync.WaitEvent("ss_recvframe_callback", (void**)&data, 5000);
+			ret = Sync.wait_once("ss_recvframe_callback", (void**)&data, 5000);
 			EXPECT_EQ(ret, 0);
 
 			if (ret == 0) {
@@ -678,7 +718,7 @@ namespace {
 			EXPECT_EQ(ret, SC_PAYLOAD_TOO_BIG);
 
 			//ss_error_callback_data* data(nullptr);
-			//ret = Sync.WaitEvent("ss_error_callback", (void**)&data, 5000);
+			//ret = Sync.wait_once("ss_error_callback", (void**)&data, 5000);
 			//EXPECT_EQ(ret, 0);
 
 			//if (ret == 0) {
@@ -695,11 +735,13 @@ namespace {
 
 		//disconnect
 		{
+			EXPECT_TRUE(Sync.add("ss_disconnected_callback"));
+
 			ret = SC_DisconnectFromHost(client);
 			EXPECT_EQ(ret, 0);
 
 			ss_disconnected_callback_data* data(nullptr);
-			ret = Sync.WaitEvent("ss_disconnected_callback", (void**)&data, 5000);
+			ret = Sync.wait_once("ss_disconnected_callback", (void**)&data, 5000);
 			EXPECT_EQ(ret, 0);
 
 			if (ret == 0) {
@@ -739,12 +781,14 @@ namespace {
 		SS_SESSION sessions[clientsize] = { 0 };
 
 		for (int i = 0; i < clientsize; i++) {
+			EXPECT_TRUE(Sync.add("ss_connected_callback"));
+
 			ret = SC_ConnectToHost(ip.c_str(), port, &clients[i]);
 			EXPECT_EQ(ret, 0);
 			EXPECT_NE(clients[i], nullptr);
 
 			ss_connected_callback_data* data(nullptr);
-			ret = Sync.WaitEvent("ss_connected_callback", (void**)&data, 8000);
+			ret = Sync.wait_once("ss_connected_callback", (void**)&data, 8000);
 			EXPECT_EQ(ret, 0);
 			EXPECT_EQ(data->server, server);
 			EXPECT_EQ(data->client_ip, ip);
@@ -764,11 +808,13 @@ namespace {
 		for (int i = 0; i < clientsize; i++) {
 			//server send to client frame
 			{
+				EXPECT_TRUE(Sync.add("sc_recvframe_callback"));
+
 				ret = SS_SendFrame(sessions[i], max_buff.data(), max_buff.size(), SS_FRAME_BINARY);
 				EXPECT_EQ(ret, 0);
 
 				sc_recvframe_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("sc_recvframe_callback", (void**)&data, 10000);
+				ret = Sync.wait_once("sc_recvframe_callback", (void**)&data, 10000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -785,11 +831,13 @@ namespace {
 
 			//client send to server frame
 			{
+				EXPECT_TRUE(Sync.add("ss_recvframe_callback"));
+
 				ret = SC_SendFrame(clients[i], max_buff.data(), max_buff.size(), SC_FRAME_BINARY);
 				EXPECT_EQ(ret, 0);
 
 				ss_recvframe_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("ss_recvframe_callback", (void**)&data, 10000);
+				ret = Sync.wait_once("ss_recvframe_callback", (void**)&data, 10000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
@@ -808,11 +856,13 @@ namespace {
 		//disconnect
 		for (int i = 0; i < clientsize; i++) {
 			{
+				EXPECT_TRUE(Sync.add("ss_disconnected_callback"));
+
 				ret = SC_DisconnectFromHost(clients[i]);
 				EXPECT_EQ(ret, 0);
 
 				ss_disconnected_callback_data* data(nullptr);
-				ret = Sync.WaitEvent("ss_disconnected_callback", (void**)&data, 5000);
+				ret = Sync.wait_once("ss_disconnected_callback", (void**)&data, 5000);
 				EXPECT_EQ(ret, 0);
 
 				if (ret == 0) {
