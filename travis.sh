@@ -3,8 +3,18 @@ cd ..
 git clone -b v0.3.4 https://github.com/google/glog.git
 cd glog
 ./configure
+autoreconf -ivf
 make
-make install
+sudo make install
+cd ..
+
+# build gtest
+cd ..
+git clone -b release-1.10.0 https://github.com/google/googletest.git
+cd googletest
+cmake CMakeLists.txt
+make
+sudo make install
 cd ..
 
 # add externals
@@ -13,16 +23,15 @@ git clone https://github.com/butterflyy/externals.git
 #build simple_server_socket
 cd simple_socket
 cd api/simple_server_socket
-cp Makefile_first Makefile
-make
-cp Makefile_second Makefile
-make
-make install
+sudo ./make.sh
 
 #build simple_server_socket
 cd ../simple_client_socket
-cp Makefile_first Makefile
+sudo ./make.sh
+
+#build UnitTest
+cd ../../test/UnitTest/UnitTest
 make
-cp Makefile_second Makefile
-make
-make install
+
+#run UnitTest
+./UnitTest
