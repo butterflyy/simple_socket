@@ -1,5 +1,5 @@
 UnitTest : UnitTest.o
-	g++  -std=c++11 -DNDEBUG -Wl,-Bsymbolic UnitTest.o -o UnitTest -L/usr/lib -lwhsarmclient -L/usr/lib -lwhsarmserver -lgtest_main -lgtest
+	g++  -std=c++11 -DNDEBUG -Wl,-Bsymbolic UnitTest.o -o UnitTest -L/usr/lib -lwhsarmclient -L/usr/lib -lwhsarmserver -lgtest_main -lgtest -lpthread -lboost_system -lboost_thread -lboost_timer -lboost_chrono
 
 
 UnitTest.o : UnitTest.cpp

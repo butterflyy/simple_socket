@@ -1,4 +1,5 @@
 [![Build Status](https://www.travis-ci.org/butterflyy/simple_socket.svg?branch=develop)](https://www.travis-ci.org/butterflyy/simple_socket)
+[![Build status](https://ci.appveyor.com/api/projects/status/jcydmof1cfvsyuvm?svg=true)](https://ci.appveyor.com/project/butterflyy/simple-socket)
 
 # Simple Socket
 

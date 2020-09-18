@@ -4,12 +4,29 @@
 # http://lint.travis-ci.org/
 
 language: cpp
+dist: trusty
+sudo: false
+os: linux
+
+matrix:
+  include:
+    - env: COMPILER=g++-6 BUILD=Release STANDARD=14
+      compiler: gcc
+      addons:
+        apt:
+          update: true
+          sources:
+            - sourceline: 'ppa:mhier/libboost-latest'
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+            - boost1.67
 
 
 # These are the install and build (script) phases for the most common entries in the matrix.  They could be included
 # in each entry in the matrix, but that is just repetitive.
 install:
-
-  - chmod +x travis.sh
+#  - echo  /usr/local/lib >>/etc/ld.so.conf
+#  - ldconfig
   
 script: ./travis.sh
