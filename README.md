@@ -1,3 +1,5 @@
+[![Build Status](https://www.travis-ci.org/butterflyy/simple_socket.svg?branch=develop)](https://www.travis-ci.org/butterflyy/simple_socket)
+
 # Simple Socket
 
 ## 特点
