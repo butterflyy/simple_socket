@@ -14,16 +14,8 @@ git clone https://github.com/butterflyy/externals.git
 #build simple_server_socket
 cd simple_socket
 cd api/simple_server_socket
-cp Makefile_first Makefile
-make
-cp Makefile_second Makefile
-make
-sudo make install
+sudo ./make.sh
 
 #build simple_server_socket
 cd ../simple_client_socket
-cp Makefile_first Makefile
-make
-cp Makefile_second Makefile
-make
-sudo make install
+sudo ./make.sh
