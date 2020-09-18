@@ -12,7 +12,7 @@ cd ..
 cd ..
 git clone -b release-1.10.0 https://github.com/google/googletest.git
 cd googletest
-cmake
+cmake CMakeLists.txt
 make
 sudo make install
 cd ..
