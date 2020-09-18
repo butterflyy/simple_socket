@@ -8,6 +8,15 @@ make
 sudo make install
 cd ..
 
+# build gtest
+cd ..
+git clone -b release-1.10.0 https://github.com/google/googletest.git
+cd googletest
+cmake
+make
+sudo make install
+cd ..
+
 # add externals
 git clone https://github.com/butterflyy/externals.git
 
