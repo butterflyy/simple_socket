@@ -5,7 +5,7 @@ cd glog
 ./configure
 autoreconf -ivf
 make
-make install
+sudo make install
 cd ..
 
 # add externals
@@ -18,7 +18,7 @@ cp Makefile_first Makefile
 make
 cp Makefile_second Makefile
 make
-make install
+sudo make install
 
 #build simple_server_socket
 cd ../simple_client_socket
@@ -26,4 +26,4 @@ cp Makefile_first Makefile
 make
 cp Makefile_second Makefile
 make
-make install
+sudo make install
