@@ -3,6 +3,7 @@ cd ..
 git clone -b v0.3.4 https://github.com/google/glog.git
 cd glog
 ./configure
+autoreconf -ivf
 make
 make install
 cd ..
