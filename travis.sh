@@ -23,4 +23,6 @@ sudo ./make.sh
 #build UnitTest
 cd ../../test/UnitTest/UnitTest
 make
+
+#run UnitTest
 ./UnitTest
