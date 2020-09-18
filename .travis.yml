@@ -8,5 +8,8 @@ language: cpp
 
 # These are the install and build (script) phases for the most common entries in the matrix.  They could be included
 # in each entry in the matrix, but that is just repetitive.
+install:
 
-script: .\travis.sh
+  - chmod +x travis.sh
+  
+script: ./travis.sh
