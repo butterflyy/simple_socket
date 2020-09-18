@@ -19,3 +19,8 @@ sudo ./make.sh
 #build simple_server_socket
 cd ../simple_client_socket
 sudo ./make.sh
+
+#build UnitTest
+cd ../../test/UnitTest/UnitTest
+make
+./UnitTest
