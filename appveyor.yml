@@ -1,19 +1,25 @@
-version: 1.0.{build}
-image:
-  - Visual Studio 2013
+version: '{build}'
+
+environment:
+  GYP_MSVS_VERSION: 2013
+
 platform:
   - Win32
-  - x64
+
 configuration:
   - Debug
   - Release
-clone_depth: 1
-build:
-  parallel: true
 
-environment:
-  matrix:
-    only:
-      - image: Visual Studio 2013
-  build:
-    project: msvc\libusb_2013.sln
+
+build_script:
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - msbuild simple_socket.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /m /verbosity:normal
+
+test_script:
+#  - src\client\windows\%CONFIGURATION%\client_tests.exe
+#  - src\tools\windows\%CONFIGURATION%\dump_syms_unittest.exe
+#  - build\out\Debug\Win32\%CONFIGURATION%\
+
+artifacts:
+  - path: '**\*.exe'
+#  - path: '**\*.lib'
