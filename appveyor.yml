@@ -63,7 +63,7 @@ build_script:
     
     cd build
     
-    cmake .. -G %GENERATOR% -DGLOG_INCLUDE_DIR=C:/projects/externals -DBOOST_DIR=%BOOST_ROOT% -DBOOST_LIB_DIR=%BOOST_LIBRARYDIR%
+    cmake .. -G %GENERATOR% -DEXTERNALS_DIR=C:/projects/externals -DBOOST_DIR=%BOOST_ROOT% -DBOOST_LIB_DIR=%BOOST_LIBRARYDIR%
     
     cmake --build .
 
