@@ -1,5 +1,8 @@
 version: '{build}'
 
+image:
+  - Visual Studio 2013
+  
 environment:
   GYP_MSVS_VERSION: 2013
 
