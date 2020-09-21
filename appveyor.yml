@@ -26,7 +26,7 @@ build_script:
     
     cd glog
     
-    cmake G %GENERATOR%
+    cmake -G %GENERATOR%
     
     cmake --build .
     
@@ -45,7 +45,7 @@ build_script:
     
     cd build
     
-    cmake .. G %GENERATOR% -Dgtest_force_shared_crt=ON
+    cmake .. -G %GENERATOR% -Dgtest_force_shared_crt=ON
     
     cmake --build .
     
@@ -62,7 +62,7 @@ build_script:
     
     cd build
     
-    cmake .. G %GENERATOR% -DGLOG_INCLUDE_DIR=../externals
+    cmake .. -G %GENERATOR% -DGLOG_INCLUDE_DIR=../externals
     
     cmake --build .
 
