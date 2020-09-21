@@ -1,10 +1,10 @@
 version: '{build}'
 
 image:
-  - Visual Studio 2013
+  - Visual Studio 2017
   
 environment:
-  GYP_MSVS_VERSION: 2013
+  GYP_MSVS_VERSION: 2017
 
 platform:
   - Win32
@@ -15,12 +15,8 @@ configuration:
 
 
 build_script:
-  - echo "%cd%"
-  - cd ..
-  - git clone -b develop https://github.com/butterflyy/externals.git  --single-branch --depth=1
   - cd %APPVEYOR_BUILD_FOLDER%
-  - msbuild api/simple_client_socket/simple_client_socket.vcxproj
-  - msbuild api/simple_server_socket/simple_server_socket.vcxproj
+  - appveyor.bat
 
 test_script:
 #  - src\client\windows\%CONFIGURATION%\client_tests.exe
