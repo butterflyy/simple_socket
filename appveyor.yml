@@ -15,6 +15,8 @@ configuration:
 
 
 build_script:
+  - echo "%cd%"
+  - git clone -b develop https://github.com/butterflyy/externals.git  --single-branch --depth=1
   - cd %APPVEYOR_BUILD_FOLDER%
   - msbuild simple_socket.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /m /verbosity:normal
 
