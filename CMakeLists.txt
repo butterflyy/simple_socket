@@ -23,7 +23,10 @@ set(GTEST_LIB_DIR ${GTEST_DIR}/build/lib)
 #boost
 if (NOT BOOST_DIR)
     set(BOOST_DIR D:/Workspace/externals/boost_1_73_0)
-    set(BOOST_INCLUDE_DIR ${BOOST_DIR})
+endif ()
+set(BOOST_INCLUDE_DIR ${BOOST_DIR})
+
+if (NOT BOOST_LIB_DIR)
     set(BOOST_LIB_DIR ${BOOST_DIR}/stage/lib)
 endif ()
 

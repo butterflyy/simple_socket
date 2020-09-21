@@ -5,8 +5,9 @@ environment:
   matrix:
     - GENERATOR: '"Visual Studio 15 2017 Win64"'
       BUILD_TYPE: Release
-      WCHAR: 'OFF'
       BUILD_SHARED: 'OFF'
+      BOOST_ROOT: C:\Libraries\boost_1_67_0
+      BOOST_LIBRARYDIR: C:\Libraries\boost_1_67_0\lib64-msvc-14.1
 
 
 build_script:
@@ -62,7 +63,7 @@ build_script:
     
     cd build
     
-    cmake .. -G %GENERATOR% -DGLOG_INCLUDE_DIR=../externals
+    cmake .. -G %GENERATOR% -DGLOG_INCLUDE_DIR=C:/projects/externals -DBOOST_DIR=%BOOST_ROOT% -DBOOST_LIB_DIR=%BOOST_LIBRARYDIR%
     
     cmake --build .
 
