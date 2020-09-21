@@ -1,5 +1,4 @@
 #include "whsarmclient.h"
-#include "Common.h"
 #include "ClientImp.h"
 #include "Config.h"
 #include <common/ObjectList.h>
@@ -15,7 +14,6 @@
 #define BETA_VERSION  0  //beta version for inner test, if is release beta version is 0.
 #define RC_VERSION    1  //release candidate version. After beta version test ok.
 
-_SC_BEGIN
 
 //Global Variable
 ObjectList<ClientImp*>* g_clientImpList = nullptr;
@@ -26,7 +24,6 @@ EventManager* EVENT = nullptr;
 //Gloable dll dir
 std::string FLAGS_dll_dir;
 
-_SC_END
 
 //get dll dir
 #ifdef WIN32
@@ -46,7 +43,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 								   ch[0] = 0;
 							   }
 
-							   _SC FLAGS_dll_dir = path;
+							   FLAGS_dll_dir = path;
 	}
 		break;
 	case DLL_THREAD_DETACH:
@@ -58,7 +55,6 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 }
 
 #else
-_SC_BEGIN
 
 #include <dlfcn.h>
 void fun_hs(){
@@ -77,11 +73,9 @@ std::string GetDllDir(){
 	return std::string(path);
 }
 
-_SC_END
 
 #endif
 
-_SC_BEGIN
 
 //Delete server functional.
 struct ClientDeleter{
@@ -102,11 +96,8 @@ inline bool IsInitialize() {
 	return true;
 }
 
-_SC_END
 
 SC_API int WINAPI SC_Initialize(){
-	using namespace sc;
-
 	if (g_clientImpList) {
 		LOG(ERROR) << "API Already initialized";
 		return SC_ERROR;
@@ -176,8 +167,6 @@ SC_API int WINAPI SC_Initialize(){
 }
 
 SC_API void WINAPI SC_Finalize(){
-	using namespace sc;
-
 	if (!IsInitialize()) {
 		return;
 	}
@@ -237,8 +226,6 @@ SC_API const char* WINAPI SC_StrError(int error_code){
 SC_API int WINAPI SC_SetCallback(sc_disconnected_callback on_disconnected,
 	sc_error_callback on_error,
 	sc_recvframe_callback on_recvframe){
-	using namespace sc;
-
 	if (!IsInitialize()) {
 		return SC_ERROR;
 	}
@@ -251,8 +238,6 @@ SC_API int WINAPI SC_SetCallback(sc_disconnected_callback on_disconnected,
 }
 
 SC_API int WINAPI SC_ConnectToHost(const char* ip, int port, SC_CLIENT* client){
-	using namespace sc;
-
 	if (!IsInitialize()) {
 		return SC_ERROR;
 	}
@@ -281,8 +266,6 @@ SC_API int WINAPI SC_ConnectToHost(const char* ip, int port, SC_CLIENT* client){
 }
 
 SC_API int WINAPI SC_DisconnectFromHost(SC_CLIENT client){
-	using namespace sc;
-
 	if (!IsInitialize()) {
 		return SC_ERROR;
 	}
@@ -306,8 +289,6 @@ SC_API int WINAPI SC_DisconnectFromHost(SC_CLIENT client){
 }
 
 SC_API int WINAPI SC_SendFrame(SC_CLIENT client, const unsigned char* data, int len, int type){
-	using namespace sc;
-
 	if (!IsInitialize()) {
 		return SC_ERROR;
 	}

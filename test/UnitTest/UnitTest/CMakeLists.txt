@@ -20,4 +20,6 @@ include_directories(${BOOST_INCLUDE_DIR})
 link_directories(${BOOST_LIB_DIR})
 
 add_executable (UnitTest UnitTest.cpp)
-target_link_libraries(UnitTest whsarmclient whsarmserver gtest gtest_main)
+target_link_libraries(UnitTest whsarmclient whsarmserver gtestd gtest_maind)
+
+#install (TARGETS UnitTest DESTINATION bin)

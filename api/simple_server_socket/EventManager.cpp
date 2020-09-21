@@ -1,7 +1,6 @@
 #include "EventManager.h"
 #include "NetConfig.h" //for glog
 
-_SS_BEGIN
 
 class EventThread : public utils::Thread
 {
@@ -113,5 +112,3 @@ void EventManager::ClearThreadEvent()
 		}
 	}
 }
-
-_SS_END

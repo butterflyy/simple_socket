@@ -28,3 +28,5 @@ add_definitions(-D SS_API_EXPORTS)
 # 生成链接库
 add_library (whsarmserver SHARED ${SRC_POCO_FOUNDATION} ${SRC_POCO_NET} ${SRC_NET} ${SRC_LIB})
 target_link_libraries(whsarmserver PRIVATE glogd ws2_32)
+
+#install (TARGETS whsarmserver DESTINATION bin)

@@ -2,7 +2,6 @@
 #include "ServerImp.h"
 #include "Config.h"
 
-_SS_BEGIN
 
 ServerManagerImp::ServerManagerImp()
 {
@@ -33,5 +32,3 @@ int ServerManagerImp::TransError(int error){
 	default: assert(false);  return SS_ERROR;
 	}
 }
-
-_SS_END

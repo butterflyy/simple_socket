@@ -25,3 +25,5 @@ add_definitions(-D SC_API_EXPORTS)
 
 add_library (whsarmclient SHARED ${SRC_POCO_FOUNDATION} ${SRC_POCO_NET} ${SRC_NET} ${SRC_LIB})
 target_link_libraries(whsarmclient PRIVATE glogd ws2_32)
+
+#install (TARGETS whsarmclient DESTINATION bin)

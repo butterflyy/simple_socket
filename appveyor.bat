@@ -4,8 +4,9 @@ git clone -b develop https://github.com/butterflyy/externals.git  --single-branc
 
 echo "Build glog"
 cd externals
-git clone -b v0.3.4 https://github.com/google/glog.git --single-branch --depth=1
+git clone -b v0.4.0 https://github.com/google/glog.git --single-branch --depth=1
 cd glog
+cmake 
 msbuild google-glog.sln
 cd ..
 rename glog glog-0.3.4
