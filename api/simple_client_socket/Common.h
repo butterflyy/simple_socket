@@ -2,4 +2,4 @@
 
 #define _SC_BEGIN	namespace sc {
 #define _SC_END		}
-#define _SC	::sc::
+#define __SC	::sc::

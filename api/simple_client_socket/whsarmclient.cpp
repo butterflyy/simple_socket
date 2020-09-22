@@ -46,7 +46,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 								   ch[0] = 0;
 							   }
 
-							   _SC FLAGS_dll_dir = path;
+							   __SC FLAGS_dll_dir = path;
 	}
 		break;
 	case DLL_THREAD_DETACH:
