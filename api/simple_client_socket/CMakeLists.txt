@@ -22,7 +22,11 @@ include_directories(${GLOG_INCLUDE_DIR})
 link_directories(${GLOG_LIB_DIR})
 
 add_definitions(-D SC_API_EXPORTS)
-add_definitions(-std=c++11)
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_compile_options(-std=c++11)
+    add_compile_options(-Wl,-Bsymbolic)
+endif()
 
 add_library (whsarmclient SHARED ${SRC_POCO_FOUNDATION} ${SRC_POCO_NET} ${SRC_NET} ${SRC_LIB})
 if (WIN32)
