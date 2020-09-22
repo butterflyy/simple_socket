@@ -24,6 +24,7 @@ link_directories(${GLOG_LIB_DIR})
 
 
 add_definitions(-D SS_API_EXPORTS)
+add_definitions(-std=c++11)
 
 # 生成链接库
 add_library (whsarmserver SHARED ${SRC_POCO_FOUNDATION} ${SRC_POCO_NET} ${SRC_NET} ${SRC_LIB})
