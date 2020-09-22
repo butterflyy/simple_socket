@@ -18,7 +18,7 @@ pwd
 # build gtest
 git clone -b release-1.10.0 https://github.com/google/googletest.git  --single-branch --depth=1
 cd googletest
-cmake CMakeLists.txt -DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF
+cmake CMakeLists.txt -DBUILD_GMOCK=OFF
 make
 sudo make install
 cd ..
