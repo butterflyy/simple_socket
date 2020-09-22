@@ -46,7 +46,7 @@ build_script:
     
     cd build
     
-    cmake .. -G %GENERATOR% -Dgtest_force_shared_crt=ON
+    cmake .. -G %GENERATOR% -Dgtest_force_shared_crt=ON -DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF
     
     cmake --build .
     
@@ -66,10 +66,6 @@ build_script:
     cmake .. -G %GENERATOR% -DEXTERNALS_DIR=C:/projects/externals -DBOOST_DIR=%BOOST_ROOT% -DBOOST_LIB_DIR=%BOOST_LIBRARYDIR%
     
     cmake --build .
-
-
-before_test:
-#  - set PATH=%PATH%;C:\projects\spdlog\build\%BUILD_TYPE%
   
 test_script:
-#  - C:\projects\spdlog\build\tests\%BUILD_TYPE%\spdlog-utests.exe
+  - C:\projects\simple_socket\build\Bin\%BUILD_TYPE%\UnitTest.exe

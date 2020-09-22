@@ -30,6 +30,12 @@ if (NOT BOOST_LIB_DIR)
     set(BOOST_LIB_DIR ${BOOST_DIR}/stage/lib)
 endif ()
 
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Bin)
+
+
 add_subdirectory(api/simple_client_socket)
 add_subdirectory(api/simple_server_socket)
-add_subdirectory(test/UnitTest/UnitTest)
+add_subdirectory(test/UnitTest)
