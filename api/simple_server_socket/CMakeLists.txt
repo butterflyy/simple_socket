@@ -30,7 +30,7 @@ add_library (whsarmserver SHARED ${SRC_POCO_FOUNDATION} ${SRC_POCO_NET} ${SRC_NE
 if (WIN32)
     target_link_libraries(whsarmserver PRIVATE glogd ws2_32)
 else ()
-    target_link_libraries(whsarmserver glog)
+    target_link_libraries(whsarmserver glog dl)
 endif ()
 
 #install (TARGETS whsarmserver DESTINATION bin)
