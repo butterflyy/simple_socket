@@ -68,4 +68,4 @@ build_script:
     cmake --build .
   
 test_script:
-  - C:\projects\simple_socket\build\Bin\%BUILD_TYPE%\UnitTest.exe
+  - C:\projects\simple_socket\build\Bin\Debug\UnitTest.exe

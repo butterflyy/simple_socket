@@ -36,4 +36,5 @@ cmake .. -DEXTERNALS_DIR=$(pwd)/../../externals
 make
 
 #run UnitTest
+cd Bin
 ./UnitTest
