@@ -19,6 +19,8 @@ link_directories(${GTEST_LIB_DIR})
 include_directories(${BOOST_INCLUDE_DIR})
 link_directories(${BOOST_LIB_DIR})
 
+add_definitions(-std=c++11)
+
 add_executable (UnitTest UnitTest.cpp)
 if (WIN32)
     target_link_libraries(UnitTest whsarmclient whsarmserver gtestd gtest_maind)
