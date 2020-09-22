@@ -1,6 +1,7 @@
 #include "ServerImp.h"
 #include "ServerManagerImp.h"
 
+_SS_BEGIN
 
 ServerImp::ServerImp(ServerManagerImp* serverManagerImp, const StreamSocket& socket)
 :Server(socket),
@@ -75,3 +76,5 @@ void ServerImp::OnRecvFrame(const byte* data, int len, int type){
 		EVENT->OnCallback(eventData);
 	}
 }
+
+_SS_END

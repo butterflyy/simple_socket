@@ -1,8 +1,10 @@
 #pragma once
+#include "Common.h"
 #include "ServerManager.h"
 #include "whsarmserver.h" //for callback
 #include "NetParam.h"
 
+_SS_BEGIN
 
 class ServerManagerImp : public ServerManager
 {
@@ -17,3 +19,7 @@ private:
 	Server* createConnection(const StreamSocket& socket) override;
 private:
 };
+
+_SS_END
+
+

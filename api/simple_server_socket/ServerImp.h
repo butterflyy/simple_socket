@@ -1,7 +1,9 @@
 #pragma once
+#include "Common.h"
 #include "Server.h"
 #include "EventManager.h"
 
+_SS_BEGIN
 
 class ServerManagerImp;
 class ServerImp : public Server
@@ -17,5 +19,7 @@ public:
 private:
 	ServerManagerImp* _serverManagerImp;
 };
+
+_SS_END
 
 

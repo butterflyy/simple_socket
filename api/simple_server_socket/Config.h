@@ -1,7 +1,9 @@
 #pragma once
+#include "Common.h"
 #include <common/ConfigBase.h>
 #include "NetParam.h"
 
+_SS_BEGIN
 
 struct ConfigParam{
 	NetParam net;
@@ -23,3 +25,5 @@ public:
 		AddItemString<long>(Data().log_frame.max_log_size, "LogFrame", "max_log_size", DEFAULT_MAX_LOG_SIZE);
 	}
 };
+
+_SS_END

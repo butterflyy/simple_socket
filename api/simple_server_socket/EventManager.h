@@ -1,8 +1,10 @@
 #pragma once
+#include "Common.h"
 #include <common/utils.h>
 #include <list>
 #include "whsarmserver.h" //for callback
 
+_SS_BEGIN
 
 enum EventType
 {
@@ -75,4 +77,6 @@ inline void EventManager::SetCallback(ss_connected_callback on_connected,
 
 
 extern EventManager* EVENT;
+
+_SS_END
 

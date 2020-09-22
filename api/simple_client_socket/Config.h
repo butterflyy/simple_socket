@@ -1,7 +1,9 @@
 #pragma once
+#include "Common.h"
 #include <common/ConfigBase.h>
 #include "NetParam.h"
 
+_SC_BEGIN
 
 struct ConfigParam{
 	LogFrameParam log_frame;
@@ -19,3 +21,4 @@ public:
 	}
 };
 
+_SC_END
