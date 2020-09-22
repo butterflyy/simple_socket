@@ -6,10 +6,9 @@
 pwd
 # build glog
 cd ..
-git clone -b v0.3.4 https://github.com/google/glog.git --single-branch --depth=1
+git clone -b v0.4.0 https://github.com/google/glog.git --single-branch --depth=1
 cd glog
-./configure
-autoreconf -ivf
+cmake CMakeLists.txt
 make
 sudo make install
 sudo cp /usr/local/lib/libglog.* /usr/lib/
@@ -31,15 +30,9 @@ pwd
 
 #build simple_server_socket
 cd simple_socket
-cd api/simple_server_socket
-sudo ./make.sh
-
-#build simple_server_socket
-cd ../simple_client_socket
-sudo ./make.sh
-
-#build UnitTest
-cd ../../test/UnitTest/UnitTest
+mkdir build
+cd build
+cmake ..
 make
 
 #run UnitTest
