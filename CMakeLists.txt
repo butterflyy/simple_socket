@@ -10,24 +10,38 @@ endif ()
 #externals include
 set(EXTERNALS_INCLUDE_DIR ${EXTERNALS_DIR}/include)
 
-#glog
-set(GLOG_DIR ${EXTERNALS_DIR}/glog-0.4.0)
-set(GLOG_INCLUDE_DIR ${GLOG_DIR}/src/windows)
-set(GLOG_LIB_DIR ${GLOG_DIR})
+if (WIN32)
+    #glog
+    set(GLOG_DIR ${EXTERNALS_DIR}/glog-0.4.0)
+    set(GLOG_INCLUDE_DIR ${GLOG_DIR}/src/windows)
+    set(GLOG_LIB_DIR ${GLOG_DIR})
 
-#gtest
-set(GTEST_DIR ${EXTERNALS_DIR}/googletest-release-1.10.0)
-set(GTEST_INCLUDE_DIR ${GTEST_DIR}/googletest/include)
-set(GTEST_LIB_DIR ${GTEST_DIR}/build/lib)
+    #gtest
+    set(GTEST_DIR ${EXTERNALS_DIR}/googletest-release-1.10.0)
+    set(GTEST_INCLUDE_DIR ${GTEST_DIR}/googletest/include)
+    set(GTEST_LIB_DIR ${GTEST_DIR}/build/lib)
 
-#boost
-if (NOT BOOST_DIR)
-    set(BOOST_DIR D:/Workspace/externals/boost_1_73_0)
-endif ()
-set(BOOST_INCLUDE_DIR ${BOOST_DIR})
+    #boost
+    if (NOT BOOST_DIR)
+        set(BOOST_DIR D:/Workspace/externals/boost_1_73_0)
+    endif ()
+    set(BOOST_INCLUDE_DIR ${BOOST_DIR})
 
-if (NOT BOOST_LIB_DIR)
-    set(BOOST_LIB_DIR ${BOOST_DIR}/stage/lib)
+    if (NOT BOOST_LIB_DIR)
+        set(BOOST_LIB_DIR ${BOOST_DIR}/stage/lib)
+    endif ()
+elseif (UNIX)
+    #glog
+    set(GLOG_INCLUDE_DIR /usr/local/include)
+    set(GLOG_LIB_DIR /usr/lib)
+
+    #gtest
+    set(GTEST_INCLUDE_DIR /usr/local/include)
+    set(GTEST_LIB_DIR /usr/lib)
+
+    #boost
+else ()
+    message(satus "Other system")
 endif ()
 
 

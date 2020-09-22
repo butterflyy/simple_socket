@@ -32,7 +32,7 @@ pwd
 cd simple_socket
 mkdir build
 cd build
-cmake ..
+cmake .. -DEXTERNALS_DIR=$(pwd)/../../externals
 make
 
 #run UnitTest
