@@ -23,13 +23,13 @@ build_script:
 
     cd glog-0.4.0
     
-    mkdir build
+    mkdir build_x64
 
-    cd build
+    cd build_x64
 
     cmake -G %GENERATOR%
     
-    cmake --build .
+    cmake --build . --config Release
     
     cd ../..
 
@@ -44,7 +44,7 @@ build_script:
     
     cmake .. -G %GENERATOR% -Dgtest_force_shared_crt=ON -DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF
     
-    cmake --build .
+    cmake --build . --config Release
 
 
     echo "Build simple socket"
@@ -57,7 +57,7 @@ build_script:
     
     cmake .. -G %GENERATOR% -DEXTERNALS_DIR=C:/projects/externals
     
-    cmake --build .
+    cmake --build . --config Release
   
 test_script:
-  - C:\projects\simple-socket\build\Bin\Debug\UnitTest.exe
+  - C:\projects\simple-socket\build\bin\Release\UnitTest.exe
