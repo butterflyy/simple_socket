@@ -16,6 +16,10 @@ add_definitions(-std=c++11)
 
 link_libraries(whsarmclient whsarmserver)
 
+if(UNIX)
+link_libraries(pthread)
+endif()
+
 add_executable(echo_server echo_server.cpp)
 add_executable(test_echo_server test_echo_server.cpp)
 add_executable(test_client test_client.cpp)

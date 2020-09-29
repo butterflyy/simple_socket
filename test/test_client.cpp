@@ -1,6 +1,6 @@
 // test_server.cpp : Defines the entry point for the console application.
 //
-#include <common\utils.h>
+#include <common/utils.h>
 #include <whsarmclient.h>
 
 
@@ -33,15 +33,15 @@ void CALLBACK recvframe_callback(SC_CLIENT client, const unsigned char* data, in
 	}
 }
 
-void main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 	if (argc != 3) {
 		printf("Usage : ip port \n");
-		return;
+		return 0;
 	}
 
 	int ret = SC_Initialize();
-	if (ret < 0) return;
+	if (ret < 0) return 0;
 
 	do
 	{
@@ -60,7 +60,7 @@ void main(int argc, char* argv[])
 		for (int i = 0; i < 10000; i++){
 			std::string s = utils::StrFormat("client test data %d£¡", i);
 			ret = SC_SendFrame(client, (byte*)s.c_str(), s.size(), SC_FRAME_STRING);
-			if (ret < 0) return;
+			if (ret < 0) return 0;
 		}
 
 		//test big data
@@ -80,14 +80,14 @@ void main(int argc, char* argv[])
 		//utils::Thread::msleep(10000);
 		std::string s("paload client data");
 		ret = SC_SendFrame(client, (byte*)s.c_str(), s.size(), SC_FRAME_STRING);
-		if (ret < 0) return;
+		if (ret < 0) return 0;
 
 	} while (0);
 
 	while (getchar() != 'q'){}
 
 	SC_Finalize();
-
-	system("pause");
+	
+	return 0;
 }
 

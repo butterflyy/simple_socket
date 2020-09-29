@@ -27,7 +27,7 @@ build_script:
 
     cd build_x64
 
-    cmake -G %GENERATOR%
+    cmake .. -G %GENERATOR%
     
     cmake --build . --config Release
     
@@ -38,9 +38,9 @@ build_script:
     
     cd googletest-release-1.10.0
     
-    mkdir build
+    mkdir build_x64
     
-    cd build
+    cd build_x64
     
     cmake .. -G %GENERATOR% -Dgtest_force_shared_crt=ON -DBUILD_GMOCK=OFF -DINSTALL_GTEST=OFF
     
