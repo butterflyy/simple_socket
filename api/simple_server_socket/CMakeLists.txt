@@ -29,10 +29,9 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     add_compile_options(-Wl,-Bsymbolic)
 endif()
 
-# 生成链接库
 add_library (whsarmserver SHARED ${SRC_POCO_FOUNDATION} ${SRC_POCO_NET} ${SRC_NET} ${SRC_LIB})
 if (WIN32)
-    target_link_libraries(whsarmserver PRIVATE glogd ws2_32)
+    target_link_libraries(whsarmserver PRIVATE glog ws2_32)
 else ()
     target_link_libraries(whsarmserver glog dl)
 endif ()

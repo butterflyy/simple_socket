@@ -1,32 +1,25 @@
 #!/usr/bin/env sh
 
-#sudo echo  /usr/local/lib >>/etc/ld.so.conf
-#sudo ldconfig
-
-pwd
-# build glog
+# add externals
 cd ..
-git clone -b v0.4.0 https://github.com/google/glog.git --single-branch --depth=1
-cd glog
-cmake CMakeLists.txt
+git clone -b develop https://github.com/butterflyy/externals.git  --single-branch --depth=1
+# build glog
+cd externals/3rdparty/glog-0.4.0
+mkdir build
+cd build
+cmake ..
 make
 sudo make install
-sudo cp /usr/local/lib/libglog.* /usr/lib/
-cd ..
-pwd
+cd ../..
 
 # build gtest
-git clone -b release-1.10.0 https://github.com/google/googletest.git  --single-branch --depth=1
-cd googletest
-cmake CMakeLists.txt -DBUILD_GMOCK=OFF
+cd googletest-release-1.10.0
+mkdir build
+cd build
+cmake .. -DBUILD_GMOCK=OFF
 make
 sudo make install
-cd ..
-pwd
-
-# add externals
-git clone -b develop https://github.com/butterflyy/externals.git  --single-branch --depth=1
-pwd
+cd ../../..
 
 #build simple_server_socket
 cd simple_socket

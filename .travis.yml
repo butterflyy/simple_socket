@@ -12,15 +12,6 @@ matrix:
   include:
     - env: COMPILER=g++
       compiler: gcc
-      addons:
-        apt:
-          update: true
-          sources:
-            - sourceline: 'ppa:mhier/libboost-latest'
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++
-            - boost1.67
 
 
 # These are the install and build (script) phases for the most common entries in the matrix.  They could be included

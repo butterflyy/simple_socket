@@ -12,24 +12,20 @@ set(EXTERNALS_INCLUDE_DIR ${EXTERNALS_DIR}/include)
 
 if (WIN32)
     #glog
-    set(GLOG_DIR ${EXTERNALS_DIR}/glog-0.4.0)
+    set(GLOG_DIR ${EXTERNALS_DIR}/3rdparty/glog-0.4.0)
     set(GLOG_INCLUDE_DIR ${GLOG_DIR}/src/windows)
-    set(GLOG_LIB_DIR ${GLOG_DIR})
 
     #gtest
-    set(GTEST_DIR ${EXTERNALS_DIR}/googletest-release-1.10.0)
-    set(GTEST_INCLUDE_DIR ${GTEST_DIR}/googletest/include)
-    set(GTEST_LIB_DIR ${GTEST_DIR}/build/lib)
+    set(GTEST_DIR ${EXTERNALS_DIR}/3rdparty/googletest-release-1.10.0)
+    set(GTEST_INCLUDE_DIR ${GTEST_DIR}/googletest/include) 
 
-    #boost
-    if (NOT BOOST_DIR)
-        set(BOOST_DIR D:/Workspace/externals/boost_1_73_0)
-    endif ()
-    set(BOOST_INCLUDE_DIR ${BOOST_DIR})
-
-    if (NOT BOOST_LIB_DIR)
-        set(BOOST_LIB_DIR ${BOOST_DIR}/stage/lib)
-    endif ()
+    if(CMAKE_CL_64)
+        set(GLOG_LIB_DIR ${GLOG_DIR}/build_x64)
+        set(GTEST_LIB_DIR ${GTEST_DIR}/build_x64/lib)
+    else()
+        set(GLOG_LIB_DIR ${GLOG_DIR}/build_Win32)
+        set(GTEST_LIB_DIR ${GTEST_DIR}/build_Win32/lib)
+    endif()
 elseif (UNIX)
     #glog
     set(GLOG_INCLUDE_DIR /usr/local/include)
@@ -45,9 +41,8 @@ else ()
 endif ()
 
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
 add_subdirectory(api/simple_client_socket)

@@ -30,7 +30,7 @@ endif()
 
 add_library (whsarmclient SHARED ${SRC_POCO_FOUNDATION} ${SRC_POCO_NET} ${SRC_NET} ${SRC_LIB})
 if (WIN32)
-    target_link_libraries(whsarmclient PRIVATE glogd ws2_32)
+    target_link_libraries(whsarmclient PRIVATE glog ws2_32)
 else ()
     target_link_libraries(whsarmclient glog dl)
 endif ()
