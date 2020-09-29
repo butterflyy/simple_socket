@@ -3,9 +3,8 @@ cmake_minimum_required (VERSION 3.0)
 project (simple_socket)
 
 #externals
-if (NOT EXTERNALS_DIR)
-    set(EXTERNALS_DIR D:/Workspace/externals)
-endif ()
+
+set(EXTERNALS_DIR ${CMAKE_SOURCE_DIR}/../externals)
 
 #externals include
 set(EXTERNALS_INCLUDE_DIR ${EXTERNALS_DIR}/include)
@@ -47,4 +46,4 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory(api/simple_client_socket)
 add_subdirectory(api/simple_server_socket)
-add_subdirectory(test/UnitTest)
+add_subdirectory(test)

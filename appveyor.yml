@@ -21,7 +21,7 @@ build_script:
 
     echo "Build glog"
 
-    cd glog-0.4.0
+    cd 3rdparty/glog-0.4.0
     
     mkdir build_x64
 

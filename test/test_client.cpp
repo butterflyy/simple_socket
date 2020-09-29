@@ -1,17 +1,8 @@
 // test_server.cpp : Defines the entry point for the console application.
 //
-
-#include "stdafx.h"
 #include <common\utils.h>
 #include <whsarmclient.h>
 
-#if 0
-#define IP    "192.168.100.243"
-#else
-#define IP    "127.0.0.1"
-#endif
-
-#define PORT  39877
 
 void CALLBACK disconnected_callback(SC_CLIENT client){
 	printf("[client] disconnect \n");
@@ -44,6 +35,11 @@ void CALLBACK recvframe_callback(SC_CLIENT client, const unsigned char* data, in
 
 void main(int argc, char* argv[])
 {
+	if (argc != 3) {
+		printf("Usage : ip port \n");
+		return;
+	}
+
 	int ret = SC_Initialize();
 	if (ret < 0) return;
 
@@ -53,7 +49,7 @@ void main(int argc, char* argv[])
 		if (ret < 0) break;
 
 		SC_CLIENT client(nullptr);
-		ret = SC_ConnectToHost(IP, PORT, &client);
+		ret = SC_ConnectToHost(argv[1], utils::Stoi(argv[2]), &client);
 		if (ret < 0){
 			printf("[client]  connect failed, err = %s \n", SC_StrError(ret));
 			break;
@@ -62,7 +58,7 @@ void main(int argc, char* argv[])
 #if 1
 		//test string
 		for (int i = 0; i < 10000; i++){
-			std::string s = utils::StrFormat("客户端测试数据%d！", i);
+			std::string s = utils::StrFormat("client test data %d！", i);
 			ret = SC_SendFrame(client, (byte*)s.c_str(), s.size(), SC_FRAME_STRING);
 			if (ret < 0) return;
 		}
@@ -82,7 +78,7 @@ void main(int argc, char* argv[])
 #endif
 
 		//utils::Thread::msleep(10000);
-		std::string s("paload后客户端测试数据");
+		std::string s("paload client data");
 		ret = SC_SendFrame(client, (byte*)s.c_str(), s.size(), SC_FRAME_STRING);
 		if (ret < 0) return;
 

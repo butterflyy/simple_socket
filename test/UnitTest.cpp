@@ -48,7 +48,7 @@ namespace {
 		}
 
 		static void BuildRandomData(utils::Buffer& buff) {
-			for (int i = 0; i < buff.size(); i++) {
+			for (size_t i = 0; i < buff.size(); i++) {
 				buff[i] = rand() & 0xFF;
 			}
 		}

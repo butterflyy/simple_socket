@@ -71,7 +71,7 @@ int NetHelper::recvFrame(int* msgtype, int* frametype, byte* data, int len){
 	checkHeader(header);
 
 	if (len < header.msglen){
-		throw SimpleNetException(SN_PAYLOAD_TOO_BIG);
+		throw SimpleNetException("playload is to big", SN_PAYLOAD_TOO_BIG);
 	}
 
 	*msgtype = header.msgtype;
@@ -99,7 +99,7 @@ void NetHelper::recvAll(byte* data, int len){
 	while (nTotal < len){
 		int nRecv = _socket.receiveBytes(data + nTotal, len - nTotal);
 		if (nRecv == 0){
-			throw SimpleNetException(SN_NETWORK_DISCONNECTED);
+			throw SimpleNetException("receive bytes is 0", SN_NETWORK_DISCONNECTED);
 		}
 		nTotal += nRecv;
 	}
