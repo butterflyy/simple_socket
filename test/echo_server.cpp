@@ -4,7 +4,6 @@
 #include <common/utils.h>
 #include <whsarmserver.h>
 
-#define PORT  49877
 
 std::map<SS_SESSION, std::string> ss;
 utils::Mutex ss_mutex;
@@ -54,8 +53,13 @@ void CALLBACK recvframe_callback(SS_SESSION session, const unsigned char* data, 
 	}
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+	if (argc != 2) {
+		printf("Usage : port \n");
+		return 0;
+	}
+
 	int ret = SS_Initialize();
 	if (ret < 0) return 0;
 
@@ -63,7 +67,7 @@ int main()
 	if (ret < 0) return 0;
 
 	SS_SERVER server(nullptr);
-	ret = SS_StartServer(PORT, &server);
+	ret = SS_StartServer(utils::Stoi(argv[1]), &server);
 	if (ret < 0) return 0;
 
 	while (getchar() != 'q'){}
@@ -72,7 +76,6 @@ int main()
 
 	SS_Finalize();
 	
-	system("pause");
 	return 0;
 }
 
