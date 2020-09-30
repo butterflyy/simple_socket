@@ -43,7 +43,7 @@ public:
 				_manager->_on_error(_eventData.session, _eventData.error_code);
 			break;
 		case EVENT_RECV_FRAME:
-			if (_manager->_on_disconnected)
+			if (_manager->_on_recvframe)
 				_manager->_on_recvframe(_eventData.session, _eventData.frame.data,
 				_eventData.frame.len, _eventData.frame.type);
 			break;

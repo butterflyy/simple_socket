@@ -17,7 +17,7 @@ int ClientImp::TransError(int error){
 	case SN_NETWORK_ERROR: return SC_NETWORK_ERROR;
 	case SN_NETWORK_DISCONNECTED: return SC_NETWORK_DISCONNECTED;
 	case SN_NETWORK_TIMEOUT: return SC_NETWORK_TIMEOUT;
-	case SN_PAYLOAD_TOO_BIG: return SC_PAYLOAD_TOO_BIG;
+	//case SN_PAYLOAD_TOO_BIG: return SC_PAYLOAD_TOO_BIG;
 	case SN_FRAME_ERROR: return SC_FRAME_ERROR;
 	default: assert(false);  return SC_ERROR;
 	}
@@ -60,15 +60,15 @@ void ClientImp::OnRecvFrame(const byte* data, int len, int type){
 		eventData.type = EVENT_RECV_FRAME;
 		eventData.client = this;
 
-		eventData.frame.data = new byte[len + 1];
-		memcpy(eventData.frame.data, data, len);
-		eventData.frame.data[len] = 0;
-
+		eventData.frame.data = const_cast<byte*>(data);
 		eventData.frame.len = len;
 		eventData.frame.type = type;
 
 		LOG(INFO) << "OnRecvFrame";
 		EVENT->OnCallback(eventData);
+	}
+	else {
+		SAFE_DELETE_ARRAY(data);
 	}
 }
 

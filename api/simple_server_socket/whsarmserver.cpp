@@ -231,7 +231,7 @@ SS_API const char* WINAPI SS_StrError(int error_code){
 	case SS_NETWORK_ERROR: return "SS_NETWORK_ERROR";
 	case SS_NETWORK_DISCONNECTED: return "SS_NETWORK_DISCONNECTED";
 	case SS_NETWORK_TIMEOUT: return "SS_NETWORK_TIMEOUT";
-	case SS_PAYLOAD_TOO_BIG: return "SS_PAYLOAD_TOO_BIG";
+//	case SS_PAYLOAD_TOO_BIG: return "SS_PAYLOAD_TOO_BIG";
 	case SS_FRAME_ERROR: return "SS_FRAME_ERROR";
 	default: assert(false);  return "**UNKNOWN**";
 	}
@@ -348,10 +348,6 @@ SS_API int WINAPI SS_SendFrame(SS_SESSION session, const unsigned char* data, in
 	ServerImp* serverImp = reinterpret_cast<ServerImp*>(session);
 	if (!serverImp){
 		return SS_INVALID_PARAM;
-	}
-
-	if (len > serverImp->GetNetParam().recv_buff_size * 1024 * 1024){
-		return SS_PAYLOAD_TOO_BIG;
 	}
 
 	EXCEPTION_BEGIN

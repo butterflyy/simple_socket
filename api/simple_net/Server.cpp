@@ -25,12 +25,6 @@ void Server::Disconnect(){
 }
 
 void Server::run(){
-	{
-		EXCEPTION_BEGIN
-		createRecvBuffer();
-		EXCEPTION_END
-	}
-
 	std::string addr_info;
 	{
 		EXCEPTION_BEGIN
@@ -45,7 +39,7 @@ void Server::run(){
 
 	{
 		EXCEPTION_BEGIN_ADDR(addr_info)
-			Poco::Timespan timeout(2000000);
+			Poco::Timespan timeout(10*1000000);
 			if (_socket.poll(timeout, Socket::SELECT_READ)){
 				byte paramBuff[MAX_TCP_PARAM];
 				int msgtype;
@@ -90,16 +84,17 @@ void Server::run(){
 			EXCEPTION_BEGIN_ADDR(addr_info)
 				int msgtype;
 				int frametype;
-				int nRecv = recvFrame(&msgtype, &frametype, _recvbuff, _recvlen);
+				byte* recvbuff(nullptr);
+				int nRecv = recvFrameAlloc(&msgtype, &frametype, &recvbuff);
 				assert(msgtype == MSG_NORMAL || msgtype == MSG_HEARBEAT);
 
 				_recvSpan.restart();
 				noalive_times = 0;
 
 				if (msgtype == MSG_NORMAL){
-					LogFrame(false, _recvbuff, nRecv, frametype);
+					LogFrame(false, recvbuff, nRecv, frametype);
 
-					OnRecvFrame(_recvbuff, nRecv, frametype);
+					OnRecvFrame(recvbuff, nRecv, frametype);
 				}
 			EXCEPTION_END
 
@@ -109,10 +104,10 @@ void Server::run(){
 				}
 				else{
 					//error handle
-					if (error_code == SN_PAYLOAD_TOO_BIG || error_code == SN_FRAME_ERROR){
+					if (error_code == SN_FRAME_ERROR){
 						EXCEPTION_BEGIN_ADDR(addr_info)
 							//read empty buffer
-							readEmptyBuffer(_recvbuff, _recvlen);
+							readEmptyBuffer();
 						EXCEPTION_END
 					}
 

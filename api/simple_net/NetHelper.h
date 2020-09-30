@@ -68,7 +68,7 @@ enum NetError
 	SN_NETWORK_ERROR = 1000,
 	SN_NETWORK_DISCONNECTED,
 	SN_NETWORK_TIMEOUT,
-	SN_PAYLOAD_TOO_BIG,
+	//SN_PAYLOAD_TOO_BIG, unused
 	SN_FRAME_ERROR,
 };
 
@@ -130,17 +130,24 @@ public:
 	void LogFrame(bool send, const byte* data, int len, int type);
 
 protected:
-	void createRecvBuffer();
-
 	void close();
 	void sendFrame(int msgtype, int frametype, const byte* data, int len);
+	
+	inline void recvFrameHead(PTCP_HEADER header);
+	inline void recvFrameData(const PTCP_HEADER header, byte* data, int len);
+
 	//return msglen
 	int recvFrame(int* msgtype, int* frametype, byte* data, int len);
 
+	//return msglen
+	//IPMORT: alloc memory for msg data, need free outside !!!!!!
+	int recvFrameAlloc(int* msgtype, int* frametype, byte** data);
+
 	void sendAll(const byte* data, int len);
 	void recvAll(byte* data, int len);
-	void checkHeader(const _TCP_HEADER& header);
-	void readEmptyBuffer(byte* data, int len);
+	void checkHeader(const TCP_HEADER& header);
+	inline void checkVersionCompatibility(uint8_t version);
+	void readEmptyBuffer();
 protected:
 	StreamSocket _socket;
 	utils::Mutex _sendMutex;
@@ -149,9 +156,6 @@ protected:
 	LogFrameParam _logFrameParam;
 
 	bool _connected;
-
-	int _recvlen;
-	byte* _recvbuff;
 
 	TimeSpan _sendSpan;
 	TimeSpan _recvSpan;
@@ -214,26 +218,12 @@ inline const char* NetHelper::StrError(int err){
 	case SN_NETWORK_ERROR: return "SN_NETWORK_ERROR";
 	case SN_NETWORK_DISCONNECTED: return "SN_NETWORK_DISCONNECTED";
 	case SN_NETWORK_TIMEOUT: return "SN_NETWORK_TIMEOUT";
-	case SN_PAYLOAD_TOO_BIG: return "SN_PAYLOAD_TOO_BIG";
+	//case SN_PAYLOAD_TOO_BIG: return "SN_PAYLOAD_TOO_BIG";
 	case SN_FRAME_ERROR: return "SN_FRAME_ERROR";
 	default: assert(false); return "**SN_UNKNOW**";
 	}
 }
 
-inline void NetHelper::createRecvBuffer(){
-	assert(_netParam.recv_buff_size > 0);
-	int newRecvLen = _netParam.recv_buff_size * 1024 * 1024;
-	if (_recvlen != newRecvLen){
-		SAFE_DELETE_ARRAY(_recvbuff);
-		_recvlen = newRecvLen;
-
-		//string add \0
-		_recvbuff = new byte[_recvlen + 1];
-		if (!_recvbuff){
-			throw Poco::OutOfMemoryException();
-		}
-	}
-}
 
 inline void NetHelper::close(){
 	try{

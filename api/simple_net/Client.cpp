@@ -79,12 +79,6 @@ void Client::Disconnect(){
 }
 
 void Client::run(){
-	{
-		EXCEPTION_BEGIN
-		createRecvBuffer();
-		EXCEPTION_END
-	}
-
 	std::string addr_info;
 	{
 		EXCEPTION_BEGIN
@@ -104,16 +98,17 @@ void Client::run(){
 			EXCEPTION_BEGIN_ADDR(addr_info)
 				int msgtype;
 				int frametype;
-				int nRecv = recvFrame(&msgtype, &frametype, _recvbuff, _recvlen);
+				byte* recvbuff(nullptr);
+				int nRecv = recvFrameAlloc(&msgtype, &frametype, &recvbuff);
 				assert(msgtype == MSG_NORMAL || msgtype == MSG_HEARBEAT);
 
 				_recvSpan.restart();
 				noalive_times = 0;
 
 				if (msgtype == MSG_NORMAL){
-					LogFrame(false, _recvbuff, nRecv, frametype);
+					LogFrame(false, recvbuff, nRecv, frametype);
 
-					OnRecvFrame(_recvbuff, nRecv, frametype);
+					OnRecvFrame(recvbuff, nRecv, frametype);
 				}
 			EXCEPTION_END
 
@@ -123,10 +118,10 @@ void Client::run(){
 				}
 				else{
 					//error handle
-					if (error_code == SN_PAYLOAD_TOO_BIG || error_code == SN_FRAME_ERROR){
+					if (error_code == SN_FRAME_ERROR){
 						EXCEPTION_BEGIN_ADDR(addr_info)
 							//read empty buffer
-							readEmptyBuffer(_recvbuff, _recvlen);
+							readEmptyBuffer();
 						EXCEPTION_END
 					}
 

@@ -65,15 +65,15 @@ void ServerImp::OnRecvFrame(const byte* data, int len, int type){
 		eventData.type = EVENT_RECV_FRAME;
 		eventData.session = this;
 
-		eventData.frame.data = new byte[len + 1];
-		memcpy(eventData.frame.data, data, len);
-		eventData.frame.data[len] = 0;
-
+		eventData.frame.data = const_cast<byte*>(data);
 		eventData.frame.len = len;
 		eventData.frame.type = type;
 
 		LOG(INFO) << PeerAddressLasting() << " OnRecvFrame";
 		EVENT->OnCallback(eventData);
+	}
+	else {
+		SAFE_DELETE_ARRAY(data);
 	}
 }
 

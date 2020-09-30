@@ -8,8 +8,6 @@ POCO_IMPLEMENT_EXCEPTION(SimpleNetException, NetException, "SimpleNet exception"
 
 NetHelper::NetHelper()
 :_connected(false), 
-_recvlen(0),
-_recvbuff(nullptr),
 _called(true)
 {
 	memset(&_netParam, 0, sizeof(_netParam));
@@ -19,8 +17,6 @@ _called(true)
 NetHelper::NetHelper(const StreamSocket& socket)
 :_socket(socket),
 _connected(false),
-_recvlen(0),
-_recvbuff(nullptr),
 _called(true)
 {
 	memset(&_netParam, 0, sizeof(_netParam));
@@ -30,7 +26,6 @@ _called(true)
 
 NetHelper::~NetHelper()
 {
-	SAFE_DELETE_ARRAY(_recvbuff)
 }
 
 void NetHelper::SendFrame(const byte* data, int len, int type){
@@ -50,9 +45,10 @@ void NetHelper::sendFrame(int msgtype, int frametype, const byte* data, int len)
 
 	TCP_HEADER header;
 	memset(&header, 0, sizeof(TCP_HEADER));
+	header.flag = FLAG_TCP;
+	header.version = PROTOCOL_VERSION;
 	header.msgtype = msgtype;
 	header.frametype = frametype;
-	strcpy(header.flag, TCP_FLAG);
 	header.msglen = len;
 
 	sendAll((byte*)&header, sizeof(TCP_HEADER));
@@ -61,26 +57,53 @@ void NetHelper::sendFrame(int msgtype, int frametype, const byte* data, int len)
 	}
 }
 
+void NetHelper::recvFrameHead(PTCP_HEADER header){
+	recvAll((byte*)header, sizeof(TCP_HEADER));
+
+	//check msg
+	checkHeader(*header);
+}
+
+void NetHelper::recvFrameData(PTCP_HEADER header, byte* data, int len){
+	assert(len >= header->msglen);
+	if (len < header->msglen){
+		throw NetException("recv data buffer is to small", SN_NETWORK_ERROR);
+	}
+	recvAll(data, header->msglen);
+}
+
 int NetHelper::recvFrame(int* msgtype, int* frametype, byte* data, int len){
 	TCP_HEADER header;
 	memset(&header, 0, sizeof(TCP_HEADER));
 
-	recvAll((byte*)&header, sizeof(TCP_HEADER));
-
-	//check msg
-	checkHeader(header);
-
-	if (len < header.msglen){
-		throw SimpleNetException("playload is to big", SN_PAYLOAD_TOO_BIG);
-	}
+	recvFrameHead(&header);
 
 	*msgtype = header.msgtype;
 	*frametype = header.frametype;
 
-	if (data && len > 0 && header.msglen > 0){
-		//recv msg data
-		recvAll(data, header.msglen);
-		data[header.msglen] = 0;
+	if (header.msglen > 0) {
+		recvFrameData(&header, data, len);
+	}
+
+	return header.msglen;
+}
+
+int NetHelper::recvFrameAlloc(int* msgtype, int* frametype, byte** data) {
+	TCP_HEADER header;
+	memset(&header, 0, sizeof(TCP_HEADER));
+
+	recvFrameHead(&header);
+
+	*msgtype = header.msgtype;
+	*frametype = header.frametype;
+
+	if (header.msglen > 0) {
+		*data = new byte[header.msglen + 1];
+		if (!data) {
+			throw Poco::OutOfMemoryException();
+		}
+		recvFrameData(&header, *data, header.msglen);
+		(*data)[header.msglen] = 0;//string callback need 0/ end
 	}
 
 	return header.msglen;
@@ -105,21 +128,32 @@ void NetHelper::recvAll(byte* data, int len){
 	}
 }
 
-void NetHelper::checkHeader(const _TCP_HEADER& header){
-	if (strcmp(header.flag, TCP_FLAG)){
-		throw SimpleNetException("flag error", SN_FRAME_ERROR);
+void NetHelper::checkHeader(const TCP_HEADER& header){
+	if (header.flag != FLAG_TCP){
+		throw SimpleNetException("header flag error", SN_FRAME_ERROR);
 	}
+
+	checkVersionCompatibility(header.version);
+
 	if (header.msgtype != MSG_NORMAL && header.msgtype != MSG_HEARBEAT && header.msgtype != MSG_HANDSHAKE){
-		throw SimpleNetException("msg type error", SN_FRAME_ERROR);
+		throw SimpleNetException("header msg type error", SN_FRAME_ERROR);
 	}
+
 	if (header.frametype != FRAME_STRING && header.frametype != FRAME_BINARY){
-		throw SimpleNetException("data type error", SN_FRAME_ERROR);
+		throw SimpleNetException("header data type error", SN_FRAME_ERROR);
 	}
 }
 
-void NetHelper::readEmptyBuffer(byte* data, int len){
+void NetHelper::checkVersionCompatibility(uint8_t version) {
+	if (version != PROTOCOL_VERSION) {
+		throw SimpleNetException("header version error", SN_FRAME_ERROR);
+	}
+}
+
+void NetHelper::readEmptyBuffer(){
 	Poco::Timespan timeout(100000);
+	char buff[1024];
 	while (_socket.poll(timeout, Socket::SELECT_READ)){
-		_socket.receiveBytes(data, len);
+		_socket.receiveBytes(buff, 1024);
 	}
 }

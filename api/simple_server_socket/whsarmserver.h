@@ -46,8 +46,8 @@ extern "C" {
 		/** 网络超时 */
 		SS_NETWORK_TIMEOUT = -5,
 
-		/** 数据帧过大，默认最大不超过5MB，通过配置文件可以修改 */
-		SS_PAYLOAD_TOO_BIG = -6,
+		/** 数据帧过大，已废弃 */
+		//SS_PAYLOAD_TOO_BIG = -6,
 
 		/** 数据帧错误 */
 		SS_FRAME_ERROR = -7,
@@ -174,7 +174,7 @@ extern "C" {
 	*       线程安全，支持并发发送数据操作。
 	* 参数： session 客户端连接会话对象。
 	* 参数： data 数据帧的指针。
-	* 参数： len 数据帧长度，默认最大不超过5MB，通过配置文件可以修改。
+	* 参数： len 数据帧长度。
 	* 参数： type 数据帧类型， 参考 ss_frame_type。
 	* 返回： 0 成功，其他值失败，参考 ss_error_code。
 	*/

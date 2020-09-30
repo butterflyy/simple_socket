@@ -9,16 +9,6 @@
 //指定测试选项
 // --gtest_filter=TestServerClient.BigFrame
 
-struct KeepAlive {
-	long heatbeat_time;
-	long keepalive_time;
-	long keepalive_count;
-};
-
-struct NetParam {
-	long recv_buff_size;
-	KeepAlive keep_alive;
-};
 
 SS_API int WINAPI SS_GetNetParam(struct NetParam* param);
 SS_API int WINAPI SS_SetNetParam(const struct NetParam* param);
@@ -617,18 +607,11 @@ namespace {
 	}
 
 	TEST_F(TestServerClient, Function) {
-		NetParam param;
-		memset(&param, 0, sizeof(NetParam));
-
-		int ret = SS_GetNetParam(&param);
-		ASSERT_EQ(ret, 0);
-
-
 		const std::string ip = "127.0.0.1";
 		const int port = 56234;
 
 		SS_SERVER server = nullptr;
-		ret = SS_StartServer(port, &server);
+		int ret = SS_StartServer(port, &server);
 		EXPECT_EQ(ret, 0);
 		EXPECT_NE(server, nullptr);
 
@@ -650,9 +633,9 @@ namespace {
 
 
 		//make max package  test
-		utils::Buffer max_buff(param.recv_buff_size * 1024 * 1024);
+		utils::Buffer max_buff(6 * 1024 * 1024);
 		BuildRandomData(max_buff);
-		utils::Buffer max_buff_1(param.recv_buff_size * 1024 * 1024 + 1);
+		//utils::Buffer max_buff_1(param.recv_buff_size * 1024 * 1024 + 1);
 		//server send binary to client frame
 		{
 			EXPECT_TRUE(Sync.add("sc_recvframe_callback"));
@@ -675,21 +658,6 @@ namespace {
 			}
 		}
 
-		{
-			ret = SS_SendFrame(session, max_buff_1.data(), max_buff_1.size(), SS_FRAME_BINARY);
-			EXPECT_EQ(ret, SS_PAYLOAD_TOO_BIG);
-
-			//sc_error_callback_data* data(nullptr);
-			//ret = Sync.wait_once("sc_error_callback", (void**)&data, 5000);
-			//EXPECT_EQ(ret, 0);
-
-			//if (ret == 0) {
-			//	EXPECT_EQ(data->client, client);
-			//	EXPECT_EQ(data->error_code, SC_PAYLOAD_TOO_BIG);
-
-			//	delete data;
-			//}
-		}
 
 
 		//client send binary to server frame
@@ -713,21 +681,6 @@ namespace {
 				delete data;
 			}
 		}
-		{
-			ret = SC_SendFrame(client, max_buff_1.data(), max_buff_1.size(), SS_FRAME_BINARY);
-			EXPECT_EQ(ret, SC_PAYLOAD_TOO_BIG);
-
-			//ss_error_callback_data* data(nullptr);
-			//ret = Sync.wait_once("ss_error_callback", (void**)&data, 5000);
-			//EXPECT_EQ(ret, 0);
-
-			//if (ret == 0) {
-			//	EXPECT_EQ(data->session, session);
-			//	EXPECT_EQ(data->error_code, SC_PAYLOAD_TOO_BIG);
-
-			//	delete data;
-			//}
-		}
 
 
 		//test string boundary
@@ -750,30 +703,15 @@ namespace {
 			}
 		}
 	}
-
-	TEST_F(TestServerClient, BigFrame) {
-		enum {
-			MAX_FRAME_SIZE = 100//MB
-		};
-
-		NetParam param;
-		memset(&param, 0, sizeof(NetParam));
-
-		int ret = SS_GetNetParam(&param);
-		ASSERT_EQ(ret, 0);
-
-		param.recv_buff_size = MAX_FRAME_SIZE;
-
-		ret = SS_SetNetParam(&param);
-		ASSERT_EQ(ret, 0);
-
-		const int clientsize = 2;
+	/*
+	TEST_F(TestServerClient, Concurrency) {
+		const int clientsize = 1000;
 
 		const std::string ip = "127.0.0.1";
 		const int port = 56234;
 
 		SS_SERVER server = nullptr;
-		ret = SS_StartServer(port, &server);
+		int ret = SS_StartServer(port, &server);
 		EXPECT_EQ(ret, 0);
 		EXPECT_NE(server, nullptr);
 
@@ -788,7 +726,7 @@ namespace {
 			EXPECT_NE(clients[i], nullptr);
 
 			ss_connected_callback_data* data(nullptr);
-			ret = Sync.wait_once("ss_connected_callback", (void**)&data, 8000);
+			ret = Sync.wait_once("ss_connected_callback", (void**)&data, 10000);
 			EXPECT_EQ(ret, 0);
 			EXPECT_EQ(data->server, server);
 			EXPECT_EQ(data->client_ip, ip);
@@ -797,20 +735,13 @@ namespace {
 			delete data;
 		}
 
-		//build data
-		//make max package  test
-		utils::Buffer max_buff(param.recv_buff_size * 1024 * 1024);
-
-		std::cout << "begin build random data over";
-		BuildRandomData(max_buff);
-		std::cout << "build random data over";
-
 		for (int i = 0; i < clientsize; i++) {
-			//server send to client frame
+			//server send string to client frame
 			{
 				EXPECT_TRUE(Sync.add("sc_recvframe_callback"));
 
-				ret = SS_SendFrame(sessions[i], max_buff.data(), max_buff.size(), SS_FRAME_BINARY);
+				std::string teststr = "Just a test frame data";
+				ret = SS_SendFrame(sessions[i], (byte*)teststr.c_str(), teststr.length(), SS_FRAME_STRING);
 				EXPECT_EQ(ret, 0);
 
 				sc_recvframe_callback_data* data(nullptr);
@@ -819,21 +750,44 @@ namespace {
 
 				if (ret == 0) {
 					EXPECT_EQ(data->client, clients[i]);
-					EXPECT_EQ(data->len, max_buff.size());
-					EXPECT_EQ(memcmp(data->data, max_buff.data(), max_buff.size()), 0);
-					EXPECT_EQ(data->type, SS_FRAME_BINARY);
+					std::string recvstr((char*)data->data, data->len);
+					EXPECT_EQ(teststr, recvstr);
+					EXPECT_EQ(data->type, SS_FRAME_STRING);
 
 					delete[]data->data;
 					delete data;
 				}
 			}
 
+			//server send binary to client frame
+			{
+				EXPECT_TRUE(Sync.add("sc_recvframe_callback"));
 
-			//client send to server frame
+				byte sendbt[12] = { 0x42, 0x4D, 0x16, 0x52, 0xF2, 0x32, 0x12, 0x12, 0x92, 0xA2, 0x12, 0x32 };
+
+				ret = SS_SendFrame(sessions[i], sendbt, 12, SS_FRAME_BINARY);
+				EXPECT_EQ(ret, 0);
+
+				sc_recvframe_callback_data* data(nullptr);
+				ret = Sync.wait_once("sc_recvframe_callback", (void**)&data, 10000);
+				EXPECT_EQ(ret, 0);
+
+				if (ret == 0) {
+					EXPECT_EQ(data->client, clients[i]);
+					EXPECT_EQ(memcmp(data->data, sendbt, 12), 0);
+					EXPECT_EQ(data->type, SC_FRAME_BINARY);
+
+					delete[]data->data;
+					delete data;
+				}
+			}
+
+			//client send string to server frame
 			{
 				EXPECT_TRUE(Sync.add("ss_recvframe_callback"));
 
-				ret = SC_SendFrame(clients[i], max_buff.data(), max_buff.size(), SC_FRAME_BINARY);
+				std::string teststr = "Just a test frame data";
+				ret = SC_SendFrame(clients[i], (byte*)teststr.c_str(), teststr.length(), SS_FRAME_STRING);
 				EXPECT_EQ(ret, 0);
 
 				ss_recvframe_callback_data* data(nullptr);
@@ -842,14 +796,38 @@ namespace {
 
 				if (ret == 0) {
 					EXPECT_EQ(data->session, sessions[i]);
-					EXPECT_EQ(data->len, max_buff.size());
-					EXPECT_EQ(memcmp(data->data, max_buff.data(), max_buff.size()), 0);
-					EXPECT_EQ(data->type, SC_FRAME_BINARY);
+					std::string recvstr((char*)data->data, data->len);
+					EXPECT_EQ(teststr, recvstr);
+					EXPECT_EQ(data->type, SS_FRAME_STRING);
 
 					delete[]data->data;
 					delete data;
 				}
 
+			}
+
+
+			//client send binary to server frame
+			{
+				EXPECT_TRUE(Sync.add("ss_recvframe_callback"));
+
+				byte sendbt[12] = { 0x42, 0x4D, 0x16, 0x52, 0xF2, 0x32, 0x12, 0x12, 0x92, 0xA2, 0x12, 0x32 };
+
+				ret = SC_SendFrame(clients[i], sendbt, 12, SS_FRAME_BINARY);
+				EXPECT_EQ(ret, 0);
+
+				ss_recvframe_callback_data* data(nullptr);
+				ret = Sync.wait_once("ss_recvframe_callback", (void**)&data, 10000);
+				EXPECT_EQ(ret, 0);
+
+				if (ret == 0) {
+					EXPECT_EQ(data->session, sessions[i]);
+					EXPECT_EQ(memcmp(data->data, sendbt, 12), 0);
+					EXPECT_EQ(data->type, SC_FRAME_BINARY);
+
+					delete[]data->data;
+					delete data;
+				}
 			}
 		}
 
@@ -872,4 +850,5 @@ namespace {
 			}
 		}
 	}
+	*/
 }

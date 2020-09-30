@@ -228,7 +228,7 @@ SC_API const char* WINAPI SC_StrError(int error_code){
 	case SC_NETWORK_ERROR: return "SC_NETWORK_ERROR";
 	case SC_NETWORK_DISCONNECTED: return "SC_NETWORK_DISCONNECTED";
 	case SC_NETWORK_TIMEOUT: return "SC_NETWORK_TIMEOUT";
-	case SC_PAYLOAD_TOO_BIG: return "SC_PAYLOAD_TOO_BIG";
+	//case SC_PAYLOAD_TOO_BIG: return "SC_PAYLOAD_TOO_BIG";
 	case SC_FRAME_ERROR: return "SC_FRAME_ERROR";
 	default: assert(false);  return "**UNKNOWN**";
 	}
@@ -321,10 +321,6 @@ SC_API int WINAPI SC_SendFrame(SC_CLIENT client, const unsigned char* data, int 
 	ClientImp* clientImp = reinterpret_cast<ClientImp*>(client);
 	if (!clientImp){
 		return SC_INVALID_PARAM;
-	}
-
-	if (len > clientImp->GetNetParam().recv_buff_size * 1024 * 1024){
-		return SC_PAYLOAD_TOO_BIG;
 	}
 
 	EXCEPTION_BEGIN
