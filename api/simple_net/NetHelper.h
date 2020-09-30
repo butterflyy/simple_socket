@@ -157,9 +157,6 @@ protected:
 
 	bool _connected;
 
-	TimeSpan _sendSpan;
-	TimeSpan _recvSpan;
-
 	bool _called; //if event called.
 };
 

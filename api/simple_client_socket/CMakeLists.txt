@@ -7,9 +7,10 @@ include_directories (${EXTERNALS_INCLUDE_DIR})
 
 file(GLOB_RECURSE SRC_POCO_FOUNDATION "../Poco/Foundation/*.cpp")
 file(GLOB_RECURSE SRC_POCO_NET "../Poco/Net/*.cpp")
-file(GLOB_RECURSE SRC_NET "../simple_net/*.cpp")
 
 list (APPEND SRC_LIB
+    ../simple_net/Client.cpp
+    ../simple_net/NetHelper.cpp
     ./ClientImp.cpp
     ./EventManager.cpp
     ./whsarmclient.cpp
@@ -28,7 +29,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     add_compile_options(-Wl,-Bsymbolic)
 endif()
 
-add_library (whsarmclient SHARED ${SRC_POCO_FOUNDATION} ${SRC_POCO_NET} ${SRC_NET} ${SRC_LIB})
+add_library (whsarmclient SHARED ${SRC_POCO_FOUNDATION} ${SRC_POCO_NET}  ${SRC_LIB})
 if (WIN32)
     target_link_libraries(whsarmclient PRIVATE glog ws2_32)
 else ()

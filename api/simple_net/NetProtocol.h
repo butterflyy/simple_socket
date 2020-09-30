@@ -44,10 +44,11 @@ typedef struct _TCP_HEADER
 
 //server send to client param
 typedef struct _TCP_PARAM{
-	uint32_t recv_buff_size;
-	uint32_t heatbeat_time; //millsecond
-	uint32_t keepalive_time;//millsecond
-	uint32_t keepalive_count;
+	//unused
+	//uint32_t recv_buff_size;
+	//uint32_t heatbeat_time; //millsecond
+	//uint32_t keepalive_time;//millsecond
+	//uint32_t keepalive_count;
 }TCP_PARAM, *PTCP_PARAM;
 
 typedef struct _UDP_HEADER

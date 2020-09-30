@@ -703,9 +703,9 @@ namespace {
 			}
 		}
 	}
-	/*
+	
 	TEST_F(TestServerClient, Concurrency) {
-		const int clientsize = 1000;
+		const int clientsize = 500;
 
 		const std::string ip = "127.0.0.1";
 		const int port = 56234;
@@ -850,5 +850,4 @@ namespace {
 			}
 		}
 	}
-	*/
 }

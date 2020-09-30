@@ -28,7 +28,7 @@ void Client::Connect(const char* ip, int port){
 
 			//handshake
 			sendFrame(MSG_HANDSHAKE, FRAME_BINARY, nullptr, 0);
-			Poco::Timespan timeout(2000000);
+			Poco::Timespan timeout(10*1000000);
 			if (_socket.poll(timeout, Socket::SELECT_READ)){
 				byte paramBuff[MAX_TCP_PARAM];
 				int msgtype;
@@ -42,16 +42,7 @@ void Client::Connect(const char* ip, int port){
 					throw SimpleNetException("Recv tcp param size error, less than TCP_PARAM", SN_FRAME_ERROR);
 				}
 
-				PTCP_PARAM tcp_param = (PTCP_PARAM)paramBuff;
-				_netParam.recv_buff_size = tcp_param->recv_buff_size;
-				_netParam.keep_alive.heatbeat_time = tcp_param->heatbeat_time;
-				_netParam.keep_alive.keepalive_count = tcp_param->keepalive_count;
-				_netParam.keep_alive.keepalive_time = tcp_param->keepalive_time;
-
-				LOG(INFO) << "recv_buff_size=" << _netParam.recv_buff_size
-					<< " heatbeat_time=" << _netParam.keep_alive.heatbeat_time
-					<< " keepalive_count=" << _netParam.keep_alive.keepalive_count
-					<< " keepalive_time=" << _netParam.keep_alive.keepalive_time;
+				//PTCP_PARAM tcp_param = (PTCP_PARAM)paramBuff;
 			}
 			else{
 				throw Poco::TimeoutException("No handshake ack");
@@ -88,65 +79,92 @@ void Client::run(){
 
 	LOG(INFO) << addr_info << "run begin";
 
-	_sendSpan.start();
-	_recvSpan.start();
-	long noalive_times = 0;
+	//keepalive status
+	bool probeEnabled = false;
+	TimeSpan aliveTimeSpan;
+	TimeSpan intervalTimeSpan;
+	int probeCount(0);
+
+	if (_netParam.keep_alive.enabled) {
+		aliveTimeSpan.start();
+	}
 
 	while (!Thread::isQuit()){
-		Poco::Timespan timeout(1000000);
-		if (_socket.poll(timeout, Socket::SELECT_READ)){
-			EXCEPTION_BEGIN_ADDR(addr_info)
-				int msgtype;
-				int frametype;
-				byte* recvbuff(nullptr);
-				int nRecv = recvFrameAlloc(&msgtype, &frametype, &recvbuff);
-				assert(msgtype == MSG_NORMAL || msgtype == MSG_HEARBEAT);
+		EXCEPTION_BEGIN_ADDR(addr_info)
+			Poco::Timespan timeout(1000000);
+			if (_socket.poll(timeout, Socket::SELECT_READ)){
+					int msgtype;
+					int frametype;
+					byte* recvbuff(nullptr);
+					int nRecv = recvFrameAlloc(&msgtype, &frametype, &recvbuff);
+					assert(msgtype == MSG_NORMAL || msgtype == MSG_HEARBEAT);
 
-				_recvSpan.restart();
-				noalive_times = 0;
-
-				if (msgtype == MSG_NORMAL){
-					LogFrame(false, recvbuff, nRecv, frametype);
-
-					OnRecvFrame(recvbuff, nRecv, frametype);
-				}
-			EXCEPTION_END
-
-			if (error_code != 0){
-				if (error_code == SN_NETWORK_DISCONNECTED){
-					break;
-				}
-				else{
-					//error handle
-					if (error_code == SN_FRAME_ERROR){
-						EXCEPTION_BEGIN_ADDR(addr_info)
-							//read empty buffer
-							readEmptyBuffer();
-						EXCEPTION_END
+					if (_netParam.keep_alive.enabled) {
+						//recv a frame, disable alive probe
+						probeEnabled = false;
+						aliveTimeSpan.restart();
 					}
 
-					OnError(error_code, error_msg);
-				}
-			}
-		}
-		else{//check hearbeat
-			if (_sendSpan.elapsed() > _netParam.keep_alive.heatbeat_time){
-				utils::LockGuard<utils::Mutex> lock(_sendMutex);
+					if (msgtype == MSG_NORMAL){
+						LogFrame(false, recvbuff, nRecv, frametype);
 
-				EXCEPTION_BEGIN_ADDR(addr_info)
-					sendFrame(MSG_HEARBEAT, FRAME_BINARY, nullptr, 0);
-				EXCEPTION_END
-
-				_sendSpan.restart();
+						OnRecvFrame(recvbuff, nRecv, frametype);
+					}
+					else if (msgtype == MSG_HEARBEAT) {//alive ack
+						utils::LockGuard<utils::Mutex> lock(_sendMutex);
+						sendFrame(MSG_HEARBEAT, FRAME_BINARY, nullptr, 0);
+					}
 			}
-			else if (_recvSpan.elapsed() > _netParam.keep_alive.keepalive_time){
-				noalive_times++;
-				LOG(INFO) << addr_info << " keepalive timeout, no alive times = " << noalive_times;
-				if (noalive_times >= _netParam.keep_alive.keepalive_count){
-					LOG(INFO) << addr_info << "keepalive timeout times > _netParam.keep_alive.keepalive_count, disconnect";
-					break;//disconnected.
+			else{//check alive
+				if (_netParam.keep_alive.enabled) {
+					if (probeEnabled) {
+						if (probeCount < _netParam.keep_alive.probe) {
+							if (intervalTimeSpan.elapsed() > _netParam.keep_alive.interval) {
+								LOG(INFO) << addr_info << " interval timeout, start probe = " << probeCount;
+
+								//new probe alive frame
+								{
+									utils::LockGuard<utils::Mutex> lock(_sendMutex);
+									sendFrame(MSG_HEARBEAT, FRAME_BINARY, nullptr, 0);
+								}
+
+								probeCount++;
+								intervalTimeSpan.start();
+							}
+						}
+						else {//probe count is reached
+							if (intervalTimeSpan.elapsed() > _netParam.keep_alive.interval) {
+								//probe failed, disconnected
+								LOG(INFO) << addr_info << "disconnected, probe failed = " << probeCount;
+								break;
+							}
+						}
+					}
+					else {
+						if (aliveTimeSpan.elapsed() > _netParam.keep_alive.time) {
+							//enable alive probe
+							probeEnabled = true;
+							probeCount = 0;
+							intervalTimeSpan.start();
+						}
+					}
+				}//keep_alive.enabled
+			}
+		EXCEPTION_END
+		if (error_code != 0) {
+			if (error_code == SN_NETWORK_DISCONNECTED) {
+				break;
+			}
+			else {
+				//error handle
+				if (error_code == SN_FRAME_ERROR) {
+					EXCEPTION_BEGIN_ADDR(addr_info)
+						//read empty buffer
+						readEmptyBuffer();
+					EXCEPTION_END
 				}
-				_recvSpan.restart();
+
+				OnError(error_code, error_msg);
 			}
 		}
 	}
