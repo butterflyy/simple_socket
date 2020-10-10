@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.0)
 project (simple_socket)
 
 
-option (GCC_STATIC_LINK "arm of linux gcc static link" OFF)
+option (ARM_D20 "build arm d20 library" OFF)
 
 #externals
 set(EXTERNALS_DIR ${CMAKE_SOURCE_DIR}/../externals)
@@ -28,7 +28,7 @@ if (WIN32)
         set(GTEST_LIB_DIR ${GTEST_DIR}/build_Win32/lib)
     endif()
 elseif (UNIX)
-    if(GCC_STATIC_LINK)
+    if(ARM_D20)
 	#glog
         set(GLOG_INCLUDE_DIR /usr/arm/include)
         set(GLOG_LIB_DIR /usr/arm/lib)

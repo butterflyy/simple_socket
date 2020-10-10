@@ -116,7 +116,7 @@ SC_API int WINAPI SC_Initialize(){
 #if defined(WIN32) || defined(__gnu_linux__)
 	if (!FLAGS_glog_init){
 #ifndef ARM_D20
-		google::InitGoogleLogging("whsarmclient");
+//		google::InitGoogleLogging("whsarmclient");
 #endif
 		FLAGS_glog_init = true;
 		FLAGS_glog_shutdown = false;
