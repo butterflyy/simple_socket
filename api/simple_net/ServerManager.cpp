@@ -125,6 +125,8 @@ void ServerManager::run(){
 		_serversMutex.lock();
 		removeDeadConnect();
 		_serversMutex.unlock();
+
+		Thread::msleep(10);
 	}
 
 	LOG(INFO) << addr_info << "ServerManager run end";

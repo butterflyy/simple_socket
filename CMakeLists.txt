@@ -2,8 +2,10 @@ cmake_minimum_required (VERSION 3.0)
 
 project (simple_socket)
 
-#externals
 
+option (USE_BOOST "Not support C11, need boost" ON)
+
+#externals
 set(EXTERNALS_DIR ${CMAKE_SOURCE_DIR}/../externals)
 
 #externals include

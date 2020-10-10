@@ -167,6 +167,8 @@ void Client::run(){
 				OnError(error_code, error_msg);
 			}
 		}
+
+		Thread::msleep(10);
 	}
 	EXCEPTION_BEGIN_ADDR(addr_info)
 		close();

@@ -81,7 +81,7 @@ void Server::run(){
 
 	while (!Thread::isQuit()){
 		EXCEPTION_BEGIN_ADDR(addr_info)
-			Poco::Timespan timeout(8*1000000);
+			Poco::Timespan timeout(1000000);
 			if (_socket.poll(timeout, Socket::SELECT_READ)){
 					int msgtype;
 					int frametype;
@@ -157,6 +157,8 @@ void Server::run(){
 				OnError(error_code, error_msg);
 			}
 		}
+
+		Thread::msleep(10);
 	}
 	EXCEPTION_BEGIN_ADDR(addr_info)
 		close();

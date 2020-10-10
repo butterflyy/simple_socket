@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 	ret = SC_SetCallback(disconnected_callback, error_callback, recvframe_callback);
 	if (ret < 0) return 0;
 
-	for(int i = 0; i < 500; i++){
+	for(int i = 0; i < 200; i++){
 		printf("connect size = %d \n", i);
 		SC_CLIENT client(nullptr);
 		ret = SC_ConnectToHost(argv[1], utils::Stoi(argv[2]), &client);
