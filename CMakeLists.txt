@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.0)
 project (simple_socket)
 
 
-option (USE_BOOST "Not support C11, need boost" ON)
+option (GCC_STATIC_LINK "arm of linux gcc static link" OFF)
 
 #externals
 set(EXTERNALS_DIR ${CMAKE_SOURCE_DIR}/../externals)
@@ -28,15 +28,23 @@ if (WIN32)
         set(GTEST_LIB_DIR ${GTEST_DIR}/build_Win32/lib)
     endif()
 elseif (UNIX)
-    #glog
-    set(GLOG_INCLUDE_DIR /usr/local/include)
-    set(GLOG_LIB_DIR /usr/lib)
+    if(GCC_STATIC_LINK)
+	#glog
+        set(GLOG_INCLUDE_DIR /usr/arm/include)
+        set(GLOG_LIB_DIR /usr/arm/lib)
 
-    #gtest
-    set(GTEST_INCLUDE_DIR /usr/local/include)
-    set(GTEST_LIB_DIR /usr/lib)
+        #gtest
+        set(GTEST_INCLUDE_DIR /usr/arm/include)
+        set(GTEST_LIB_DIR /usr/arm/lib)
+    else()
+    	#glog
+    	set(GLOG_INCLUDE_DIR /usr/local/include)
+    	set(GLOG_LIB_DIR /usr/lib)
 
-    #boost
+    	#gtest
+    	set(GTEST_INCLUDE_DIR /usr/local/include)
+    	set(GTEST_LIB_DIR /usr/lib)
+    endif()
 else ()
     message(satus "Other system")
 endif ()
