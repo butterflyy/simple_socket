@@ -19,7 +19,7 @@ cd build
 cmake .. -DBUILD_GMOCK=OFF
 make
 sudo make install
-cd ../../..
+cd ../../../..
 
 #build simple_server_socket
 cd simple_socket
@@ -29,5 +29,5 @@ cmake .. -DEXTERNALS_DIR=$(pwd)/../../externals
 make
 
 #run UnitTest
-cd Bin
+cd bin
 ./UnitTest
