@@ -116,7 +116,7 @@ SC_API int WINAPI SC_Initialize(){
 #if defined(WIN32) || defined(__gnu_linux__)
 	if (!FLAGS_glog_init){
 #ifndef ARM_D20
-//		google::InitGoogleLogging("whsarmclient");
+		google::InitGoogleLogging("whsarmclient");
 #endif
 		FLAGS_glog_init = true;
 		FLAGS_glog_shutdown = false;
@@ -279,6 +279,32 @@ SC_API int WINAPI SC_ConnectToHost(const char* ip, int port, SC_CLIENT* client){
 
 	g_clientImpList->Add(clientImp);
 	return ret;
+}
+
+
+SC_API int WINAPI SC_GetClientPort(SC_CLIENT client, int* port){
+	using namespace sc;
+
+	if (!IsInitialize()) {
+		return SC_ERROR;
+	}
+
+	LOG(INFO) << "SC_GetClientPort";
+
+	if (!client || !port) {
+		return SC_INVALID_PARAM;
+	}
+
+	ClientImp* clientImp = reinterpret_cast<ClientImp*>(client);
+	if (!clientImp) {
+		return SC_INVALID_PARAM;
+	}
+
+	EXCEPTION_BEGIN
+		*port = clientImp->Port();
+	EXCEPTION_END
+
+	return ClientImp::TransError(error_code);
 }
 
 SC_API int WINAPI SC_DisconnectFromHost(SC_CLIENT client){
